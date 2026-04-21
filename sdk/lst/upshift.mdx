@@ -1,0 +1,78 @@
+---
+title: "Upshift"
+description: "Yield aggregator vaults that route deposits to the highest-APY opportunities on Monad"
+---
+
+<Info>
+**Type:** Yield Aggregator Vaults | **Docs:** [upshift.finance](https://upshift.finance)
+</Info>
+
+## Overview
+
+Upshift deploys ERC4626-compatible vaults that automatically route deposited assets to the best available yield source on Monad. Each vault focuses on a single underlying asset and rebalances between lending protocols, LSTs, and liquidity positions to maximize APY.
+
+The vault registry is the central contract used to enumerate all deployed Upshift vaults on Monad.
+
+## Types
+
+```typescript
+type UpshiftVault = {
+  address: `0x${string}`
+  asset: `0x${string}`        // underlying token (MON, USDC, etc.)
+  apy: number                  // current annualized yield, e.g. 0.12 = 12%
+  totalAssets: bigint
+  strategy: string             // human-readable strategy description
+  protocol: 'upshift'
+}
+```
+
+## Functions
+
+### getUpshiftVaults()
+
+Returns all Upshift vaults from the on-chain registry.
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+const vaults = await sdk.getUpshiftVaults()
+// → UpshiftVault[]
+
+vaults.forEach(v => {
+  console.log(`${v.address}: ${(v.apy * 100).toFixed(2)}% APY - ${v.strategy}`)
+})
+```
+
+### getUpshiftTVL()
+
+Returns the total assets under management across all Upshift vaults in USD.
+
+```typescript
+const tvl = await sdk.getUpshiftTVL()
+// → number (USD)
+
+console.log(`Upshift TVL: $${(tvl / 1e6).toFixed(2)}M`)
+```
+
+### getBestUpshiftVault(asset?)
+
+Returns the Upshift vault with the highest current APY. Optionally filter by underlying asset address.
+
+```typescript
+// Best vault across all assets
+const best = await sdk.getBestUpshiftVault()
+// → UpshiftVault
+
+// Best vault for a specific asset
+const bestMON = await sdk.getBestUpshiftVault('0x...')
+// → UpshiftVault | null
+
+console.log(`Best vault: ${best.address} @ ${(best.apy * 100).toFixed(2)}% APY`)
+```
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| VaultRegistry | `0x7ADf95e0a67B7d1c3E4C2e2b6f7d3Bf5e2F3D8aA` |

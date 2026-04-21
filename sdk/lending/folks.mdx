@@ -1,0 +1,84 @@
+---
+title: "Folks Finance"
+description: "Cross-chain lending with Monad as a spoke chain"
+---
+
+<Info>
+**TVL:** ~$8M | **Type:** Cross-Chain Lending (spokes) | **Docs:** [docs.folks.finance](https://docs.folks.finance)
+</Info>
+
+## Overview
+
+Folks Finance is a cross-chain lending protocol that uses a hub-and-spoke architecture. Monad acts as a spoke - users deposit and borrow locally, while the hub chain coordinates cross-chain liquidity and rate discovery. This enables unified liquidity across multiple chains.
+
+<Note>
+Rates on Monad may differ slightly from other spoke chains due to local supply/demand dynamics. The hub periodically reconciles rates across all spokes.
+</Note>
+
+## Functions
+
+### getFolksMarkets()
+
+Returns all active Folks Finance lending markets on the Monad spoke.
+
+**Returns** `FolksMarket[]`
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `address` | `string` | Market contract address on Monad |
+| `asset` | `string` | Underlying token address |
+| `totalDeposits` | `bigint` | Total deposited assets (raw) |
+| `totalBorrows` | `bigint` | Total borrowed assets (raw) |
+| `supplyAPY` | `number` | Current supply APY as a decimal |
+| `borrowAPY` | `number` | Current borrow APY as a decimal |
+| `protocol` | `'folks'` | Protocol identifier |
+
+```typescript
+const markets = await sdk.getFolksMarkets()
+// → [
+//   {
+//     address: '0x...',
+//     asset: '0x...',
+//     totalDeposits: 4500000n,
+//     totalBorrows: 2800000n,
+//     supplyAPY: 0.057,
+//     borrowAPY: 0.091,
+//     protocol: 'folks'
+//   },
+// ]
+```
+
+### getFolksTVL()
+
+Returns total value locked in Folks Finance markets on the Monad spoke in USD.
+
+**Returns** `number`
+
+```typescript
+const tvl = await sdk.getFolksTVL()
+// → 8200000
+```
+
+## Usage Example
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+
+const markets = await sdk.getFolksMarkets()
+const tvl = await sdk.getFolksTVL()
+
+console.log(`Folks Finance Monad TVL: $${(tvl / 1e6).toFixed(1)}M`)
+
+for (const m of markets) {
+  const utilization = Number(m.totalBorrows) / Number(m.totalDeposits)
+  console.log(`Market ${m.asset}: supply ${(m.supplyAPY * 100).toFixed(2)}%, borrow ${(m.borrowAPY * 100).toFixed(2)}%, util ${(utilization * 100).toFixed(1)}%`)
+}
+```
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| SpokeCommon | `0xBB7d60bF5b0e1A9B85BE9A5Ef71E7d46C7C95E0B` |

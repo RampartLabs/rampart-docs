@@ -1,0 +1,145 @@
+---
+title: "GET /tvl"
+description: "Total Value Locked by category"
+---
+
+<Info>
+TVL figures are USD-denominated and sourced from on-chain data across every Monad DeFi protocol: DEXes, lending markets, LSTs, yield vaults, perpetuals, and other protocols. All values use the cross-oracle verified price.
+</Info>
+
+## Endpoint
+
+```http
+GET /api/tvl
+```
+
+## Query Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `breakdown` | `boolean` | `false` | Return per-category breakdown. If `false`, returns a single total number. |
+
+## Response (breakdown=false)
+
+```json
+{
+  "data": 48200000,
+  "timestamp": 1713600000000
+}
+```
+
+## Response (breakdown=true)
+
+```typescript
+interface TVLBreakdown {
+  total: number
+  dex: number
+  lending: number
+  lst: number
+  yield: number
+  perps: number
+  other: number
+}
+```
+
+```json
+{
+  "data": {
+    "total": 48200000,
+    "dex": 12400000,
+    "lending": 18600000,
+    "lst": 9800000,
+    "yield": 4200000,
+    "perps": 2100000,
+    "other": 1100000
+  },
+  "timestamp": 1713600000000
+}
+```
+
+## Protocols Included
+
+| Category | Protocols |
+|----------|-----------|
+| DEX | Kuru, Uniswap V2/V3, PancakeSwap V2/V3 |
+| Lending | Neverland, Euler V2, Morpho Blue, Curvance, Sherpa, Accountable, Folks Finance, Sumer |
+| LST | aprMON (aPriori), gMON, shMON (Magma), sMON (Kintsu) |
+| Yield | Lagoon, TownSquare, Enjoyoors, Nabla, Upshift |
+| Perps | Monday Markets, Narwhal |
+
+## cURL
+
+```bash
+# Total only
+curl "https://your-app.vercel.app/api/tvl"
+
+# With category breakdown
+curl "https://your-app.vercel.app/api/tvl?breakdown=true"
+```
+
+## TypeScript Fetch
+
+```typescript
+interface TVLBreakdown {
+  total: number
+  dex: number
+  lending: number
+  lst: number
+  yield: number
+  perps: number
+  other: number
+}
+
+// Total TVL
+async function fetchTVL(): Promise<number> {
+  const res = await fetch('https://your-app.vercel.app/api/tvl')
+  const json = await res.json()
+  return json.data as number
+}
+
+// Breakdown
+async function fetchTVLBreakdown(): Promise<TVLBreakdown> {
+  const res = await fetch('https://your-app.vercel.app/api/tvl?breakdown=true')
+  const json = await res.json()
+  return json.data as TVLBreakdown
+}
+
+const total = await fetchTVL()
+console.log(`Total DeFi TVL: $${(total / 1e6).toFixed(1)}M`)
+
+const breakdown = await fetchTVLBreakdown()
+console.log(`  DEX:     $${(breakdown.dex / 1e6).toFixed(1)}M`)
+console.log(`  Lending: $${(breakdown.lending / 1e6).toFixed(1)}M`)
+console.log(`  LST:     $${(breakdown.lst / 1e6).toFixed(1)}M`)
+console.log(`  Yield:   $${(breakdown.yield / 1e6).toFixed(1)}M`)
+```
+
+## Next.js Route Implementation
+
+```typescript
+// pages/api/tvl.ts
+import { getMonadDeFiTVL } from 'rampart-monad'
+import type { NextApiRequest, NextApiResponse } from 'next'
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const breakdown = req.query.breakdown === 'true'
+
+  try {
+    const tvl = await getMonadDeFiTVL()
+
+    const data = breakdown ? tvl : tvl.total
+
+    res
+      .setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=120')
+      .json({ data, timestamp: Date.now() })
+  } catch (err) {
+    res.status(500).json({ data: null, timestamp: Date.now(), error: String(err) })
+  }
+}
+```
+
+## Notes
+
+- TVL is a point-in-time snapshot - values can change significantly between blocks given Monad's ~400 ms block time.
+- The `other` category covers protocols that report TVL but do not fit neatly into the main categories.
+- Consider caching this endpoint for at least 60 seconds to avoid excessive RPC load.

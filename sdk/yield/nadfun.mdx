@@ -1,0 +1,107 @@
+---
+title: "nad.fun"
+description: "Memecoin launchpad on Monad - bonding curve launches that graduate to DEX listings"
+---
+
+<Info>
+**Type:** Memecoin Launchpad | **Docs:** [nad.fun](https://nad.fun)
+</Info>
+
+## Overview
+
+nad.fun is Monad's native memecoin launchpad. Tokens launch on an automated bonding curve - early buyers get lower prices, and as buying pressure fills the curve, the token price increases. When a token reaches a configurable market cap threshold, it **graduates** from the bonding curve and liquidity is deployed to a DEX (typically Kuru or a Uniswap V2-compatible AMM).
+
+The Rampart SDK reads token lists, graduation status, and aggregate statistics from the nad.fun factory.
+
+<Warning>
+The nad.fun factory address is pending deployment confirmation on Monad Mainnet. `getNadFunTokens()` may return an empty array until the address is updated in the SDK.
+</Warning>
+
+## Types
+
+```typescript
+type MemeToken = {
+  address: `0x${string}`
+  name: string
+  symbol: string
+  creator: `0x${string}`
+  marketCap: number           // current USD market cap
+  volume24h: number           // 24h trading volume in USD
+  graduated: boolean          // true if moved to DEX
+  bondingCurveProgress: number // 0–1, how full the bonding curve is
+  protocol: 'nadfun'
+}
+
+type NadFunStats = {
+  totalTokens: number         // all tokens ever launched
+  graduatedTokens: number     // tokens that reached DEX listing
+  totalVolume: number         // cumulative USD volume
+  protocol: 'nadfun'
+}
+```
+
+## Functions
+
+### getNadFunTokens()
+
+Returns all tokens launched on nad.fun, sorted by most recently created.
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+const tokens = await sdk.getNadFunTokens()
+// → MemeToken[]
+
+tokens.slice(0, 5).forEach(t => {
+  console.log(`${t.symbol}: mcap $${(t.marketCap / 1e3).toFixed(0)}K  graduated: ${t.graduated}`)
+})
+```
+
+### getTrendingMemes()
+
+Returns the top tokens by 24h trading volume.
+
+```typescript
+const trending = await sdk.getTrendingMemes()
+// → MemeToken[]  (sorted by volume24h desc)
+
+console.log('Trending memecoins:')
+trending.slice(0, 10).forEach((t, i) => {
+  console.log(`${i + 1}. ${t.symbol}  Vol: $${(t.volume24h / 1e3).toFixed(0)}K`)
+})
+```
+
+### getGraduatedMemes()
+
+Returns only tokens that have graduated from the bonding curve to a DEX listing.
+
+```typescript
+const graduated = await sdk.getGraduatedMemes()
+// → MemeToken[]  (graduated === true)
+
+console.log(`${graduated.length} tokens have graduated to DEX`)
+```
+
+### getNadFunStats()
+
+Returns aggregate platform statistics.
+
+```typescript
+const stats = await sdk.getNadFunStats()
+// → NadFunStats
+
+console.log(`Total launches: ${stats.totalTokens}`)
+console.log(`Graduated: ${stats.graduatedTokens} (${((stats.graduatedTokens / stats.totalTokens) * 100).toFixed(1)}%)`)
+console.log(`Cumulative volume: $${(stats.totalVolume / 1e6).toFixed(1)}M`)
+```
+
+## Contract Addresses
+
+| Contract | Address | Status |
+|----------|---------|--------|
+| Factory | `0x822c...placeholder` | Pending confirmation |
+
+<Note>
+Factory address will be updated once the nad.fun Mainnet deployment is confirmed. Track the [GitHub repo](https://github.com/monad-crypto/rampart) for updates.
+</Note>

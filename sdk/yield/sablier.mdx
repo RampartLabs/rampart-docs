@@ -1,0 +1,79 @@
+---
+title: "Sablier"
+description: "Real-time token streaming and vesting on Monad"
+---
+
+<Info>
+**Type:** Token Streaming | **Docs:** [docs.sablier.com](https://docs.sablier.com)
+</Info>
+
+## Overview
+
+Sablier is the leading token streaming protocol, enabling continuous, per-second token distributions. It is commonly used for:
+
+- **Vesting schedules** - linear or cliff + linear unlocks for team and investor allocations
+- **Payroll** - streaming salaries in real-time instead of periodic lump-sum payments
+- **Yield streaming** - protocols stream earned rewards continuously to stakers or LPs
+
+On Monad, Sablier's `LockupLinear` contract is deployed and supports ERC-20 streams with arbitrary sender, recipient, and duration.
+
+## Types
+
+```typescript
+type SablierStats = {
+  streamCount: number      // total streams ever created on Monad
+  totalStreamed: number     // cumulative USD value streamed
+  protocol: 'sablier'
+}
+```
+
+## Functions
+
+### getSablierStats()
+
+Returns aggregate stats for all Sablier streams on Monad.
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+const stats = await sdk.getSablierStats()
+// → SablierStats
+
+console.log(`Total streams: ${stats.streamCount}`)
+console.log(`Total streamed: $${(stats.totalStreamed / 1e6).toFixed(1)}M`)
+```
+
+### getSablierStream(streamId)
+
+Returns details of a specific stream by its numeric ID.
+
+```typescript
+const stream = await sdk.getSablierStream(42n)
+// → stream details object
+
+console.log(`Sender: ${stream.sender}`)
+console.log(`Recipient: ${stream.recipient}`)
+console.log(`Streamed so far: ${stream.streamedAmount}`)
+```
+
+### getSablierStreamCount()
+
+Returns the total number of streams ever created on the Monad deployment.
+
+```typescript
+const count = await sdk.getSablierStreamCount()
+// → number
+
+console.log(`Streams created: ${count}`)
+```
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| LockupLinear (`SABLIER_ADDRESSES.lockupLinear`) | `0x7a43F8a888fa15227D4f6B9F9A0A4E6e1b9c1b2E` |
+
+<Note>
+Stream IDs are sequential integers starting from 1. Use `getSablierStreamCount()` to find the latest stream ID, then iterate backwards to find active streams.
+</Note>

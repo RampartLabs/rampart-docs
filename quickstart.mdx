@@ -1,0 +1,135 @@
+---
+title: "Quickstart"
+description: "Install Rampart and make your first on-chain call in under 2 minutes"
+---
+
+## 1. Install
+
+```bash
+npm install rampart-monad
+```
+
+<Note>
+  Requires Node.js 18+ and TypeScript 5+. Rampart ships ESM + CJS + DTS - no configuration needed.
+</Note>
+
+## 2. Your first call
+
+```typescript
+import { getKuruPools, getEulerVaults, getBestSwapRoute } from 'rampart-monad'
+
+// Fetch live Kuru orderbook pools
+const pools = await getKuruPools()
+console.log(`${pools.length} active pools on Kuru`)
+// → 24 active pools on Kuru
+
+// Find the best swap route across 6 DEXes
+const route = await getBestSwapRoute(
+  '0x0000000000000000000000000000000000000000', // MON (native)
+  '0xf817257fed379853cDe0fa4F97AB987181B1E5Ea', // USDC
+  '1000000000000000000'                          // 1 MON
+)
+console.log(`Best route: ${route.bestDex} - ${route.amountOut} USDC`)
+// → Best route: kuru - 0.354 USDC
+
+// Get all Euler V2 vaults with live APR
+const vaults = await getEulerVaults()
+console.log(`${vaults.length} Euler vaults, best APR: ${(vaults[0]?.apr * 100).toFixed(2)}%`)
+// → 108 Euler vaults, best APR: 12.40%
+```
+
+## 3. All LSTs in one call
+
+```typescript
+import { getAllLSTStats, getBestLST } from 'rampart-monad'
+
+const lsts = await getAllLSTStats()
+for (const lst of lsts) {
+  console.log(`${lst.token}: ${(lst.apr * 100).toFixed(2)}% APR, TVL $${lst.tvl.toLocaleString()}`)
+}
+// → aprMON: 7.20% APR, TVL $48,300,000
+// → sMON:   6.80% APR, TVL $32,100,000
+// → gMON:   6.50% APR, TVL $28,900,000
+// → shMON:  7.10% APR, TVL $19,400,000
+// → vshMON: 7.10% APR, TVL $19,400,000
+
+const best = await getBestLST()
+console.log(`Best LST: ${best.token} at ${(best.apr * 100).toFixed(2)}%`)
+// → Best LST: aprMON at 7.20%
+```
+
+## 4. Market intelligence
+
+```typescript
+import { getMarketOverview, getBestYields } from 'rampart-monad'
+
+// Full ecosystem snapshot
+const market = await getMarketOverview()
+console.log(`Total Monad DeFi TVL: $${(market.totalTVL / 1e6).toFixed(1)}M`)
+console.log(`Active protocols: ${market.protocolCount}`)
+
+// Top yield opportunities across all protocols
+const yields = await getBestYields(5)
+for (const y of yields) {
+  console.log(`${y.protocol}/${y.asset}: ${(y.apy * 100).toFixed(2)}% APY`)
+}
+// → euler/USDC: 12.40% APY
+// → morpho/USDC: 11.20% APY
+// → sherpa/USDC: 10.80% APY
+```
+
+## 5. AI Agent (Vercel AI SDK)
+
+```typescript
+import { RampartAgent } from 'rampart-monad'
+import { generateText } from 'ai'
+import { anthropic } from '@ai-sdk/anthropic'
+
+const agent = new RampartAgent()
+
+const { text } = await generateText({
+  model: anthropic('claude-3-5-sonnet-20241022'),
+  tools: agent.tools,
+  system: 'You are a Monad DeFi analyst. Use the provided tools to answer questions.',
+  prompt: 'What is the best yield strategy for 10,000 USDC on Monad right now?',
+  maxSteps: 5,
+})
+
+console.log(text)
+// → "Based on current rates, the best yield for 10,000 USDC on Monad is Euler V2
+//    at 12.4% APY via the USDC lending vault (0x...). Alternative: Morpho Blue
+//    at 11.2% APY with slightly lower risk..."
+```
+
+## Chain Configuration
+
+Rampart pre-configures the Monad public client. You can also import it directly:
+
+```typescript
+import { publicClient, monad, MONAD_CHAIN_ID } from 'rampart-monad'
+
+// Use the pre-configured viem client
+const block = await publicClient.getBlockNumber()
+console.log(`Current block: ${block}`)
+
+// Chain details
+console.log(monad.name)         // → "Monad Mainnet"
+console.log(MONAD_CHAIN_ID)     // → 143
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="DEX Protocols" icon="arrow-right-arrow-left" href="sdk/dex/overview">
+    Swap quotes, pool data, and price feeds from 14 DEXes
+  </Card>
+  <Card title="Lending Protocols" icon="piggy-bank" href="sdk/lending/overview">
+    Supply/borrow rates and TVL from 14 lending protocols
+  </Card>
+  <Card title="Multi-DEX Router" icon="route" href="sdk/aggregators/router">
+    Best-route quotes across all 6 DEXes simultaneously
+  </Card>
+  <Card title="AI Agent Tools" icon="robot" href="sdk/ai-agent/rampart-agent">
+    36 structured tools for LLM-driven DeFi analysis
+  </Card>
+</CardGroup>

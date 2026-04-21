@@ -1,0 +1,191 @@
+---
+title: "GET /portfolio"
+description: "Wallet snapshot across all Monad DeFi protocols"
+---
+
+<Info>
+Returns a complete DeFi portfolio for any wallet address: native MON balance, ERC20 token holdings, LST positions (aprMON, gMON, shMON, sMON), and Euler V2 vault positions - all with USD values.
+</Info>
+
+## Endpoint
+
+```http
+GET /api/portfolio
+```
+
+## Query Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `address` | `string` | Yes | Wallet address (`0x...`) |
+| `include` | `string` | No | Comma-separated sections: `tokens`, `lst`, `lending`, or `all` (default `all`) |
+
+## Response
+
+```typescript
+interface TokenBalance {
+  address: string
+  symbol: string
+  balance: number
+  valueUSD: number
+}
+
+interface LSTPosition {
+  token: string
+  balance: number
+  valueUSD: number
+  underlyingMON: number
+}
+
+interface EulerPosition {
+  vault: string
+  asset: string
+  supplied: number
+  valueUSD: number
+  apr: number
+}
+
+interface Portfolio {
+  address: string
+  nativeBalance: number
+  nativeValueUSD: number
+  tokens: TokenBalance[]
+  lstPositions: LSTPosition[]
+  eulerPositions: EulerPosition[]
+  totalUSD: number
+  timestamp: number
+}
+```
+
+## Example Response
+
+```json
+{
+  "data": {
+    "address": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+    "nativeBalance": 142.5,
+    "nativeValueUSD": 50.445,
+    "tokens": [
+      {
+        "address": "0xf817257fed379853cDe0fa4F97AB987181B1E5Ea",
+        "symbol": "USDC",
+        "balance": 2500.0,
+        "valueUSD": 2500.0
+      }
+    ],
+    "lstPositions": [
+      {
+        "token": "aprMON",
+        "balance": 50.0,
+        "valueUSD": 17.70,
+        "underlyingMON": 51.23
+      }
+    ],
+    "eulerPositions": [
+      {
+        "vault": "0x...",
+        "asset": "USDC",
+        "supplied": 1000.0,
+        "valueUSD": 1000.0,
+        "apr": 0.0821
+      }
+    ],
+    "totalUSD": 3568.145,
+    "timestamp": 1713600000000
+  },
+  "timestamp": 1713600000000
+}
+```
+
+## cURL
+
+```bash
+# Full portfolio
+curl "https://your-app.vercel.app/api/portfolio?address=0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+
+# Tokens and LST positions only
+curl "https://your-app.vercel.app/api/portfolio?address=0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045&include=tokens,lst"
+
+# Lending positions only
+curl "https://your-app.vercel.app/api/portfolio?address=0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045&include=lending"
+```
+
+## TypeScript Fetch
+
+```typescript
+interface PortfolioResponse {
+  data: Portfolio
+  timestamp: number
+  error?: string
+}
+
+async function fetchPortfolio(
+  address: string,
+  include = 'all'
+): Promise<Portfolio> {
+  const url = `https://your-app.vercel.app/api/portfolio?address=${address}&include=${include}`
+  const res = await fetch(url)
+  const json: PortfolioResponse = await res.json()
+  if (json.error) throw new Error(json.error)
+  return json.data
+}
+
+const portfolio = await fetchPortfolio('0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045')
+console.log(`Total portfolio value: $${portfolio.totalUSD.toFixed(2)}`)
+console.log(`MON balance: ${portfolio.nativeBalance.toFixed(4)}`)
+
+for (const lst of portfolio.lstPositions) {
+  console.log(`${lst.token}: ${lst.balance.toFixed(4)} (≈ $${lst.valueUSD.toFixed(2)})`)
+}
+```
+
+## Next.js Route Implementation
+
+```typescript
+// pages/api/portfolio.ts
+import { getPortfolio } from 'rampart-monad'
+import { isAddress } from 'viem'
+import type { NextApiRequest, NextApiResponse } from 'next'
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const { address, include = 'all' } = req.query
+
+  if (!address || typeof address !== 'string' || !isAddress(address)) {
+    return res.status(400).json({
+      data: null,
+      timestamp: Date.now(),
+      error: 'Invalid or missing wallet address',
+    })
+  }
+
+  try {
+    const portfolio = await getPortfolio(address as `0x${string}`)
+
+    // Optionally filter sections
+    const sections = (include as string).split(',')
+    const filtered = sections.includes('all') ? portfolio : {
+      address: portfolio.address,
+      nativeBalance: portfolio.nativeBalance,
+      nativeValueUSD: portfolio.nativeValueUSD,
+      tokens: sections.includes('tokens') ? portfolio.tokens : [],
+      lstPositions: sections.includes('lst') ? portfolio.lstPositions : [],
+      eulerPositions: sections.includes('lending') ? portfolio.eulerPositions : [],
+      totalUSD: portfolio.totalUSD,
+      timestamp: portfolio.timestamp,
+    }
+
+    res
+      .setHeader('Cache-Control', 's-maxage=15, stale-while-revalidate=30')
+      .json({ data: filtered, timestamp: Date.now() })
+  } catch (err) {
+    res.status(500).json({ data: null, timestamp: Date.now(), error: String(err) })
+  }
+}
+```
+
+## Notes
+
+- USD values use the cross-oracle verified price from `getVerifiedPrice` - Kuru spot price is used for MON.
+- LST positions include `underlyingMON` - the MON redemption value at the current exchange rate.
+- The `include` parameter reduces RPC calls: use `tokens` if you only need ERC20 balances.
+- Wallet addresses must be checksummed or lowercase - viem normalises them internally.

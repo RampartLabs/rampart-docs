@@ -1,0 +1,70 @@
+---
+title: "Nabla"
+description: "Single-sided AMM liquidity provision with insurance backstop"
+---
+
+<Info>
+**TVL:** ~$3M | **Type:** Single-Sided AMM | **Docs:** [docs.nabla.fi](https://docs.nabla.fi)
+</Info>
+
+## Overview
+
+Nabla is a single-sided AMM where liquidity providers deposit a single asset and earn yield from swap fees. A shared backstop pool provides insurance against impermanent loss. Unlike traditional two-sided AMMs, there is no need to provide paired assets when depositing.
+
+## Functions
+
+### getNablaPools()
+
+Returns all active Nabla liquidity pools with current APY and total liquidity.
+
+**Returns** `NablaPool[]`
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `address` | `string` | Pool contract address |
+| `asset` | `string` | Single asset deposited into the pool |
+| `totalLiquidity` | `bigint` | Total liquidity in the pool (raw) |
+| `apy` | `number` | Current APY from fees as a decimal |
+| `protocol` | `'nabla'` | Protocol identifier |
+
+```typescript
+const pools = await sdk.getNablaPools()
+// → [
+//   { address: '0x...', asset: '0x...', totalLiquidity: 1800000n, apy: 0.072, protocol: 'nabla' },
+//   { address: '0x...', asset: '0x...', totalLiquidity: 950000n,  apy: 0.051, protocol: 'nabla' },
+// ]
+```
+
+### getNablaTVL()
+
+Returns total value locked across all Nabla pools and the backstop pool in USD.
+
+**Returns** `number`
+
+```typescript
+const tvl = await sdk.getNablaTVL()
+// → 3000000
+```
+
+## Usage Example
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+
+const pools = await sdk.getNablaPools()
+const tvl = await sdk.getNablaTVL()
+
+console.log(`Nabla TVL: $${(tvl / 1e6).toFixed(1)}M across ${pools.length} pools`)
+
+const best = pools.sort((a, b) => b.apy - a.apy)[0]
+console.log(`Best pool APY: ${(best.apy * 100).toFixed(2)}% for asset ${best.asset}`)
+```
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| Router | `0x610748f49774C062467c7AE1eC9E4729FFE94577` |
+| BackstopPool | `0x11B06EF8Adc5ea73841023CB39Be614f471213cc` |

@@ -1,0 +1,111 @@
+---
+title: "KyberSwap"
+description: "DEX aggregator - smart routing across multiple Monad liquidity sources"
+---
+
+<Info>
+**Type:** DEX Aggregator | **Docs:** [docs.kyberswap.com](https://docs.kyberswap.com)
+</Info>
+
+## Overview
+
+KyberSwap is a DEX aggregator that routes trades through the optimal path across multiple liquidity sources. On Monad, it aggregates liquidity from native AMMs and orderbooks to provide best-execution pricing. The SDK uses the KyberSwap API for routing - no on-chain calls are required for quotes.
+
+## Functions
+
+### getKyberSwapQuote()
+
+Returns an optimized swap quote via the KyberSwap routing API.
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tokenIn` | `Address` | Input token address |
+| `tokenOut` | `Address` | Output token address |
+| `amountIn` | `bigint` | Exact input amount |
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `amountOut` | `bigint` | Expected output amount |
+| `amountOutUsd` | `number` | Output value in USD |
+| `gas` | `number` | Estimated gas cost |
+| `route` | `RouteStep[]` | Array of routing steps `{ exchange, tokenIn, tokenOut, swapAmount }` |
+| `priceImpact` | `number` | Price impact percentage |
+| `encodedSwapData` | `Hex` | Calldata for executing the swap |
+
+```typescript
+import { getKyberSwapQuote } from 'rampart-monad'
+
+const quote = await getKyberSwapQuote(
+  '0x...', // tokenIn (MON)
+  '0x...', // tokenOut (USDC)
+  1_000_000_000_000_000_000n // 1 MON
+)
+
+console.log(`Amount out: ${quote.amountOut}`)
+console.log(`Value: $${quote.amountOutUsd}`)
+console.log(`Route: ${quote.route.map(s => s.exchange).join(' → ')}`)
+```
+
+---
+
+### getKyberSwapPrice()
+
+Returns the current spot price for a token pair using KyberSwap routing.
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tokenIn` | `Address` | Input token address |
+| `tokenOut` | `Address` | Output token address |
+
+**Returns** `number`. price of tokenIn in units of tokenOut.
+
+```typescript
+import { getKyberSwapPrice } from 'rampart-monad'
+
+const price = await getKyberSwapPrice(
+  '0x...', // MON
+  '0x...'  // USDC
+)
+console.log(`KyberSwap price: ${price} USDC per MON`)
+```
+
+<CodeGroup>
+```typescript Best Route Comparison
+import { getKyberSwapQuote, getOpenOceanQuote } from 'rampart-monad'
+
+const tokenIn = '0x...'
+const tokenOut = '0x...'
+const amount = 1_000_000_000_000_000_000n
+
+const [kyber, openocean] = await Promise.all([
+  getKyberSwapQuote(tokenIn, tokenOut, amount),
+  getOpenOceanQuote(tokenIn, tokenOut, amount)
+])
+
+const bestOut = kyber.amountOut > openocean.amountOut ? kyber : openocean
+const source = kyber.amountOut > openocean.amountOut ? 'KyberSwap' : 'OpenOcean'
+console.log(`Best: ${source} - ${bestOut.amountOut}`)
+```
+
+```typescript Route Inspection
+import { getKyberSwapQuote } from 'rampart-monad'
+
+const quote = await getKyberSwapQuote('0x...', '0x...', 5_000_000n)
+console.log('Routing path:')
+quote.route.forEach((step, i) => {
+  console.log(`  ${i + 1}. ${step.exchange}: ${step.tokenIn} → ${step.tokenOut}`)
+})
+```
+</CodeGroup>
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| MetaAggregationRouterV2 | `0x6131B5fae19EA4f9D964eAc0408E4408b66337b5` |

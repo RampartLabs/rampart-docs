@@ -1,0 +1,149 @@
+---
+title: "Kuru"
+description: "Orderbook AMM on Monad - native MON pricing, on-chain limit orders"
+---
+
+<Info>
+**TVL:** ~$5M | **Type:** Orderbook AMM | **Docs:** [docs.kuru.io](https://docs.kuru.io)
+</Info>
+
+## Overview
+
+Kuru is a native Monad orderbook AMM that combines on-chain limit orders with automated market-making. Unlike traditional AMMs, Kuru maintains an on-chain orderbook with bid/ask price levels, enabling tighter spreads and more predictable execution.
+
+Kuru uses **native MON** as the base pricing asset, so token prices are expressed in MON terms. The SDK provides functions to read pool state, simulate swaps, and retrieve token prices.
+
+## Functions
+
+### getKuruPools()
+
+Returns all active Kuru liquidity pools.
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `poolAddress` | `Address` | On-chain pool contract address |
+| `baseToken` | `Address` | Base token address |
+| `quoteToken` | `Address` | Quote token address (often USDC or MON) |
+| `price` | `number` | Current mid-market price |
+| `tvl` | `number` | Total value locked in USD |
+| `volume24h` | `number` | 24-hour trading volume in USD |
+
+```typescript
+import { getKuruPools } from 'rampart-monad'
+
+const pools = await getKuruPools()
+console.log(pools[0].price)   // e.g. 0.354 (MON/USD)
+console.log(pools[0].tvl)     // e.g. 1200000
+```
+
+---
+
+### getOrderbook()
+
+Returns the full bid/ask orderbook for a given Kuru pool.
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `poolAddress` | `Address` | Address of the Kuru pool |
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `bids` | `OrderLevel[]` | Array of bid price levels `{ price, size }` |
+| `asks` | `OrderLevel[]` | Array of ask price levels `{ price, size }` |
+| `spread` | `number` | Bid-ask spread in basis points |
+| `midPrice` | `number` | Mid-market price |
+
+```typescript
+import { getOrderbook } from 'rampart-monad'
+
+const book = await getOrderbook('0x...')
+console.log(`Mid: ${book.midPrice}`)
+console.log(`Spread: ${book.spread} bps`)
+console.log(`Best bid: ${book.bids[0].price}`)
+console.log(`Best ask: ${book.asks[0].price}`)
+```
+
+---
+
+### simulateKuruSwap()
+
+Simulates a swap on Kuru without sending a transaction.
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `poolAddress` | `Address` | Address of the Kuru pool |
+| `amountIn` | `bigint` | Input amount in token decimals |
+| `isBuy` | `boolean` | `true` = buy base token, `false` = sell base token |
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `amountOut` | `bigint` | Expected output amount |
+| `priceImpact` | `number` | Price impact as a percentage |
+| `executionPrice` | `number` | Effective execution price |
+| `fee` | `bigint` | Fee paid in quote token |
+
+```typescript
+import { simulateKuruSwap } from 'rampart-monad'
+
+const sim = await simulateKuruSwap(
+  '0x...',        // poolAddress
+  1_000_000n,     // 1 USDC (6 decimals)
+  true            // buying base token
+)
+console.log(`Out: ${sim.amountOut}`)
+console.log(`Price impact: ${sim.priceImpact}%`)
+```
+
+---
+
+### getTokenPrice()
+
+Returns the current price of a token using Kuru as the price source.
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tokenAddress` | `Address` | Token to price |
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `priceUsd` | `number` | Token price in USD |
+| `priceMon` | `number` | Token price in MON |
+| `source` | `string` | Always `"kuru"` |
+| `poolAddress` | `Address` | Pool used for pricing |
+
+```typescript
+import { getTokenPrice } from 'rampart-monad'
+
+const price = await getTokenPrice('0x...')
+console.log(`$${price.priceUsd} (${price.priceMon} MON)`)
+```
+
+<Note>
+Kuru returns the most reliable MON price on Monad (~$0.354). It is used as the cross-reference source in the SDK's oracle module when Chainlink or Pyth feeds are unavailable.
+</Note>
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| KuruRouter | `0x0000000000000000000000000000000000000000` |
+| BTC/USDC Pool | `0x0000000000000000000000000000000000000000` |
+| MON/USDC Pool | `0x0000000000000000000000000000000000000000` |
+
+<Note>
+Kuru uses MON native pricing - prices for all assets are denominated in MON internally and converted to USD using the MON/USDC pool rate.
+</Note>

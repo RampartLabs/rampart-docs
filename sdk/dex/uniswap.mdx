@@ -1,0 +1,118 @@
+---
+title: "Uniswap V3"
+description: "Concentrated liquidity AMM - Uniswap V3 on Monad Mainnet"
+---
+
+<Info>
+**TVL:** ~$10M | **Type:** Concentrated Liquidity (V3) | **Docs:** [docs.uniswap.org](https://docs.uniswap.org)
+</Info>
+
+## Overview
+
+Uniswap V3 is the largest DEX by TVL on Monad Mainnet. It uses concentrated liquidity - LPs provide liquidity within custom price ranges, dramatically improving capital efficiency compared to V2-style constant-product AMMs.
+
+The SDK exposes pool enumeration, price queries, and a cross-DEX price comparison utility against Kuru.
+
+<Note>
+Uniswap V3's `QuoterV2` contract is not a true view function. The SDK uses `simulateContract` (not `readContract`) for all quote calls. Using `readContract` will fail on Monad's RPC.
+</Note>
+
+## Functions
+
+### getUniswapPools()
+
+Returns all active Uniswap V3 pools on Monad.
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `poolAddress` | `Address` | Pool contract address |
+| `token0` | `Address` | First token address |
+| `token1` | `Address` | Second token address |
+| `fee` | `number` | Fee tier in bps (e.g. 500, 3000, 10000) |
+| `sqrtPriceX96` | `bigint` | Current sqrt price in Q64.96 format |
+| `liquidity` | `bigint` | Active liquidity in the pool |
+| `tick` | `number` | Current tick |
+
+```typescript
+import { getUniswapPools } from 'rampart-monad'
+
+const pools = await getUniswapPools()
+for (const pool of pools) {
+  console.log(`${pool.token0}/${pool.token1} - fee: ${pool.fee / 10000}%`)
+}
+```
+
+---
+
+### getUniswapPrice()
+
+Returns the current spot price between two tokens using the best Uniswap V3 pool.
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tokenA` | `Address` | Input token address |
+| `tokenB` | `Address` | Output token address |
+
+**Returns** `number`. price of tokenA denominated in tokenB.
+
+```typescript
+import { getUniswapPrice } from 'rampart-monad'
+
+const price = await getUniswapPrice(
+  '0x...', // MON
+  '0x...'  // USDC
+)
+console.log(`1 MON = ${price} USDC`)
+```
+
+---
+
+### compareWithKuru()
+
+Compares the effective swap price between Uniswap V3 and Kuru for a given token pair and input amount. Useful for arbitrage detection and best-execution routing.
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tokenA` | `Address` | Input token address |
+| `tokenB` | `Address` | Output token address |
+| `amount` | `bigint` | Input amount in token decimals |
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `uniswapPrice` | `number` | Effective price on Uniswap V3 |
+| `kuruPrice` | `number` | Effective price on Kuru |
+| `bestSource` | `string` | `"uniswap"` or `"kuru"` |
+| `spreadBps` | `number` | Price difference in basis points |
+
+```typescript
+import { compareWithKuru } from 'rampart-monad'
+
+const cmp = await compareWithKuru(
+  '0x...', // tokenA
+  '0x...', // tokenB
+  1_000_000_000_000_000_000n // 1 token (18 decimals)
+)
+
+if (cmp.bestSource === 'kuru') {
+  console.log(`Kuru is better by ${cmp.spreadBps} bps`)
+} else {
+  console.log(`Uniswap is better by ${cmp.spreadBps} bps`)
+}
+```
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| Factory V3 | `0x1F98431c8aD98523631AE4a59f267346ea31F984` |
+| QuoterV2 | `0x61fFE014bA17989E743c5F6cB21bF9697530B21e` |
+| SwapRouter02 | `0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45` |
+| NonfungiblePositionManager | `0xC36442b4a4522E871399CD717aBDD847Ab11FE88` |

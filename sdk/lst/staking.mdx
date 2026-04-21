@@ -1,0 +1,104 @@
+---
+title: "LST Aggregator"
+description: "Compare and aggregate all 5 Monad LSTs in a single interface"
+---
+
+<Info>
+**Protocols:** aprMON · sMON · gMON · shMON · vshMON | **Type:** LST Aggregator | **Source:** on-chain reads via Rampart
+</Info>
+
+## Overview
+
+The LST Aggregator normalizes data from all five Monad liquid staking protocols into a consistent `LSTStats` type. Use it to compare APRs, exchange rates, and TVLs across the entire ecosystem without integrating each protocol separately.
+
+## Types
+
+```typescript
+type LSTStats = {
+  token: 'aprMON' | 'sMON' | 'gMON' | 'shMON' | 'vshMON'
+  protocol: string
+  contractAddress: `0x${string}`
+  apr: number           // annualized rate, e.g. 0.08 = 8%
+  exchangeRate: number  // LST per 1 MON
+  tvl: number           // total value locked in USD
+  risk: 'low' | 'medium' | 'high'
+  timestamp: number     // unix seconds
+}
+```
+
+## Functions
+
+### getAllLSTStats()
+
+Returns stats for all 5 LSTs in a single multicall batch.
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+const stats = await sdk.getAllLSTStats()
+// → LSTStats[]  (5 entries, one per token)
+
+console.log(stats.map(s => `${s.token}: ${(s.apr * 100).toFixed(2)}%`))
+// aprMON: 8.00%
+// sMON:   7.00%
+// gMON:   7.50%
+// shMON:  6.50%
+// vshMON: 9.00%
+```
+
+### getBestLST()
+
+Returns the single LST with the highest current APR.
+
+```typescript
+const best = await sdk.getBestLST()
+// → LSTStats
+
+console.log(`Best yield: ${best.token} @ ${(best.apr * 100).toFixed(2)}% APR`)
+// Best yield: vshMON @ 9.00% APR
+```
+
+### compareLSTs()
+
+Returns all LSTs sorted by APR descending. Useful for building yield comparison UIs.
+
+```typescript
+const ranked = await sdk.compareLSTs()
+
+// Print a comparison table
+ranked.forEach((lst, i) => {
+  console.log(
+    `${i + 1}. ${lst.token.padEnd(6)} ${lst.protocol.padEnd(12)} ` +
+    `APR: ${(lst.apr * 100).toFixed(2)}%  TVL: $${(lst.tvl / 1e6).toFixed(1)}M`
+  )
+})
+// 1. vshMON  mellow       APR: 9.00%  TVL: $19.0M
+// 2. aprMON  apriori      APR: 8.00%  TVL: $48.0M
+// 3. gMON    kintsu       APR: 7.50%  TVL: $25.0M
+// 4. sMON    magma        APR: 7.00%  TVL: $30.0M
+// 5. shMON   fastlane     APR: 6.50%  TVL: $15.0M
+```
+
+### getTotalStakedMON()
+
+Returns the total MON staked across all 5 protocols combined.
+
+```typescript
+const total = await sdk.getTotalStakedMON()
+// → number (MON units)
+
+console.log(`Total staked: ${(total / 1e6).toFixed(1)}M MON`)
+// Total staked: 137.0M MON
+```
+
+## Contract Addresses
+
+| Token | Contract |
+|-------|----------|
+| aprMON | `0xb2f82D0f38dc453D596Ad40A37799446Cc89274A` |
+| vshMON (Mellow vault factory) | `0xC9Da1Fe5B70e40C60e4028da5b1d7b8BD8e19c82` |
+
+<Note>
+sMON, gMON, and shMON contract addresses are read dynamically from their respective protocol registries. See individual protocol pages for details.
+</Note>

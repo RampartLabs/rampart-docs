@@ -1,0 +1,74 @@
+---
+title: "Accountable"
+description: "Undercollateralized lending protocol on Monad"
+---
+
+<Info>
+**TVL:** ~$2M | **Type:** Undercollateralized Lending | **Docs:** [accountable.finance](https://accountable.finance)
+</Info>
+
+## Overview
+
+Accountable enables undercollateralized lending on Monad. Unlike overcollateralized protocols, borrowers can access credit beyond their posted collateral value through reputation or whitelisting mechanisms. This allows for more capital-efficient borrowing at the cost of higher counterparty risk for depositors.
+
+<Warning>
+Undercollateralized lending carries elevated risk compared to overcollateralized protocols. Borrower default can result in losses for depositors that exceed the collateral held by the protocol.
+</Warning>
+
+## Functions
+
+### getAccountableVaults()
+
+Returns all active Accountable lending vaults.
+
+**Returns** `AccountableVault[]`
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `address` | `string` | Vault contract address |
+| `asset` | `string` | Underlying token address |
+| `totalDeposits` | `bigint` | Total deposited assets (raw) |
+| `borrowRate` | `number` | Current borrow rate as a decimal (e.g. `0.095`) |
+| `protocol` | `'accountable'` | Protocol identifier |
+
+```typescript
+const vaults = await sdk.getAccountableVaults()
+// → [
+//   { address: '0x...', asset: '0x...', totalDeposits: 1200000n, borrowRate: 0.095, protocol: 'accountable' },
+//   { address: '0x...', asset: '0x...', totalDeposits: 800000n,  borrowRate: 0.110, protocol: 'accountable' },
+// ]
+```
+
+### getAccountableTVL()
+
+Returns total value locked across all Accountable vaults in USD.
+
+**Returns** `number`
+
+```typescript
+const tvl = await sdk.getAccountableTVL()
+// → 2000000
+```
+
+## Usage Example
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+
+const vaults = await sdk.getAccountableVaults()
+const tvl = await sdk.getAccountableTVL()
+
+console.log(`Accountable TVL: $${(tvl / 1e6).toFixed(1)}M`)
+
+// Find vault with highest borrow demand
+const hottest = vaults.sort((a, b) => b.borrowRate - a.borrowRate)[0]
+console.log(`Highest borrow rate: ${(hottest.borrowRate * 100).toFixed(2)}%`)
+```
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| VaultManager | `0xC80F56E6Bd9d0e36261D6D54C06BE4a8AE5D22b1` |

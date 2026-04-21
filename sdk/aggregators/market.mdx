@@ -1,0 +1,168 @@
+---
+title: "Market Intelligence"
+description: "Ecosystem-wide TVL, yield aggregation, and arbitrage scanning"
+---
+
+<Info>
+Market Intelligence aggregates data from every lending protocol, LST, yield vault, and DEX on Monad into a single unified view. It covers Neverland, Euler V2, Morpho Blue, Curvance, Sherpa, Accountable, Folks Finance, Sumer, Lagoon, TownSquare, Enjoyoors, Nabla, and all four LSTs.
+</Info>
+
+## Overview
+
+The market intelligence module provides a single entry point to query ecosystem-wide metrics: total TVL broken down by category, the best current yields across all protocols, DEX liquidity summaries, and cross-DEX arbitrage alerts.
+
+## Types
+
+```typescript
+interface YieldOpportunity {
+  protocol: string
+  asset: string
+  apy: number
+  tvl: number
+  type: 'lending' | 'lst' | 'yield'
+}
+
+interface TVLBreakdown {
+  total: number
+  dex: number
+  lending: number
+  lst: number
+  yield: number
+  perps: number
+  other: number
+}
+
+interface DexSummary {
+  totalVolume24h: number
+  activePairs: number
+  topPair: string
+}
+
+interface LendingSummary {
+  totalSupplied: number
+  totalBorrowed: number
+  utilizationRate: number
+}
+
+interface MonadMarketOverview {
+  totalTVL: number
+  dexTVL: number
+  lendingTVL: number
+  lstTVL: number
+  yieldTVL: number
+  protocolCount: number
+  topYields: YieldOpportunity[]
+  dex: DexSummary
+  lending: LendingSummary
+  timestamp: number
+}
+
+interface ArbitrageAlert {
+  buyDex: string
+  sellDex: string
+  buyPrice: number
+  sellPrice: number
+  spreadPct: number
+  profitable: boolean
+}
+```
+
+## Functions
+
+### `getMarketOverview`
+
+Returns a full ecosystem snapshot: total and per-category TVL, active protocol count, top yield opportunities, and DEX and lending summaries.
+
+```typescript
+getMarketOverview(): Promise<MonadMarketOverview>
+```
+
+### `getBestYields`
+
+Aggregates yield opportunities across all lending protocols, LSTs, and yield vaults. Results are sorted by APY descending.
+
+```typescript
+getBestYields(limit?: number): Promise<YieldOpportunity[]>
+```
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `limit` | `number` | `20` | Maximum number of results to return |
+
+### `getMonadDeFiTVL`
+
+Returns TVL broken down by protocol category. Includes all protocols listed in the overview section.
+
+```typescript
+getMonadDeFiTVL(): Promise<TVLBreakdown>
+```
+
+### `getArbitrageAlerts`
+
+Scans all DEX pairs and returns alerts where the price spread exceeds 0.5%. Each alert includes the recommended buy and sell venues.
+
+```typescript
+getArbitrageAlerts(): Promise<ArbitrageAlert[]>
+```
+
+### `compareAssetYields`
+
+Compares a specific asset's yield opportunities across all protocols. Useful for deciding where to deploy a single asset.
+
+```typescript
+compareAssetYields(asset: string): Promise<YieldOpportunity[]>
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `asset` | `string` | Asset symbol or address (e.g. `'USDC'`, `'MON'`) |
+
+## Usage
+
+```typescript
+import { getMarketOverview, getBestYields, getMonadDeFiTVL } from 'rampart-monad'
+
+const market = await getMarketOverview()
+console.log(`Total TVL: $${(market.totalTVL / 1e6).toFixed(1)}M`)
+console.log(`Protocols: ${market.protocolCount}`)
+
+const tvl = await getMonadDeFiTVL()
+console.log(`Lending TVL: $${(tvl.lending / 1e6).toFixed(1)}M`)
+console.log(`LST TVL:     $${(tvl.lst / 1e6).toFixed(1)}M`)
+
+const yields = await getBestYields(5)
+yields.forEach(y => console.log(`${y.protocol}/${y.asset}: ${(y.apy * 100).toFixed(2)}%`))
+```
+
+## Comparing Yields for a Specific Asset
+
+```typescript
+import { compareAssetYields } from 'rampart-monad'
+
+const opportunities = await compareAssetYields('USDC')
+
+console.log('USDC yield by protocol:')
+for (const opp of opportunities) {
+  console.log(`  ${opp.protocol}: ${(opp.apy * 100).toFixed(2)}% (TVL: $${(opp.tvl / 1e6).toFixed(1)}M)`)
+}
+```
+
+## Arbitrage Scanning
+
+```typescript
+import { getArbitrageAlerts } from 'rampart-monad'
+
+const alerts = await getArbitrageAlerts()
+
+for (const alert of alerts) {
+  if (alert.profitable) {
+    console.log(`Spread ${alert.spreadPct.toFixed(2)}% - buy ${alert.buyDex}, sell ${alert.sellDex}`)
+  }
+}
+```
+
+## Notes
+
+- TVL figures are USD-denominated and use the cross-oracle verified price from `oracles.ts`.
+- `getBestYields` includes LST APRs, lending supply rates, and vault yields in a single sorted list.
+- `getMarketOverview` makes multiple RPC calls in parallel - typical latency on Monad is under 500 ms given the ~400 ms block time.

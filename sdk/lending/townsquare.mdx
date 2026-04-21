@@ -1,0 +1,86 @@
+---
+title: "TownSquare"
+description: "Cross-chain spoke/hub lending with Monad integration"
+---
+
+<Info>
+**TVL:** ~$2M | **Type:** Cross-Chain Spoke/Hub Lending | **Docs:** [docs.townsquare.fi](https://docs.townsquare.fi)
+</Info>
+
+## Overview
+
+TownSquare uses a spoke/hub architecture similar to Folks Finance. Monad acts as a spoke chain where users interact locally; the hub coordinates cross-chain state and rate discovery. Markets with zero deposits are filtered out automatically.
+
+<Note>
+`getTownSquareMarkets()` filters out markets where `totalDeposits === 0`. Newly deployed markets may not appear until they receive initial deposits.
+</Note>
+
+## Functions
+
+### getTownSquareMarkets()
+
+Returns all active TownSquare markets on Monad with non-zero deposits.
+
+**Returns** `TownSquareMarket[]`
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `address` | `string` | Market contract address |
+| `asset` | `string` | Underlying token address |
+| `totalDeposits` | `bigint` | Total deposited assets (raw) |
+| `totalBorrows` | `bigint` | Total borrowed assets (raw) |
+| `supplyAPY` | `number` | Current supply APY as a decimal |
+| `borrowAPY` | `number` | Current borrow APY as a decimal |
+| `tvlUSD` | `number` | Market TVL in USD |
+| `protocol` | `'townsquare'` | Protocol identifier |
+
+```typescript
+const markets = await sdk.getTownSquareMarkets()
+// → [
+//   {
+//     address: '0x...',
+//     asset: '0x...',
+//     totalDeposits: 1200000n,
+//     totalBorrows: 700000n,
+//     supplyAPY: 0.048,
+//     borrowAPY: 0.079,
+//     tvlUSD: 1200000,
+//     protocol: 'townsquare'
+//   },
+// ]
+```
+
+### getTownSquareTVL()
+
+Returns total value locked across all active TownSquare markets in USD.
+
+**Returns** `number`
+
+```typescript
+const tvl = await sdk.getTownSquareTVL()
+// → 2000000
+```
+
+## Usage Example
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+
+const markets = await sdk.getTownSquareMarkets()
+
+if (markets.length === 0) {
+  console.log('No active TownSquare markets found')
+} else {
+  const tvl = await sdk.getTownSquareTVL()
+  console.log(`TownSquare TVL: $${(tvl / 1e6).toFixed(1)}M across ${markets.length} markets`)
+}
+```
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| SpokeController | `0x8f8a0ed366439576b7db220678ed1259743239e3` |
+| AccountCtrl | `0xc2df24203ab3a4f3857d649757a99e18de059a16` |

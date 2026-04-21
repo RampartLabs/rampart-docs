@@ -1,0 +1,150 @@
+---
+title: "Rampart SDK"
+description: "Unified TypeScript interface to 52 DeFi protocols on Monad Mainnet"
+mode: "wide"
+---
+
+<div style={{textAlign: 'center', padding: '48px 0 32px'}}>
+  <img src="/logo/rampart-dark.svg" alt="Rampart" className="block dark:hidden" style={{margin: '0 auto 24px', height: '48px'}} />
+  <img src="/logo/rampart-light.svg" alt="Rampart" className="hidden dark:block" style={{margin: '0 auto 24px', height: '48px'}} />
+  <h1 style={{fontSize: '3rem', fontWeight: 800, margin: '0 0 16px', lineHeight: 1.1}}>
+    The DeFi SDK for Monad
+  </h1>
+  <p style={{fontSize: '1.25rem', color: '#6b7280', maxWidth: '600px', margin: '0 auto 32px'}}>
+    One install. 55+ protocols. Lending, DEXes, LSTs, Perps, Yield - and 41 AI tools
+    for building autonomous agents on the fastest EVM.
+  </p>
+
+```bash
+npm install rampart-monad
+```
+
+</div>
+
+## Protocol Coverage
+
+<CardGroup cols={3}>
+  <Card title="14 DEXes" icon="arrow-right-arrow-left" color="#836ef9">
+    Kuru · Uniswap V3/V4 · PancakeSwap · Clober · iZiSwap · Capricorn · KyberSwap · Swaap · WooFi · LFJ · OpenOcean · Bean
+  </Card>
+  <Card title="14 Lending" icon="piggy-bank" color="#836ef9">
+    Neverland · Euler V2 · Morpho · Curvance · Sherpa · Accountable · Folks · Sumer · TownSquare · Timeswap · Nabla · Covenant · Multipli · LeverUp
+  </Card>
+  <Card title="5 LSTs" icon="coins" color="#836ef9">
+    aprMON · sMON · gMON · shMON · vshMON (Mellow) - compare APR and TVL in a single call
+  </Card>
+  <Card title="3 Perps" icon="chart-line" color="#836ef9">
+    Monday Markets + Narwhal · Pingu Exchange · Purps - unified interface across all perpetual DEXes
+  </Card>
+  <Card title="6 Yield" icon="seedling" color="#836ef9">
+    Enjoyoors · Gearbox V3 · Sablier · Balancer V3 · Curve Finance · nad.fun
+  </Card>
+  <Card title="Aggregators" icon="bolt" color="#836ef9">
+    Best-route router across 6 DEXes · Full ecosystem TVL · Arbitrage scanner · Oracle cross-check
+  </Card>
+</CardGroup>
+
+## Key Stats
+
+<CardGroup cols={4}>
+  <Card title="55+ protocols" icon="database">
+    Full Monad ecosystem covered as of v0.1.0
+  </Card>
+  <Card title="~$200M TVL" icon="circle-dollar-sign">
+    Aggregate TVL tracked across lending + LST
+  </Card>
+  <Card title="41 AI tools" icon="robot">
+    Vercel AI SDK tools for autonomous agents
+  </Card>
+  <Card title="400ms blocks" icon="timer">
+    Native Monad speed, no extra config needed
+  </Card>
+</CardGroup>
+
+## Three Layers
+
+<Steps>
+  <Step title="Protocol Functions - Layer 1">
+    Direct, typed functions for every protocol. Import only what you need. Works in any Node.js or browser environment.
+    ```typescript
+    import { getEulerVaults, getBestLST, getBestSwapRoute } from 'rampart-monad'
+    
+    const vaults = await getEulerVaults()         // 108 Euler V2 vaults with live APR
+    const lst    = await getBestLST()             // highest APR liquid staking token
+    const route  = await getBestSwapRoute(        // best route across 6 DEXes
+      MON, USDC, '1000000000000000000'
+    )
+    ```
+  </Step>
+  <Step title="Rampart Class - Layer 2">
+    Object-oriented interface that bundles all functions behind a single instantiated client.
+    ```typescript
+    import { Rampart } from 'rampart-monad'
+    
+    const sdk = new Rampart()
+    const tvl = await sdk.getMonadDeFiTVL()
+    const top = await sdk.getBestYields(5)
+    ```
+  </Step>
+  <Step title="RampartAgent - Layer 3">
+    36 structured tools wired directly into the Vercel AI SDK. Plug into any LLM for autonomous DeFi analysis.
+    ```typescript
+    import { RampartAgent } from 'rampart-monad'
+    import { generateText } from 'ai'
+    import { anthropic } from '@ai-sdk/anthropic'
+    
+    const agent = new RampartAgent()
+    
+    const { text } = await generateText({
+      model: anthropic('claude-3-5-sonnet-20241022'),
+      tools: agent.tools,
+      prompt: 'What is the best yield for 10,000 USDC on Monad right now?',
+      maxSteps: 5,
+    })
+    ```
+  </Step>
+</Steps>
+
+## Why Monad?
+
+<CardGroup cols={2}>
+  <Card title="10,000 TPS" icon="gauge-high">
+    Enterprise-grade throughput with full EVM compatibility - every Solidity contract just works.
+  </Card>
+  <Card title="~400ms block time" icon="clock">
+    10× faster than Ethereum. Rampart is built for Monad's speed with pre-configured `publicClient`.
+  </Card>
+  <Card title="Chain ID 143" icon="link">
+    Connect instantly via `https://rpc.monad.xyz`. No chain configuration needed - Rampart handles it.
+  </Card>
+  <Card title="Native token" icon="coins">
+    MON is the native gas token. Rampart tracks MON price via Kuru DEX cross-check ($0.354).
+  </Card>
+</CardGroup>
+
+## Quick Start
+
+<CardGroup cols={2}>
+  <Card title="Installation & first call" icon="rocket" href="quickstart">
+    Get from zero to your first live on-chain data in under 2 minutes
+  </Card>
+  <Card title="DEX Protocols" icon="arrow-right-arrow-left" href="sdk/dex/overview">
+    Swap quotes and pool data from 14 DEXes
+  </Card>
+  <Card title="Lending Markets" icon="piggy-bank" href="sdk/lending/overview">
+    Supply/borrow rates and TVL from 14 lending protocols
+  </Card>
+  <Card title="LST Aggregator" icon="coins" href="sdk/lst/staking">
+    Compare all 5 MON liquid staking tokens in one call
+  </Card>
+  <Card title="Multi-DEX Router" icon="route" href="sdk/aggregators/router">
+    Best-route quotes across all 6 DEXes simultaneously
+  </Card>
+  <Card title="AI Agent (36 tools)" icon="robot" href="sdk/ai-agent/rampart-agent">
+    Build LLM-driven DeFi strategies on Monad
+  </Card>
+</CardGroup>
+
+<Note>
+**Data freshness:** Protocol counts and TVL figures reflect v0.1.0 (April 2026). Rampart reads live on-chain data on every function call - only the documentation text is static.
+</Note>

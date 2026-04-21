@@ -1,0 +1,63 @@
+---
+title: "Pingu Exchange"
+description: "Concentrated liquidity perpetuals DEX on Monad"
+---
+
+<Info>
+**Type:** Concentrated Liquidity DEX | **Docs:** [pingu.exchange](https://pingu.exchange)
+</Info>
+
+## Overview
+
+Pingu Exchange is a concentrated liquidity perpetuals venue on Monad. It uses a **DataStore + Positions** contract architecture similar to GMX V2, where a central `DataStore` holds all market configuration and position state, and a separate `Positions` contract manages individual trader positions.
+
+The Rampart SDK reads Pingu's position count and data store address to provide availability checks and basic market intelligence.
+
+## Types
+
+```typescript
+type PinguStats = {
+  positionCount: number        // total open positions across all markets
+  dataStoreAddress: string     // DataStore contract address
+  protocol: 'pingu'
+}
+```
+
+## Functions
+
+### getPinguStats()
+
+Returns the current stats for Pingu Exchange including position count and contract address.
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+const stats = await sdk.getPinguStats()
+// → PinguStats
+
+console.log(`Pingu open positions: ${stats.positionCount}`)
+console.log(`DataStore: ${stats.dataStoreAddress}`)
+```
+
+### isPinguAvailable()
+
+Performs a lightweight liveness check against the Pingu DataStore contract. Returns `true` if the contract is reachable and responding.
+
+```typescript
+const available = await sdk.isPinguAvailable()
+// → boolean
+
+if (available) {
+  console.log('Pingu Exchange is live')
+} else {
+  console.log('Pingu Exchange is unavailable')
+}
+```
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| DataStore | `0x631c6E0d5ae2E1F6a39871a9BE97F1D9d43D1C83` |
+| Positions | `0x3d7ec93875B6a6f0A5102fE29f887ee6E751b12F` |

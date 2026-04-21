@@ -1,0 +1,70 @@
+---
+title: "Timeswap"
+description: "Fixed-maturity options-based lending with oracle-free design"
+---
+
+<Info>
+**TVL:** ~$500K | **Type:** Fixed-Maturity Options/Lending | **Docs:** [docs.timeswap.io](https://docs.timeswap.io)
+</Info>
+
+## Overview
+
+Timeswap is an oracle-free, fixed-maturity lending protocol. Lenders and borrowers interact through option-like pools with defined expiry dates. Instead of relying on price oracles, Timeswap uses an AMM-based interest rate discovery mechanism. Pools are created per asset pair and maturity.
+
+<Note>
+Timeswap availability on Monad depends on active pool deployments. Use `isTimeswapAvailable()` to check before querying stats.
+</Note>
+
+## Functions
+
+### getTimeswapStats()
+
+Returns aggregate statistics across all deployed Timeswap pools on Monad.
+
+**Returns** `TimeswapStats`
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `optionPairs` | `number` | Number of active option pair contracts |
+| `poolCount` | `number` | Number of active lending pools |
+| `protocol` | `'timeswap'` | Protocol identifier |
+
+```typescript
+const stats = await sdk.getTimeswapStats()
+// → { optionPairs: 4, poolCount: 12, protocol: 'timeswap' }
+```
+
+### isTimeswapAvailable()
+
+Returns `true` if at least one Timeswap pool is deployed and active on Monad.
+
+**Returns** `boolean`
+
+```typescript
+const available = await sdk.isTimeswapAvailable()
+// → true
+```
+
+## Usage Example
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+
+const available = await sdk.isTimeswapAvailable()
+
+if (available) {
+  const stats = await sdk.getTimeswapStats()
+  console.log(`Timeswap: ${stats.poolCount} pools across ${stats.optionPairs} option pairs`)
+} else {
+  console.log('No active Timeswap pools on Monad')
+}
+```
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| OptionFactory | `0x9515507fC36174e0BAbac382B6640ef2325E61da` |
+| PoolFactory | `0xBf90d2d8E629cA48CF001F1CA6aDb47f120Fb91a` |

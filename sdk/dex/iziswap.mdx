@@ -1,0 +1,74 @@
+---
+title: "iZiSwap"
+description: "iZi AMM - concentrated liquidity with discrete price points on Monad"
+---
+
+<Info>
+**Type:** Concentrated Liquidity (iZi AMM) | **Docs:** [docs.izumi.finance](https://docs.izumi.finance)
+</Info>
+
+## Overview
+
+iZiSwap implements the iZi AMM model - a concentrated liquidity design that uses discrete price points rather than continuous curves. Liquidity providers place orders at specific price ticks, similar to a limit order book, but with AMM execution semantics. This hybrid approach can achieve tighter spreads than standard AMMs.
+
+## Functions
+
+### getIZiPools()
+
+Returns all active iZiSwap liquidity pools on Monad.
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `poolAddress` | `Address` | Pool contract address |
+| `tokenX` | `Address` | First token (lower address) |
+| `tokenY` | `Address` | Second token (higher address) |
+| `fee` | `number` | Fee tier in bps |
+| `currentPoint` | `number` | Current price point (analogous to tick) |
+| `sqrtPrice_96` | `bigint` | Current sqrt price in Q96 format |
+| `liquidity` | `bigint` | Active liquidity at current point |
+| `liquidityX` | `bigint` | Liquidity of tokenX |
+
+```typescript
+import { getIZiPools } from 'rampart-monad'
+
+const pools = await getIZiPools()
+console.log(`${pools.length} iZiSwap pools`)
+
+for (const pool of pools) {
+  console.log(`${pool.tokenX}/${pool.tokenY}`)
+  console.log(`Current point: ${pool.currentPoint}`)
+}
+```
+
+---
+
+### getIZiStats()
+
+Returns aggregated statistics for the iZiSwap protocol on Monad.
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `totalPools` | `number` | Total number of pools |
+| `totalTvl` | `number` | Protocol-wide TVL in USD |
+| `volume24h` | `number` | 24-hour trading volume in USD |
+| `feesCollected24h` | `number` | Fees collected in last 24h in USD |
+| `topPools` | `IZiPool[]` | Top 5 pools by TVL |
+
+```typescript
+import { getIZiStats } from 'rampart-monad'
+
+const stats = await getIZiStats()
+console.log(`iZiSwap TVL: $${stats.totalTvl.toLocaleString()}`)
+console.log(`24h Volume: $${stats.volume24h.toLocaleString()}`)
+console.log(`Top pool: ${stats.topPools[0].tokenX}/${stats.topPools[0].tokenY}`)
+```
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| Factory | `0x19b683A2F45012318d9B2aE1280d68d3eC54D663` |

@@ -1,0 +1,88 @@
+---
+title: "Curvance"
+description: "Multi-collateral lending - largest TVL lender on Monad at ~$58.9M"
+---
+
+<Info>
+**TVL:** ~$58.9M | **Type:** Multi-Collateral Lending | **Docs:** [docs.curvance.com](https://docs.curvance.com)
+</Info>
+
+## Overview
+
+Curvance is the largest lending protocol on Monad by TVL. It supports multi-collateral positions, meaning users can post several different assets as collateral simultaneously. Each market has its own collateral factor and independent supply/borrow APY.
+
+## Functions
+
+### getCurvanceMarkets()
+
+Returns all active Curvance lending markets with their current rates and liquidity.
+
+**Returns** `CurvanceMarket[]`
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `address` | `string` | Market contract address |
+| `asset` | `string` | Underlying token address |
+| `collateralFactor` | `number` | Max LTV for this asset (e.g. `0.75` = 75%) |
+| `supplyAPY` | `number` | Current supply APY as a decimal |
+| `borrowAPY` | `number` | Current borrow APY as a decimal |
+| `totalSupply` | `bigint` | Total supplied liquidity (raw) |
+| `totalBorrow` | `bigint` | Total borrowed amount (raw) |
+
+```typescript
+const markets = await sdk.getCurvanceMarkets()
+// → [
+//   { address: '0x...', asset: '0x...', collateralFactor: 0.80, supplyAPY: 0.052, borrowAPY: 0.088, protocol: 'curvance' },
+//   { address: '0x...', asset: '0x...', collateralFactor: 0.65, supplyAPY: 0.031, borrowAPY: 0.059, protocol: 'curvance' },
+// ]
+```
+
+### getCurvanceTVL()
+
+Returns total value locked across all Curvance markets in USD.
+
+**Returns** `number`
+
+```typescript
+const tvl = await sdk.getCurvanceTVL()
+// → 58900000
+```
+
+### getCurvanceMarket(address)
+
+Returns data for a single Curvance market by its contract address.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `address` | `string` | Market contract address |
+
+**Returns** `CurvanceMarket`
+
+```typescript
+const market = await sdk.getCurvanceMarket('0x...')
+// → { address: '0x...', asset: '0x...', collateralFactor: 0.80, supplyAPY: 0.052, borrowAPY: 0.088 }
+```
+
+## Usage Example
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+
+const markets = await sdk.getCurvanceMarkets()
+
+// Find best supply rate
+const bestSupply = markets.sort((a, b) => b.supplyAPY - a.supplyAPY)[0]
+console.log(`Best Curvance supply: ${(bestSupply.supplyAPY * 100).toFixed(2)}%`)
+
+// Find highest collateral factor (most capital efficient)
+const highestLTV = markets.sort((a, b) => b.collateralFactor - a.collateralFactor)[0]
+console.log(`Highest LTV: ${(highestLTV.collateralFactor * 100).toFixed(0)}% for ${highestLTV.asset}`)
+```
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| UnitrollerProxy | `0xe9eD4e8c5c37a4D36c3C52EB25D5Db67Dd6FD12b` |

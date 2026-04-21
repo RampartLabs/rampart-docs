@@ -1,0 +1,159 @@
+---
+title: "Oracle Aggregator"
+description: "Cross-validated price feeds from Chainlink, Pyth, Redstone, Chronicle, and Kuru DEX"
+---
+
+<Info>
+**Type:** Multi-Oracle Price Feeds | **Sources:** Chainlink · Pyth · Redstone · Chronicle · Kuru DEX
+</Info>
+
+## Overview
+
+The Rampart Oracle Aggregator reads prices from multiple independent sources and cross-validates them to detect discrepancies. A single `getVerifiedPrice(symbol)` call returns a confidence-rated price that flags if any source deviates significantly from the consensus.
+
+On Monad, oracle availability is limited:
+
+- **Chainlink** - no MON/USD feed on Monad (returns `null` for MON); other feeds available
+- **Pyth** - MON feed ID requires confirmation; current data may be inaccurate
+- **Kuru DEX** - on-chain TWAP; currently the most reliable source for MON at ~$0.354
+- **Redstone** - pull-based oracle; prices embedded in transaction calldata
+- **Chronicle** - whitelisted oracle system; available for select assets
+
+<Warning>
+Chainlink has **no MON/USD feed** on Monad. Any function requesting a Chainlink MON price returns `null`. Use `getVerifiedPrice('MON')` or Kuru DEX price for MON pricing.
+</Warning>
+
+## Types
+
+```typescript
+type VerifiedPrice = {
+  symbol: string
+  price: number           // consensus price in USD
+  confidence: number      // 0–1 score; lower = higher discrepancy between sources
+  sources: string[]       // which oracles contributed, e.g. ['pyth', 'kuru']
+  timestamp: number       // unix seconds of the freshest source
+}
+
+type OraclePrice = {
+  symbol: string
+  price: number
+  source: string
+  timestamp: number
+}
+
+type LSTRatios = {
+  aprMON: number   // aprMON/MON exchange rate
+  sMON: number     // sMON/MON exchange rate
+  gMON: number     // gMON/MON exchange rate
+  shMON: number    // shMON/MON exchange rate
+  vshMON: number   // vshMON/MON exchange rate (via Mellow)
+}
+```
+
+## Functions
+
+### getVerifiedPrice(symbol)
+
+Returns a cross-validated price with confidence score. Queries all available oracle sources and flags discrepancies above 1%.
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+
+// MON price - will use Kuru DEX + Pyth (Chainlink unavailable)
+const mon = await sdk.getVerifiedPrice('MON')
+// → { symbol: 'MON', price: 0.354, confidence: 0.95, sources: ['kuru', 'pyth'], timestamp: ... }
+
+console.log(`MON: $${mon.price.toFixed(4)}  confidence: ${(mon.confidence * 100).toFixed(0)}%`)
+console.log(`Sources: ${mon.sources.join(', ')}`)
+
+// ETH price - Chainlink + Pyth available
+const eth = await sdk.getVerifiedPrice('ETH')
+// → { symbol: 'ETH', price: 3210.50, confidence: 0.99, sources: ['chainlink', 'pyth'], timestamp: ... }
+```
+
+### getPrices(symbols[])
+
+Batch price query for multiple symbols in a single call.
+
+```typescript
+const prices = await sdk.getPrices(['MON', 'ETH', 'USDC', 'BTC'])
+// → OraclePrice[]
+
+prices.forEach(p => {
+  console.log(`${p.symbol}: $${p.price.toFixed(4)} via ${p.source}`)
+})
+```
+
+### getChainlinkRawPrice(feedAddress)
+
+Reads the raw `latestRoundData` answer from a specific Chainlink feed address. Returns the unscaled integer answer along with decimals.
+
+```typescript
+const raw = await sdk.getChainlinkRawPrice('0x...')
+// → { answer: bigint, decimals: number, updatedAt: number }
+
+const price = Number(raw.answer) / 10 ** raw.decimals
+console.log(`Chainlink raw: $${price.toFixed(4)}  updated: ${new Date(raw.updatedAt * 1000).toISOString()}`)
+```
+
+### detectOracleDiscrepancy(symbol)
+
+Compares all available oracle sources for a symbol and returns `true` if any two sources deviate by more than 1%. Useful for alerts and circuit-breaker logic.
+
+```typescript
+const hasDiscrepancy = await sdk.detectOracleDiscrepancy('ETH')
+// → boolean
+
+if (hasDiscrepancy) {
+  console.warn('Oracle discrepancy detected for ETH - prices diverge >1% between sources')
+}
+```
+
+### getRedstonePrice(symbol)
+
+Fetches the latest price from Redstone's pull-based oracle. Redstone prices are embedded in transaction calldata and read via their off-chain data service.
+
+```typescript
+const price = await sdk.getRedstonePrice('MON')
+// → number (USD)
+
+console.log(`Redstone MON: $${price.toFixed(4)}`)
+```
+
+### getChroniclePrice(symbol)
+
+Fetches the price from Chronicle's whitelisted oracle system.
+
+```typescript
+const price = await sdk.getChroniclePrice('ETH')
+// → number (USD)
+
+console.log(`Chronicle ETH: $${price.toFixed(4)}`)
+```
+
+### getLSTRatios()
+
+Returns the current exchange rates for all 5 Monad LSTs against MON. Uses each protocol's native `previewRedeem` or equivalent function.
+
+```typescript
+const ratios = await sdk.getLSTRatios()
+// → LSTRatios
+
+console.log(`aprMON/MON: ${ratios.aprMON.toFixed(6)}`)
+console.log(`sMON/MON:   ${ratios.sMON.toFixed(6)}`)
+console.log(`gMON/MON:   ${ratios.gMON.toFixed(6)}`)
+console.log(`shMON/MON:  ${ratios.shMON.toFixed(6)}`)
+console.log(`vshMON/MON: ${ratios.vshMON.toFixed(6)}`)
+```
+
+## Contract Addresses
+
+| Contract | Address | Notes |
+|----------|---------|-------|
+| Chainlink FeedRegistry | `0x47Fb2585D2C56Fe188D0E6ec628a38b74fCeeeDf` | Ethereum only - not on Monad |
+
+<Note>
+The Chainlink Feed Registry exists on Ethereum Mainnet, not on Monad. On Monad, individual feed addresses must be used directly via `getChainlinkRawPrice(feedAddress)`. There is no MON/USD Chainlink feed on Monad - use `getVerifiedPrice('MON')` which falls back to Kuru DEX pricing.
+</Note>

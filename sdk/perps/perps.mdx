@@ -1,0 +1,131 @@
+---
+title: "Monday Markets + Narwhal"
+description: "Perpetuals DEX protocols on Monad - vault-based leverage trading"
+---
+
+<Info>
+**Type:** Perpetuals DEX | **Docs:** [monday.markets](https://monday.markets)
+</Info>
+
+## Overview
+
+**Monday Markets** and **Narwhal** are the two primary perpetuals venues on Monad integrated in the Rampart SDK. Both follow a vault-liquidity model where LPs deposit assets into a pool and traders borrow liquidity for leveraged positions.
+
+- **Monday Markets** - GMX V2-inspired perps with multi-asset collateral and a reader contract for off-chain market data queries
+- **Narwhal** - single-vault perpetuals system with straightforward LP deposits and funding rate mechanics
+
+<Warning>
+Some contract addresses for these protocols are pending final deployment confirmation on Monad Mainnet. Functions may return partial data until addresses are updated in the SDK.
+</Warning>
+
+## Types
+
+```typescript
+type PerpVaultStats = {
+  totalDeposits: number    // USD value of LP deposits
+  openInterest: number     // USD value of open positions
+  fundingRate: number      // current hourly funding rate
+}
+
+type NarwhalStats = {
+  vaultAddress: `0x${string}`
+  totalDeposits: number
+  openInterest: number
+  fundingRate: number
+  protocol: 'narwhal'
+}
+```
+
+## Functions
+
+### getMondayMarkets()
+
+Returns market data for all active Monday Markets perpetuals markets.
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+const markets = await sdk.getMondayMarkets()
+// → array of market objects
+
+markets.forEach(m => {
+  console.log(`${m.indexToken}: OI $${(m.openInterest / 1e6).toFixed(1)}M`)
+})
+```
+
+### getPerplMarkets()
+
+Returns Perpl (Monday Markets' on-chain reader) market data.
+
+```typescript
+const perpl = await sdk.getPerplMarkets()
+```
+
+### getPerplTVL()
+
+Returns the total liquidity deposited into Monday Markets vaults in USD.
+
+```typescript
+const tvl = await sdk.getPerplTVL()
+// → number (USD)
+console.log(`Monday Markets TVL: $${(tvl / 1e6).toFixed(1)}M`)
+```
+
+### getPerpVaultStats()
+
+Returns vault-level statistics: deposits, open interest, and funding rate.
+
+```typescript
+const stats = await sdk.getPerpVaultStats()
+// → PerpVaultStats
+
+console.log(`Total deposits: $${(stats.totalDeposits / 1e6).toFixed(1)}M`)
+console.log(`Open interest: $${(stats.openInterest / 1e6).toFixed(1)}M`)
+console.log(`Funding rate: ${(stats.fundingRate * 100).toFixed(4)}%/hr`)
+```
+
+### getFundingRates()
+
+Returns funding rates across all active perpetuals markets on Monad.
+
+```typescript
+const rates = await sdk.getFundingRates()
+// → [{ market, longFundingRate, shortFundingRate, protocol }, ...]
+
+rates.forEach(r => {
+  console.log(`${r.market}: long ${r.longFundingRate.toFixed(4)}% / short ${r.shortFundingRate.toFixed(4)}%`)
+})
+```
+
+### getTotalPerpTVL()
+
+Returns combined TVL across all perps protocols - Monday Markets + Narwhal.
+
+```typescript
+const total = await sdk.getTotalPerpTVL()
+// → number (USD)
+```
+
+### getNarwhalStats()
+
+Returns vault statistics for Narwhal.
+
+```typescript
+const narwhal = await sdk.getNarwhalStats()
+// → NarwhalStats
+
+console.log(`Narwhal OI: $${(narwhal.openInterest / 1e6).toFixed(1)}M`)
+console.log(`Funding rate: ${(narwhal.fundingRate * 100).toFixed(4)}%/hr`)
+```
+
+## Contract Addresses
+
+| Contract | Address | Status |
+|----------|---------|--------|
+| Monday Markets Reader | `0x5678...placeholder` | Pending confirmation |
+| Narwhal Vault | `0xabcd...placeholder` | Pending confirmation |
+
+<Note>
+Contract addresses will be updated once Monad Mainnet deployments are confirmed. Track the [GitHub repo](https://github.com/monad-crypto/rampart) for address updates.
+</Note>

@@ -1,0 +1,156 @@
+---
+title: "Yield Finder"
+description: "Find and compare best yields across all Monad protocols"
+---
+
+<Info>
+This example aggregates yield data from all lending protocols (Euler V2, Neverland, Morpho), LSTs (aprMON, gMON, shMON, sMON), and yield vaults in a single pass. It uses `Promise.allSettled` so a failure in one source never blocks the others.
+</Info>
+
+## How It Works
+
+The yield finder queries four sources in parallel:
+1. `getBestYields` - aggregated list across all protocols
+2. `getAllLSTStats` - individual APRs for each LST (MON only)
+3. `getEulerBestSupply` - best Euler V2 vault for the given asset
+4. `getBestMorphoVault` - best Morpho Blue vault for the given asset
+
+Results are merged, deduplicated, sorted by APY, and the top-N are returned with a projected annual return in USD.
+
+## Full Example
+
+```typescript
+import {
+  getBestYields,
+  getAllLSTStats,
+  getEulerBestSupply,
+  getBestMorphoVault,
+} from 'rampart-monad'
+
+interface YieldOpportunity {
+  protocol: string
+  asset: string
+  apy: number
+  tvl: number
+  type: 'lending' | 'lst' | 'yield'
+}
+
+async function findBestYield(asset: string, amount: number) {
+  const [yields, lsts, eulerBest, morphoBest] = await Promise.allSettled([
+    getBestYields(10),
+    getAllLSTStats(),
+    getEulerBestSupply(asset),
+    getBestMorphoVault(asset),
+  ])
+
+  const opportunities: YieldOpportunity[] = []
+
+  // Collect from aggregated yield list
+  if (yields.status === 'fulfilled') {
+    const assetYields = yields.value.filter(y =>
+      y.asset.toLowerCase().includes(asset.toLowerCase())
+    )
+    opportunities.push(...assetYields)
+  }
+
+  // Add best LST if querying MON
+  if (lsts.status === 'fulfilled' && asset.toUpperCase() === 'MON') {
+    const bestLst = lsts.value.reduce((a, b) => a.apr > b.apr ? a : b)
+    opportunities.push({
+      protocol: bestLst.protocol,
+      asset: bestLst.token,
+      apy: bestLst.apr,
+      tvl: bestLst.tvl,
+      type: 'lst' as const,
+    })
+  }
+
+  // Sort by APY descending
+  opportunities.sort((a, b) => b.apy - a.apy)
+
+  console.log(`Top yields for ${asset} (${amount} units):`)
+  for (const opp of opportunities.slice(0, 5)) {
+    const annual = amount * opp.apy
+    console.log(`  ${opp.protocol}/${opp.asset}: ${(opp.apy * 100).toFixed(2)}% → $${annual.toFixed(2)}/yr`)
+  }
+
+  return opportunities
+}
+
+// Run it
+await findBestYield('USDC', 10000)
+```
+
+## Example Output
+
+```
+Top yields for USDC (10000 units):
+  Euler/USDC:     8.21% → $821.00/yr
+  Neverland/USDC: 6.54% → $654.00/yr
+  Morpho/USDC:    5.12% → $512.00/yr
+```
+
+```
+Top yields for MON (1000 units):
+  aPriori/aprMON: 7.40% → $74.00/yr
+  Kintsu/sMON:    6.80% → $68.00/yr
+  Magma/shMON:    6.20% → $62.00/yr
+```
+
+## Comparing a Single Asset Across Protocols
+
+```typescript
+import { compareAssetYields } from 'rampart-monad'
+
+const usdc = await compareAssetYields('USDC')
+
+console.log('USDC yield comparison:')
+for (const opp of usdc) {
+  console.log(
+    `  ${opp.protocol.padEnd(12)} ${(opp.apy * 100).toFixed(2).padStart(6)}%  ` +
+    `TVL: $${(opp.tvl / 1e6).toFixed(1)}M  type: ${opp.type}`
+  )
+}
+```
+
+## Filtering by Yield Type
+
+```typescript
+import { getBestYields } from 'rampart-monad'
+
+const all = await getBestYields(20)
+
+const lendingYields = all.filter(y => y.type === 'lending')
+const lstYields      = all.filter(y => y.type === 'lst')
+const vaultYields    = all.filter(y => y.type === 'yield')
+
+console.log('Best lending rate:', lendingYields[0])
+console.log('Best LST rate:',     lstYields[0])
+console.log('Best vault rate:',   vaultYields[0])
+```
+
+## Periodic Yield Scanner
+
+```typescript
+import { getBestYields } from 'rampart-monad'
+
+async function scanYields(intervalMs = 60_000) {
+  while (true) {
+    const top5 = await getBestYields(5)
+    console.clear()
+    console.log(`Yield snapshot - ${new Date().toISOString()}`)
+    for (const y of top5) {
+      console.log(`  ${y.protocol}/${y.asset}: ${(y.apy * 100).toFixed(2)}%`)
+    }
+    await new Promise(r => setTimeout(r, intervalMs))
+  }
+}
+
+await scanYields()
+```
+
+## Notes
+
+- `Promise.allSettled` is intentional - if one source (e.g. Morpho) is temporarily unavailable, the other sources still contribute results.
+- APYs are expressed as decimals (`0.0821` = 8.21%). Multiply by 100 for display.
+- LST APRs are calculated from on-chain exchange rate deltas over 500k blocks for gMON, or from direct staking contract reads for the others.

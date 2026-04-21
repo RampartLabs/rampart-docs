@@ -1,0 +1,148 @@
+---
+title: "Arbitrage Scanner"
+description: "Detect and act on price discrepancies across Monad DEXes"
+---
+
+<Info>
+The arbitrage scanner compares spot prices across all 6 supported DEXes and surfaces pairs where the spread exceeds 0.5%. On Monad's ~400 ms block time, profitable windows can be extremely short - this scanner is designed for low-latency polling or WebSocket-driven triggering.
+</Info>
+
+## How It Works
+
+1. `getArbitrageAlerts` queries all DEX pairs and returns alerts where `spreadPct > 0.5%`
+2. `getAllSwapQuotes` gives a full breakdown of what each DEX would pay for a specific trade
+3. `detectDexArbitrage` checks a single token pair and returns the best buy/sell combination
+
+## Full Example
+
+```typescript
+import { getArbitrageAlerts, getAllSwapQuotes, detectDexArbitrage } from 'rampart-monad'
+
+const USDC = '0xf817257fed379853cDe0fa4F97AB987181B1E5Ea'
+const MON  = '0x0000000000000000000000000000000000000000'
+
+async function scanArbitrage() {
+  const alerts = await getArbitrageAlerts()
+
+  for (const alert of alerts) {
+    if (alert.spreadPct > 0.5 && alert.profitable) {
+      console.log(`ARBITRAGE: Buy on ${alert.buyDex}  @ $${alert.buyPrice}`)
+      console.log(`           Sell on ${alert.sellDex} @ $${alert.sellPrice}`)
+      console.log(`           Spread: ${alert.spreadPct.toFixed(2)}%`)
+    }
+  }
+
+  // Drill into a specific pair
+  const quotes = await getAllSwapQuotes(MON, USDC, '10000000000000000000') // 10 MON
+  console.log('\nQuotes for 10 MON → USDC:')
+  for (const q of quotes) {
+    console.log(`  ${q.dex}: ${(Number(q.amountOut) / 1e6).toFixed(4)} USDC`)
+  }
+}
+
+await scanArbitrage()
+```
+
+## Example Output
+
+```
+ARBITRAGE: Buy on  kuru        @ $0.3540
+           Sell on uniswap-v3  @ $0.3571
+           Spread: 0.88%
+
+Quotes for 10 MON → USDC:
+  kuru:        3.5400 USDC
+  uniswap-v3:  3.5710 USDC
+  pancake-v3:  3.5380 USDC
+  uniswap-v2:  3.5200 USDC
+  pancake-v2:  3.5150 USDC
+  openocean:   3.5690 USDC
+```
+
+## Checking a Specific Pair
+
+```typescript
+import { detectDexArbitrage } from 'rampart-monad'
+
+const MON  = '0x0000000000000000000000000000000000000000'
+const USDC = '0xf817257fed379853cDe0fa4F97AB987181B1E5Ea'
+
+const alert = await detectDexArbitrage(MON, USDC)
+
+if (alert === null) {
+  console.log('No arbitrage opportunity - prices are in sync')
+} else {
+  console.log(`Spread: ${alert.spreadPct.toFixed(2)}%`)
+  console.log(`Profitable: ${alert.profitable}`)
+  console.log(`Action: buy on ${alert.buyDex} @ $${alert.buyPrice}, sell on ${alert.sellDex} @ $${alert.sellPrice}`)
+}
+```
+
+## Continuous Scanner with Alerting
+
+```typescript
+import { getArbitrageAlerts } from 'rampart-monad'
+
+const MIN_SPREAD  = 0.8  // percent
+const POLL_MS     = 2000  // 2 s (5 Monad blocks)
+
+async function runScanner() {
+  console.log(`Scanning every ${POLL_MS}ms, threshold: ${MIN_SPREAD}%`)
+
+  let lastAlert = ''
+
+  while (true) {
+    try {
+      const alerts = await getArbitrageAlerts()
+      const profitable = alerts.filter(a => a.spreadPct >= MIN_SPREAD && a.profitable)
+
+      for (const alert of profitable) {
+        const key = `${alert.buyDex}-${alert.sellDex}`
+        if (key !== lastAlert) {
+          lastAlert = key
+          console.log(
+            `[${new Date().toISOString()}] ${alert.spreadPct.toFixed(2)}% spread - ` +
+            `buy ${alert.buyDex} / sell ${alert.sellDex}`
+          )
+        }
+      }
+    } catch (err) {
+      console.error('Scan error:', err)
+    }
+
+    await new Promise(r => setTimeout(r, POLL_MS))
+  }
+}
+
+await runScanner()
+```
+
+## Cross-Oracle Price Discrepancy
+
+For a deeper check, combine DEX arbitrage scanning with oracle discrepancy detection:
+
+```typescript
+import { detectDexArbitrage, detectOracleDiscrepancy } from 'rampart-monad'
+
+const MON = '0x0000000000000000000000000000000000000000'
+
+const [dexAlert, oracleAlert] = await Promise.all([
+  detectDexArbitrage(MON, '0xf817257fed379853cDe0fa4F97AB987181B1E5Ea'),
+  detectOracleDiscrepancy('MON'),
+])
+
+if (dexAlert?.profitable) {
+  console.log('DEX arbitrage available:', dexAlert)
+}
+
+if (oracleAlert?.significant) {
+  console.log('Oracle price divergence detected:', oracleAlert)
+}
+```
+
+## Notes
+
+- Monad's ~400 ms block time means arbitrage windows close faster than on Ethereum. Target spreads above 0.8% to account for gas costs and execution latency.
+- `getAllSwapQuotes` returns routes sorted by `amountOut` descending - the first element is always the best available quote.
+- OpenOcean is included in the scan but may introduce latency from the REST API call. If speed is critical, filter it out: `quotes.filter(q => q.dex !== 'openocean')`.
+- `amountOut` values are returned as strings in wei (token decimals vary - USDC uses 6 decimals, most ERC20s use 18).

@@ -1,0 +1,133 @@
+---
+title: "PancakeSwap"
+description: "V3 concentrated liquidity AMM - second largest DEX by TVL on Monad"
+---
+
+<Info>
+**TVL:** ~$8M | **Type:** V3 Concentrated Liquidity | **Docs:** [docs.pancakeswap.finance](https://docs.pancakeswap.finance)
+</Info>
+
+## Overview
+
+PancakeSwap V3 is the second largest DEX on Monad by TVL. It implements concentrated liquidity identical in mechanics to Uniswap V3, but with its own factory, router, and fee structure. PancakeSwap offers a broader set of fee tiers and tends to have deeper liquidity for mid-cap tokens.
+
+## Functions
+
+### getPancakeSwapPools()
+
+Returns all active PancakeSwap V3 pools on Monad.
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `poolAddress` | `Address` | Pool contract address |
+| `token0` | `Address` | First token address |
+| `token1` | `Address` | Second token address |
+| `fee` | `number` | Fee tier in bps (100, 500, 2500, 10000) |
+| `sqrtPriceX96` | `bigint` | Current sqrt price Q64.96 |
+| `liquidity` | `bigint` | Active liquidity |
+| `tick` | `number` | Current tick |
+
+```typescript
+import { getPancakeSwapPools } from 'rampart-monad'
+
+const pools = await getPancakeSwapPools()
+console.log(`${pools.length} PancakeSwap pools`)
+pools.forEach(p => console.log(`Fee tier: ${p.fee / 100} bps`))
+```
+
+---
+
+### getPancakeSwapPrice()
+
+Returns the spot price for a token pair across the best available PancakeSwap V3 pool.
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tokenA` | `Address` | Input token address |
+| `tokenB` | `Address` | Output token address |
+
+**Returns** `number`. price of tokenA in units of tokenB.
+
+```typescript
+import { getPancakeSwapPrice } from 'rampart-monad'
+
+const price = await getPancakeSwapPrice(
+  '0x...', // MON
+  '0x...'  // USDC
+)
+console.log(`1 MON = ${price} USDC on PancakeSwap`)
+```
+
+---
+
+### getPancakeSwapQuote()
+
+Returns an exact-input quote using PancakeSwap's QuoterV2.
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tokenIn` | `Address` | Input token address |
+| `tokenOut` | `Address` | Output token address |
+| `amountIn` | `bigint` | Exact input amount |
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `amountOut` | `bigint` | Expected output amount |
+| `sqrtPriceX96After` | `bigint` | Sqrt price after the swap |
+| `initializedTicksCrossed` | `number` | Ticks crossed during swap |
+| `gasEstimate` | `bigint` | Estimated gas cost |
+
+```typescript
+import { getPancakeSwapQuote } from 'rampart-monad'
+
+const quote = await getPancakeSwapQuote(
+  '0x...', // tokenIn
+  '0x...', // tokenOut
+  1_000_000n // 1 USDC (6 decimals)
+)
+console.log(`Expected out: ${quote.amountOut}`)
+console.log(`Gas estimate: ${quote.gasEstimate}`)
+```
+
+---
+
+### getPancakeSwapTopPairs()
+
+Returns the top trading pairs on PancakeSwap sorted by 24h volume.
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `poolAddress` | `Address` | Pool address |
+| `token0Symbol` | `string` | Symbol of token0 |
+| `token1Symbol` | `string` | Symbol of token1 |
+| `volume24h` | `number` | 24-hour volume in USD |
+| `tvl` | `number` | Total value locked in USD |
+| `fee` | `number` | Fee tier in bps |
+
+```typescript
+import { getPancakeSwapTopPairs } from 'rampart-monad'
+
+const topPairs = await getPancakeSwapTopPairs()
+topPairs.slice(0, 5).forEach(pair => {
+  console.log(`${pair.token0Symbol}/${pair.token1Symbol} - $${pair.volume24h} vol`)
+})
+```
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| Factory V3 | `0x0BFbCF9fa4f9C56B0F40a671Ad40E0805A091865` |
+| SwapRouter | `0x13f4EA83D0bd40E75C8222255bc855a974568Dd4` |
+| QuoterV2 | `0xB048Bbc1Ee6b733FFfCFb9e9CeF7375518e25997` |
+| NonfungiblePositionManager | `0x46A15B0b27311cedF172AB29E4f4766fbE7F4364` |

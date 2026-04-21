@@ -1,0 +1,144 @@
+---
+title: "GET /price"
+description: "Fetch verified asset prices from Chainlink + Pyth + Kuru"
+---
+
+<Info>
+Prices are cross-validated across up to three oracle sources: Chainlink on-chain feeds, Pyth Network, and Kuru DEX spot price. If sources disagree by more than a configurable threshold, a discrepancy flag is set in the response.
+</Info>
+
+## Endpoint
+
+```http
+GET /api/price
+```
+
+## Query Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `symbol` | `string` | Yes | Asset symbol or address (e.g. `MON`, `USDC`, `0xf817...`) |
+| `source` | `string` | No | Oracle source: `chainlink`, `pyth`, `kuru`, or `verified` (default) |
+
+## Response
+
+```typescript
+interface VerifiedPrice {
+  symbol: string
+  price: number
+  sources: {
+    chainlink?: number | null
+    pyth?: number | null
+    kuru?: number | null
+  }
+  consensus: boolean
+  discrepancy?: number
+  timestamp: number
+}
+```
+
+The `verified` source (default) returns the median of all available sources. `consensus: false` means at least one source deviated by more than 1%.
+
+## Example Response
+
+```json
+{
+  "data": {
+    "symbol": "MON",
+    "price": 0.354,
+    "sources": {
+      "chainlink": null,
+      "pyth": 1.00,
+      "kuru": 0.354
+    },
+    "consensus": false,
+    "discrepancy": 0.646,
+    "timestamp": 1713600000000
+  },
+  "timestamp": 1713600000000
+}
+```
+
+<Warning>
+Chainlink does not have a MON/USD feed on Monad - it returns `null` for MON. The Pyth MON feed ID is pending verification and currently returns an incorrect value (~$1.00). Kuru DEX spot price ($0.354) is the most accurate MON price source at this time.
+</Warning>
+
+## cURL
+
+```bash
+# Verified price (default)
+curl "https://your-app.vercel.app/api/price?symbol=MON"
+
+# Force a specific oracle source
+curl "https://your-app.vercel.app/api/price?symbol=USDC&source=chainlink"
+
+# Query by token address
+curl "https://your-app.vercel.app/api/price?symbol=0xf817257fed379853cDe0fa4F97AB987181B1E5Ea"
+```
+
+## TypeScript Fetch
+
+```typescript
+interface PriceResponse {
+  data: {
+    symbol: string
+    price: number
+    sources: { chainlink?: number | null; pyth?: number | null; kuru?: number | null }
+    consensus: boolean
+    discrepancy?: number
+    timestamp: number
+  }
+  timestamp: number
+  error?: string
+}
+
+async function fetchPrice(symbol: string, source = 'verified'): Promise<number> {
+  const url = `https://your-app.vercel.app/api/price?symbol=${symbol}&source=${source}`
+  const res = await fetch(url)
+  const json: PriceResponse = await res.json()
+
+  if (json.error) throw new Error(json.error)
+  return json.data.price
+}
+
+const monPrice = await fetchPrice('MON')
+console.log(`MON: $${monPrice}`)
+// → MON: $0.354
+
+const usdcPrice = await fetchPrice('USDC', 'chainlink')
+console.log(`USDC: $${usdcPrice}`)
+```
+
+## Next.js Route Implementation
+
+```typescript
+// pages/api/price.ts
+import { getVerifiedPrice } from 'rampart-monad'
+import type { NextApiRequest, NextApiResponse } from 'next'
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== 'GET') {
+    return res.status(405).json({ data: null, timestamp: Date.now(), error: 'Method not allowed' })
+  }
+
+  const { symbol = 'MON', source = 'verified' } = req.query
+
+  try {
+    const price = await getVerifiedPrice(symbol as string, source as string)
+    res
+      .setHeader('Cache-Control', 's-maxage=15, stale-while-revalidate=30')
+      .json({ data: price, timestamp: Date.now() })
+  } catch (err) {
+    res.status(500).json({ data: null, timestamp: Date.now(), error: String(err) })
+  }
+}
+```
+
+## Error Codes
+
+| HTTP Status | Meaning |
+|-------------|---------|
+| `200` | Success |
+| `400` | Missing or invalid `symbol` parameter |
+| `404` | Symbol not found in token registry |
+| `500` | RPC or oracle fetch error |

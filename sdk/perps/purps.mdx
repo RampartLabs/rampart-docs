@@ -1,0 +1,67 @@
+---
+title: "Purps"
+description: "Fully on-chain perpetuals DEX on Monad with factory-deployed markets"
+---
+
+<Info>
+**Type:** Perpetuals DEX | **Docs:** [purps.xyz](https://purps.xyz)
+</Info>
+
+## Overview
+
+Purps is a fully on-chain perpetuals DEX on Monad. Markets are deployed individually through a central factory contract, with each market being its own smart contract holding liquidity and position state. A shared `Router` contract handles trade execution and routing across markets.
+
+Each Purps market supports long and short positions with on-chain funding rates that adjust based on the open interest imbalance between longs and shorts.
+
+## Types
+
+```typescript
+type PurpsMarket = {
+  address: `0x${string}`
+  asset: string              // index asset symbol, e.g. 'MON', 'ETH'
+  openInterest: number       // total OI in USD
+  fundingRate: number        // current hourly funding rate
+  tvlUSD: number             // liquidity available in the market
+  protocol: 'purps'
+}
+```
+
+## Functions
+
+### getPurpsMarkets()
+
+Returns all active Purps markets by iterating the factory.
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+const markets = await sdk.getPurpsMarkets()
+// → PurpsMarket[]
+
+markets.forEach(m => {
+  console.log(
+    `${m.asset}: OI $${(m.openInterest / 1e6).toFixed(1)}M  ` +
+    `TVL $${(m.tvlUSD / 1e6).toFixed(1)}M  ` +
+    `Funding ${(m.fundingRate * 100).toFixed(4)}%/hr`
+  )
+})
+```
+
+### getPurpsTVL()
+
+Returns the total liquidity across all Purps markets in USD.
+
+```typescript
+const tvl = await sdk.getPurpsTVL()
+// → number (USD)
+
+console.log(`Purps total TVL: $${(tvl / 1e6).toFixed(1)}M`)
+```
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| Factory | `0xAfE4d3eB898591ACe6285176b26f0F5BEb894447` |
+| Router | `0x22aDf91b491abc7a50895Cd5c5c194EcCC93f5E2` |

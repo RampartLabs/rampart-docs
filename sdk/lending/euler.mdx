@@ -1,0 +1,109 @@
+---
+title: "Euler V2"
+description: "108 permissionless vaults on Monad - supply APR discovery via factory events"
+---
+
+<Info>
+**TVL:** ~$20M | **Type:** Euler V2 (108 vaults) | **Docs:** [docs.euler.finance](https://docs.euler.finance)
+</Info>
+
+## Overview
+
+Euler V2 is a modular lending protocol that supports permissionless vault creation. On Monad, the factory has deployed 108 vaults covering a wide range of assets. Rampart discovers all vaults by iterating factory events and computes APR from the on-chain interest rate model.
+
+<Note>
+APR is derived from the vault's `interestRate()` return value using the formula: `interestRate() / 1e27 * 31_536_000`. This gives the annualized rate as a decimal (e.g. `0.087` = 8.7%).
+</Note>
+
+## Functions
+
+### getEulerVaults()
+
+Returns all active Euler vaults discovered from factory events, sorted by APR descending.
+
+**Returns** `EulerVault[]`
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `address` | `string` | Vault contract address |
+| `asset` | `string` | Underlying token address |
+| `apr` | `number` | Annualized supply rate (e.g. `0.087`) |
+| `totalSupply` | `bigint` | Total assets supplied (raw) |
+| `totalBorrow` | `bigint` | Total assets borrowed (raw) |
+| `utilization` | `number` | Borrow / supply ratio (0–1) |
+| `protocol` | `'euler'` | Protocol identifier |
+
+```typescript
+const vaults = await sdk.getEulerVaults()
+// → [
+//   { address: '0x...', asset: '0x...', apr: 0.087, totalSupply: 1200000n, utilization: 0.71, protocol: 'euler' },
+//   { address: '0x...', asset: '0x...', apr: 0.062, totalSupply: 800000n,  utilization: 0.58, protocol: 'euler' },
+// ]
+```
+
+### getEulerBestSupply(asset?)
+
+Returns the Euler vault with the highest APR. Optionally filtered to a specific underlying asset.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `asset` | `string` (optional) | Filter by underlying token address |
+
+**Returns** `EulerVault`
+
+```typescript
+// Best vault across all assets
+const best = await sdk.getEulerBestSupply()
+// → { address: '0x...', asset: '0x...', apr: 0.087, protocol: 'euler' }
+
+// Best vault for USDC specifically
+const USDC = '0xf817257fed379853cDe0fa4F97AB987181B1E5Ea'
+const bestUsdc = await sdk.getEulerBestSupply(USDC)
+```
+
+### getEulerTVL()
+
+Returns total value locked across all Euler vaults in USD.
+
+**Returns** `number`
+
+```typescript
+const tvl = await sdk.getEulerTVL()
+// → 20400000
+```
+
+## APR Formula
+
+```typescript
+// Euler V2 interest rate is stored as a per-second rate scaled to 1e27
+// To get annualized APR:
+const rawRate = await publicClient.readContract({
+  address: vaultAddress,
+  abi: eulerVaultAbi,
+  functionName: 'interestRate',
+})
+
+const apr = Number(rawRate) / 1e27 * 31_536_000
+```
+
+## Usage Example
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+
+const vaults = await sdk.getEulerVaults()
+
+// Top 3 vaults by APR
+const top3 = vaults.slice(0, 3)
+for (const v of top3) {
+  console.log(`Vault ${v.address}: ${(v.apr * 100).toFixed(2)}% APR, ${(v.utilization * 100).toFixed(1)}% utilized`)
+}
+```
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| EulerFactory | `0xba4dd672062de8feedb665dd4410658864483f1e` |

@@ -1,0 +1,68 @@
+---
+title: "Balancer V3"
+description: "Weighted liquidity pools on Monad via Balancer V3"
+---
+
+<Info>
+**Type:** Balancer V3 Weighted Pools | **Docs:** [docs.balancer.fi](https://docs.balancer.fi)
+</Info>
+
+## Overview
+
+Balancer V3 introduces a redesigned vault architecture where all pool assets are held in a single central `Vault` contract. Individual pool contracts implement only the swap logic (weighted, stable, composable stable, etc.), while the vault handles custody, accounting, and flash loans.
+
+On Monad, the Rampart SDK reads Balancer weighted pool data - token composition, weights, TVL, and trading fee APY - directly from the central Vault.
+
+## Types
+
+```typescript
+type BalancerPool = {
+  id: string                   // 32-byte pool ID (address + nonce)
+  address: `0x${string}`
+  tokens: `0x${string}`[]      // pool token addresses
+  weights: number[]            // normalized weights, e.g. [0.8, 0.2]
+  tvl: number                  // USD TVL
+  apy: number                  // trading fee APY (annualized from 7-day volume)
+  protocol: 'balancer'
+}
+```
+
+## Functions
+
+### getBalancerPools()
+
+Returns all Balancer pools registered in the Monad Vault.
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+const pools = await sdk.getBalancerPools()
+// → BalancerPool[]
+
+pools.forEach(p => {
+  const weights = p.weights.map(w => `${(w * 100).toFixed(0)}%`).join('/')
+  console.log(`Pool ${p.address}: ${weights}  TVL $${(p.tvl / 1e6).toFixed(1)}M  APY ${(p.apy * 100).toFixed(2)}%`)
+})
+```
+
+### getBalancerTVL()
+
+Returns the total TVL across all Balancer pools on Monad in USD.
+
+```typescript
+const tvl = await sdk.getBalancerTVL()
+// → number (USD)
+
+console.log(`Balancer TVL: $${(tvl / 1e6).toFixed(1)}M`)
+```
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| Vault | `0xBA12222222228d8Ba445958a75a0704d566BF2C8` |
+
+<Note>
+The Balancer Vault address is the same across all EVM chains where Balancer V3 is deployed. Pool IDs encode both the pool address and a nonce - use `pool.id` (not `pool.address`) when calling vault functions like `getPoolTokens`.
+</Note>

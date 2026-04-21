@@ -1,0 +1,65 @@
+---
+title: "Lagoon Finance"
+description: "ERC-7540 async vault factory for institutional-grade yield on Monad"
+---
+
+<Info>
+**Type:** ERC-7540 Async Vault Factory | **Docs:** [lagoon.finance](https://lagoon.finance)
+</Info>
+
+## Overview
+
+Lagoon Finance deploys **ERC-7540 asynchronous vaults** - an extension of ERC4626 that separates deposit requests from actual execution. This allows vault managers to batch deposits and implement strategies that can't settle within a single transaction, making it suitable for institutional and complex yield strategies.
+
+On Monad, the Lagoon factory has deployed multiple vaults with varying underlying assets. Each vault issues its own share token representing a pro-rata claim on vault assets.
+
+## Types
+
+```typescript
+type LagoonVault = {
+  address: `0x${string}`
+  asset: `0x${string}`         // underlying token
+  totalAssets: bigint
+  sharePrice: number            // assets per 1 share token
+  protocol: 'lagoon'
+}
+```
+
+## Functions
+
+### getLagoonVaults()
+
+Returns all Lagoon vaults deployed on Monad by querying the factory.
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+const vaults = await sdk.getLagoonVaults()
+// → LagoonVault[]
+
+vaults.forEach(v => {
+  console.log(`Vault ${v.address}: sharePrice ${v.sharePrice.toFixed(6)}`)
+})
+```
+
+### getLagoonTVL()
+
+Returns the sum of `totalAssets` across all Lagoon vaults, denominated in USD.
+
+```typescript
+const tvl = await sdk.getLagoonTVL()
+// → number (USD)
+
+console.log(`Lagoon total TVL: $${(tvl / 1e6).toFixed(2)}M`)
+```
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| VaultFactory | `0x11Ad2eBF5571E0CaC69a7f1B7FCfCF46F7b8E22D` |
+
+<Note>
+ERC-7540 vaults have asynchronous deposit and redemption queues. Actual settlement may take one or more blocks after a request is submitted. The `sharePrice` returned by `getLagoonVaults()` reflects the price at the time of the on-chain read.
+</Note>

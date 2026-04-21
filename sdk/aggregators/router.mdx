@@ -1,0 +1,135 @@
+---
+title: "Multi-DEX Router"
+description: "Best-route swap quotes across 6 DEXes simultaneously"
+---
+
+<Info>
+The router queries Kuru, Uniswap V3, PancakeSwap V3, PancakeSwap V2, Uniswap V2, and OpenOcean in parallel via `Promise.allSettled`, returning the best available output amount. OpenOcean is queried via REST API and is silently skipped if unavailable.
+</Info>
+
+## Overview
+
+The Multi-DEX Router is a DEX aggregator that fans out quote requests to all 6 supported sources simultaneously and surfaces the route with the highest `amountOut`. Price impact is included where the underlying DEX exposes it.
+
+**Supported DEXes:**
+- Kuru (native orderbook AMM, MON pairs)
+- Uniswap V3
+- PancakeSwap V3
+- PancakeSwap V2
+- Uniswap V2
+- OpenOcean (REST API)
+
+## Types
+
+```typescript
+type DexName = 'kuru' | 'uniswap-v2' | 'uniswap-v3' | 'pancake-v2' | 'pancake-v3' | 'openocean'
+
+interface SwapRoute {
+  dex: DexName
+  amountOut: string
+  priceImpact?: number
+}
+
+interface RouterResult {
+  bestDex: DexName
+  amountOut: string
+  allRoutes: SwapRoute[]
+  timestamp: number
+}
+
+interface ArbitrageAlert {
+  buyDex: DexName
+  sellDex: DexName
+  buyPrice: number
+  sellPrice: number
+  spreadPct: number
+  profitable: boolean
+}
+```
+
+## Functions
+
+### `getBestSwapRoute`
+
+Queries all 6 DEXes in parallel and returns the route with the highest `amountOut`.
+
+```typescript
+getBestSwapRoute(
+  tokenIn: string,
+  tokenOut: string,
+  amountIn: string
+): Promise<RouterResult>
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `tokenIn` | `string` | Input token address (use `0x000...000` for native MON) |
+| `tokenOut` | `string` | Output token address |
+| `amountIn` | `string` | Amount in wei (as string to avoid BigInt overflow) |
+
+Returns a `RouterResult` with `bestDex`, `amountOut`, `allRoutes` sorted by output descending, and `timestamp`.
+
+### `getAllSwapQuotes`
+
+Returns all available quotes sorted by `amountOut` descending. Useful when you want to display a comparison UI or inspect every route.
+
+```typescript
+getAllSwapQuotes(
+  tokenIn: string,
+  tokenOut: string,
+  amountIn: string
+): Promise<SwapRoute[]>
+```
+
+### `detectDexArbitrage`
+
+Detects price discrepancies greater than 0.5% between any two DEXes for a given token pair. Returns `null` if no profitable spread is found.
+
+```typescript
+detectDexArbitrage(
+  tokenA: string,
+  tokenB: string
+): Promise<ArbitrageAlert | null>
+```
+
+## Usage
+
+```typescript
+import { getBestSwapRoute, getAllSwapQuotes } from 'rampart-monad'
+
+const MON  = '0x0000000000000000000000000000000000000000'
+const USDC = '0xf817257fed379853cDe0fa4F97AB987181B1E5Ea'
+
+const result = await getBestSwapRoute(MON, USDC, '1000000000000000000')
+console.log(`Best: ${result.bestDex} → ${result.amountOut} USDC`)
+// → Best: kuru → 354000 USDC
+
+// Compare all DEX quotes
+const quotes = await getAllSwapQuotes(MON, USDC, '1000000000000000000')
+for (const q of quotes) {
+  console.log(`${q.dex}: ${q.amountOut}`)
+}
+```
+
+## Arbitrage Detection
+
+```typescript
+import { detectDexArbitrage } from 'rampart-monad'
+
+const MON  = '0x0000000000000000000000000000000000000000'
+const USDC = '0xf817257fed379853cDe0fa4F97AB987181B1E5Ea'
+
+const alert = await detectDexArbitrage(MON, USDC)
+if (alert && alert.profitable) {
+  console.log(`Buy on  ${alert.buyDex}  @ $${alert.buyPrice}`)
+  console.log(`Sell on ${alert.sellDex} @ $${alert.sellPrice}`)
+  console.log(`Spread: ${alert.spreadPct.toFixed(2)}%`)
+}
+```
+
+## Notes
+
+- `amountIn` must be a string in wei to avoid JavaScript `BigInt` precision loss.
+- Routes from DEXes that return an error or timeout are excluded from `allRoutes` - the result always reflects only successful responses.
+- OpenOcean quotes are fetched via their public REST API. If the endpoint is unavailable the router continues with the remaining 5 sources.
+- Kuru is a native orderbook AMM optimised for MON pairs and often returns the best rate for MON/USDC.

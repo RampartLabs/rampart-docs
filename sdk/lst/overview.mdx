@@ -1,0 +1,60 @@
+---
+title: "LST Overview"
+description: "All LST and yield vault protocols available on Monad through the Rampart SDK"
+---
+
+<Info>
+Rampart provides a unified interface to all LST protocols on Monad, covering native liquid staking, restaking vaults, yield-optimized wrappers, and multi-protocol yield aggregators.
+</Info>
+
+## Overview
+
+Monad's liquid staking ecosystem lets holders earn staking rewards while keeping their MON liquid. Each LST protocol takes a different approach - from simple 1:1 staking to complex restaking vaults and yield aggregation. Rampart normalizes access to all of them through consistent TypeScript functions.
+
+## Protocol Directory
+
+| Token | Protocol | Type | APR | TVL | Key Function |
+|-------|----------|------|-----|-----|--------------|
+| [aprMON](apriori) | aPriori | Liquid Staking | ~8% | ~$48M | `getAPrioriLST()` |
+| [sMON](staking) | Magma | Liquid Staking | ~7% | ~$30M | `getAllLSTStats()` |
+| [gMON](staking) | Kintsu | Liquid Staking | ~7.5% | ~$25M | `getAllLSTStats()` |
+| [shMON](staking) | FastLane / Shmonad | Liquid Staking | ~6.5% | ~$15M | `getAllLSTStats()` |
+| [vshMON](mellow) | Mellow Finance | Restaking Vault | ~9% | ~$19M | `getMellowVaults()` |
+| [lagMON](lagoon) | Lagoon | Yield Vault | - | ~$2M | `getLagoonVaults()` |
+| [upMON](upshift) | Upshift | Yield Aggregator | - | ~$3M | `getUpshiftVaults()` |
+| - | Beefy | Multi-Protocol Yield | - | ~$2M | `getBeefyVaults()` |
+| [ezMON](renzo) | Renzo | Restaking Vault | - | ~$500K | `getRenzoStats()` |
+
+## Aggregated Access
+
+Pull stats from all LSTs in a single call using the LST aggregator:
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+
+// All 5 LSTs sorted by APR
+const all = await sdk.compareLSTs()
+// → [{ token: 'vshMON', apr: 0.09, protocol: 'mellow', ... }, ...]
+
+// Highest APR LST right now
+const best = await sdk.getBestLST()
+// → { token: 'vshMON', apr: 0.09, protocol: 'mellow', tvl: 19000000, ... }
+
+// Total MON staked across the entire ecosystem
+const total = await sdk.getTotalStakedMON()
+// → 137000000 (in MON)
+```
+
+## Architecture Notes
+
+<Note>
+All LST functions are available both as standalone imports and as methods on the `Rampart` class. The `RampartAgent` exposes them as AI tools for use with the Vercel AI SDK.
+</Note>
+
+- **aprMON** - aPriori's ERC4626 vault; exchange rate increases as staking rewards accrue
+- **gMON** - Kintsu uses a `uint96` rate stored on-chain; APR derived from 500k-block delta
+- **shMON** - FastLane's validator MEV-boosted staking token; wrapped as vshMON by Mellow
+- **vshMON** - Mellow vault holding shMON; adds a second yield layer on top of FastLane rewards
+- **sMON** - Magma's straightforward liquid staking with competitive base APR

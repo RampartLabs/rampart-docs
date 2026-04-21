@@ -1,0 +1,190 @@
+---
+title: "Uniswap V4"
+description: "V4 Hooks AMM - custom pool logic via hooks on Monad Mainnet"
+---
+
+<Info>
+**TVL:** ~$2M | **Type:** V4 Hooks AMM | **Docs:** [docs.uniswap.org/contracts/v4](https://docs.uniswap.org/contracts/v4)
+</Info>
+
+## Overview
+
+Uniswap V4 introduces a singleton `PoolManager` architecture and a hooks system, allowing custom logic to execute at key lifecycle points (before/after swap, before/after LP operations). All pools are managed by a single contract, reducing gas costs via EIP-1153 transient storage.
+
+Pools are identified by a `V4PoolKey` struct instead of a simple address.
+
+## Types
+
+### V4PoolKey
+
+```typescript
+type V4PoolKey = {
+  currency0: Address    // lower address token
+  currency1: Address    // higher address token
+  fee: number           // fee tier in bps (e.g. 3000)
+  tickSpacing: number   // tick spacing (e.g. 60)
+  hooks: Address        // hooks contract (0x0 for no hooks)
+}
+```
+
+<Note>
+`currency0` must always be the lexicographically lower address. The SDK handles sorting automatically in all helper functions.
+</Note>
+
+## Functions
+
+### getUniswapV4Pools()
+
+Returns all initialized Uniswap V4 pools on Monad.
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `poolId` | `Hex` | 32-byte pool identifier |
+| `poolKey` | `V4PoolKey` | Full pool key struct |
+| `sqrtPriceX96` | `bigint` | Current sqrt price Q64.96 |
+| `tick` | `number` | Current tick |
+| `liquidity` | `bigint` | Active liquidity |
+
+```typescript
+import { getUniswapV4Pools } from 'rampart-monad'
+
+const pools = await getUniswapV4Pools()
+console.log(`${pools.length} V4 pools found`)
+console.log(pools[0].poolKey.hooks) // hooks contract
+```
+
+---
+
+### getUniswapV4PoolState()
+
+Reads the full state of a specific V4 pool by its pool key.
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `poolKey` | `V4PoolKey` | Pool identifier struct |
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `sqrtPriceX96` | `bigint` | Current sqrt price |
+| `tick` | `number` | Current tick |
+| `protocolFee` | `number` | Protocol fee |
+| `lpFee` | `number` | LP fee |
+
+```typescript
+import { getUniswapV4PoolState } from 'rampart-monad'
+
+const state = await getUniswapV4PoolState({
+  currency0: '0x0000000000000000000000000000000000000000',
+  currency1: '0x...', // USDC
+  fee: 3000,
+  tickSpacing: 60,
+  hooks: '0x0000000000000000000000000000000000000000'
+})
+console.log(`Current tick: ${state.tick}`)
+```
+
+---
+
+### getUniswapV4Price()
+
+Returns the spot price for a pool key.
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `poolKey` | `V4PoolKey` | Pool identifier struct |
+
+**Returns** `number`. price of `currency0` denominated in `currency1`.
+
+```typescript
+import { getUniswapV4Price } from 'rampart-monad'
+
+const price = await getUniswapV4Price({
+  currency0: '0x0000000000000000000000000000000000000000',
+  currency1: '0x...', // USDC
+  fee: 3000,
+  tickSpacing: 60,
+  hooks: '0x0000000000000000000000000000000000000000'
+})
+console.log(`Price: ${price}`)
+```
+
+---
+
+### simulateUniswapV4Swap()
+
+Simulates a V4 swap without executing a transaction.
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `poolKey` | `V4PoolKey` | Target pool |
+| `amountIn` | `bigint` | Exact input amount |
+| `zeroForOne` | `boolean` | `true` = swap currency0 → currency1 |
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `amountOut` | `bigint` | Expected output |
+| `priceImpact` | `number` | Percentage price impact |
+| `sqrtPriceLimitX96` | `bigint` | Sqrt price after swap |
+
+```typescript
+import { simulateUniswapV4Swap } from 'rampart-monad'
+
+const sim = await simulateUniswapV4Swap(
+  {
+    currency0: '0x0000000000000000000000000000000000000000',
+    currency1: '0x...', // USDC
+    fee: 3000,
+    tickSpacing: 60,
+    hooks: '0x0000000000000000000000000000000000000000'
+  },
+  1_000_000_000_000_000_000n, // 1 MON (18 decimals)
+  true
+)
+console.log(`Expected out: ${sim.amountOut}`)
+console.log(`Impact: ${sim.priceImpact}%`)
+```
+
+---
+
+### computeV4PoolId()
+
+Computes the deterministic 32-byte pool ID from a `V4PoolKey`.
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `poolKey` | `V4PoolKey` | Pool key to hash |
+
+**Returns** `Hex`. 32-byte keccak256 pool ID.
+
+```typescript
+import { computeV4PoolId } from 'rampart-monad'
+
+const poolId = computeV4PoolId({
+  currency0: '0x0000000000000000000000000000000000000000',
+  currency1: '0x...',
+  fee: 3000,
+  tickSpacing: 60,
+  hooks: '0x0000000000000000000000000000000000000000'
+})
+console.log(poolId) // 0x...
+```
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| PoolManager | `0x000000000004444c5dc75cB358380D2e3dE08A90` |

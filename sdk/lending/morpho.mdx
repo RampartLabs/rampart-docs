@@ -1,0 +1,94 @@
+---
+title: "Morpho"
+description: "Morpho Blue core with MetaMorpho curator vaults on Monad"
+---
+
+<Info>
+**TVL:** ~$5M | **Type:** Morpho Blue (MetaMorpho vaults) | **Docs:** [docs.morpho.org](https://docs.morpho.org)
+</Info>
+
+## Overview
+
+Morpho Blue is a minimal, immutable lending primitive. MetaMorpho vaults are curator-managed wrappers that allocate deposited assets across Morpho Blue markets to optimize yield. Rampart exposes vault discovery and TVL aggregation.
+
+<Warning>
+Monad does not support `eth_getLogs` from block 0. Morpho vault discovery uses a bounded block range. If you see an empty result, the RPC node may be rate-limiting - retry or use a private RPC endpoint.
+</Warning>
+
+## Functions
+
+### getMorphoVaults()
+
+Returns all MetaMorpho vaults deployed on Monad, sorted by APY descending.
+
+**Returns** `MorphoVault[]`
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `address` | `string` | Vault contract address |
+| `asset` | `string` | Underlying token address |
+| `totalAssets` | `bigint` | Total assets under management (raw) |
+| `apy` | `number` | Current APY as a decimal (e.g. `0.063`) |
+| `curator` | `string` | Curator address managing vault allocation |
+| `protocol` | `'morpho'` | Protocol identifier |
+
+```typescript
+const vaults = await sdk.getMorphoVaults()
+// → [
+//   { address: '0x...', asset: '0x...', totalAssets: 2100000n, apy: 0.063, curator: '0x...', protocol: 'morpho' },
+//   { address: '0x...', asset: '0x...', totalAssets: 850000n,  apy: 0.041, curator: '0x...', protocol: 'morpho' },
+// ]
+```
+
+### getMorphoTVL()
+
+Returns total value locked across all MetaMorpho vaults in USD.
+
+**Returns** `number`
+
+```typescript
+const tvl = await sdk.getMorphoTVL()
+// → 5100000
+```
+
+### getBestMorphoVault(asset?)
+
+Returns the MetaMorpho vault with the highest APY. Optionally filtered to a specific underlying asset.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `asset` | `string` (optional) | Filter by underlying token address |
+
+**Returns** `MorphoVault`
+
+```typescript
+// Best vault across all assets
+const best = await sdk.getBestMorphoVault()
+// → { address: '0x...', asset: '0x...', apy: 0.063, curator: '0x...', protocol: 'morpho' }
+
+// Best vault for a specific asset
+const USDC = '0xf817257fed379853cDe0fa4F97AB987181B1E5Ea'
+const bestUsdc = await sdk.getBestMorphoVault(USDC)
+```
+
+## Usage Example
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+
+const vaults = await sdk.getMorphoVaults()
+const tvl = await sdk.getMorphoTVL()
+
+console.log(`Morpho TVL: $${(tvl / 1e6).toFixed(1)}M across ${vaults.length} vaults`)
+
+const best = vaults[0]
+console.log(`Best APY: ${(best.apy * 100).toFixed(2)}% - curated by ${best.curator}`)
+```
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| MorphoBlue | `0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb` |

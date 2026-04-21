@@ -1,0 +1,131 @@
+---
+title: "REST API Overview"
+description: "Rampart SDK can be used as an HTTP API via a thin Next.js or Express wrapper"
+---
+
+<Info>
+The Rampart SDK is a TypeScript library - it has no built-in HTTP server. The patterns on these pages show how to wrap SDK functions in Next.js API routes or Express endpoints to expose them over HTTP for frontends, bots, or external services.
+</Info>
+
+## Base URL
+
+All examples in this section assume your deployment is at:
+
+```
+https://your-app.vercel.app/api
+```
+
+Replace this with your own domain or `http://localhost:3000/api` for local development.
+
+## Authentication
+
+For production deployments, protect your endpoints with a Bearer token:
+
+```typescript
+// lib/auth.ts
+export function requireAuth(req: Request): boolean {
+  const authHeader = req.headers.get('Authorization')
+  return authHeader === `Bearer ${process.env.API_SECRET}`
+}
+```
+
+```http
+GET /api/price?symbol=MON
+Authorization: Bearer your-secret-token
+```
+
+## Response Format
+
+All endpoints return a consistent envelope:
+
+```typescript
+interface ApiResponse<T> {
+  data: T
+  timestamp: number
+  error?: string
+}
+```
+
+Errors always include an `error` string and return a 4xx or 5xx HTTP status code.
+
+```json
+{
+  "data": null,
+  "timestamp": 1713600000000,
+  "error": "Symbol not found: XYZ"
+}
+```
+
+## Quick Start: Next.js
+
+Install the SDK:
+
+```bash
+npm install rampart-monad
+```
+
+Create an API route:
+
+```typescript
+// pages/api/price.ts
+import { getVerifiedPrice } from 'rampart-monad'
+import type { NextApiRequest, NextApiResponse } from 'next'
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const { symbol = 'MON' } = req.query
+
+  try {
+    const price = await getVerifiedPrice(symbol as string)
+    res.json({ data: price, timestamp: Date.now() })
+  } catch (err) {
+    res.status(500).json({ data: null, timestamp: Date.now(), error: String(err) })
+  }
+}
+```
+
+## Quick Start: Express
+
+```typescript
+import express from 'express'
+import { getVerifiedPrice, getMarketOverview } from 'rampart-monad'
+
+const app = express()
+
+app.get('/api/price', async (req, res) => {
+  const { symbol = 'MON' } = req.query
+  try {
+    const price = await getVerifiedPrice(symbol as string)
+    res.json({ data: price, timestamp: Date.now() })
+  } catch (err) {
+    res.status(500).json({ data: null, timestamp: Date.now(), error: String(err) })
+  }
+})
+
+app.get('/api/markets', async (_req, res) => {
+  try {
+    const overview = await getMarketOverview()
+    res.json({ data: overview, timestamp: Date.now() })
+  } catch (err) {
+    res.status(500).json({ data: null, timestamp: Date.now(), error: String(err) })
+  }
+})
+
+app.listen(3000)
+```
+
+## Rate Limiting
+
+The Monad public RPC (`https://rpc.monad.xyz`) imposes rate limits. To avoid 429 errors in production:
+
+- Cache responses in Redis or a KV store (prices for 10–30 s, TVL for 60 s)
+- Use a dedicated RPC endpoint from a node provider
+- Run multiple Vitest tests with `singleFork` to avoid parallel RPC saturation
+
+## Available Endpoints
+
+| Endpoint | Description |
+|----------|-------------|
+| [`GET /price`](/api/price) | Verified asset price |
+| [`GET /markets`](/api/markets) | Lending market rates |
+| [`GET /tvl`](/api/tvl) | TVL by category |
+| [`GET /portfolio`](/api/portfolio) | Wallet DeFi snapshot |

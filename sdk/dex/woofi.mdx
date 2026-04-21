@@ -1,0 +1,87 @@
+---
+title: "WooFi"
+description: "Proactive Market Maker - off-chain price feeds with on-chain settlement"
+---
+
+<Info>
+**Type:** PMM (Proactive Market Maker) | **Docs:** [docs.woo.org/woofi](https://docs.woo.org/woofi)
+</Info>
+
+## Overview
+
+WooFi implements the Proactive Market Maker (PMM) model, originally developed by WOO Network. PMM combines off-chain price feeds from professional market makers with on-chain settlement, enabling near-zero slippage for retail-sized trades. Pricing is driven by WOO Network's internal market-making engine rather than passive AMM curves.
+
+## Functions
+
+### getWooFiPools()
+
+Returns all active WooFi token pools on Monad.
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `token` | `Address` | Token address |
+| `symbol` | `string` | Token symbol |
+| `reserve` | `bigint` | Token reserve in the pool |
+| `price` | `number` | Current PMM price in USD |
+| `spread` | `number` | Bid-ask spread in bps |
+| `coeff` | `number` | Price coefficient (slippage factor) |
+| `woFeeRate` | `number` | WooFi fee rate in bps |
+
+```typescript
+import { getWooFiPools } from 'rampart-monad'
+
+const pools = await getWooFiPools()
+for (const pool of pools) {
+  console.log(`${pool.symbol}: $${pool.price}`)
+  console.log(`  Spread: ${pool.spread} bps | Fee: ${pool.woFeeRate} bps`)
+}
+```
+
+---
+
+### getWooFiQuote()
+
+Returns a swap quote using WooFi's PMM pricing model.
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tokenIn` | `Address` | Input token address |
+| `tokenOut` | `Address` | Output token address |
+| `amountIn` | `bigint` | Exact input amount |
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `amountOut` | `bigint` | Expected output amount |
+| `fee` | `bigint` | Fee charged in tokenOut |
+| `price` | `number` | Execution price |
+| `priceImpact` | `number` | Price impact percentage (typically near zero for small trades) |
+
+```typescript
+import { getWooFiQuote } from 'rampart-monad'
+
+const quote = await getWooFiQuote(
+  '0x...', // tokenIn (USDC)
+  '0x...', // tokenOut (MON)
+  1_000_000n // 1 USDC
+)
+
+console.log(`Amount out: ${quote.amountOut}`)
+console.log(`Price: ${quote.price}`)
+console.log(`Impact: ${quote.priceImpact}%`)
+```
+
+<Note>
+WooFi PMM pricing typically offers near-zero slippage for trades under $50K. For larger trades, the `coeff` parameter (slippage coefficient) increasingly impacts execution price.
+</Note>
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| WooPPV2 | `0x7083609fCE4d1d8Dc0C979AAb8cf214789ADCA0` |

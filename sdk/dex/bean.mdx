@@ -1,0 +1,105 @@
+---
+title: "Bean"
+description: "DLMM DEX on Monad - discrete liquidity bins for capital-efficient trading"
+---
+
+<Info>
+**Type:** DLMM DEX | **Docs:** [bean.exchange](https://bean.exchange)
+</Info>
+
+## Overview
+
+Bean is a Discrete Liquidity Market Maker (DLMM) DEX native to Monad. Like LFJ's Liquidity Book, Bean organizes liquidity into discrete price bins. Trades within a bin execute at zero slippage. Bean is optimized for Monad's high-throughput environment, taking advantage of sub-second block times for responsive price discovery.
+
+## Functions
+
+### getBeanPairs()
+
+Returns all active Bean trading pairs on Monad.
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `pairAddress` | `Address` | Bean pair contract address |
+| `token0` | `Address` | First token address |
+| `token1` | `Address` | Second token address |
+| `binStep` | `number` | Bin size in bps |
+| `activeId` | `number` | Current active bin ID |
+| `reserve0` | `bigint` | Reserve of token0 |
+| `reserve1` | `bigint` | Reserve of token1 |
+| `price` | `number` | Current price of token0 in token1 |
+| `fee` | `number` | Base fee in bps |
+
+```typescript
+import { getBeanPairs } from 'rampart-monad'
+
+const pairs = await getBeanPairs()
+console.log(`${pairs.length} Bean pairs`)
+
+for (const pair of pairs) {
+  console.log(`${pair.token0}/${pair.token1}`)
+  console.log(`  Price: ${pair.price} | Bin step: ${pair.binStep} bps`)
+  console.log(`  Active bin: ${pair.activeId}`)
+}
+```
+
+---
+
+### getBeanPairCount()
+
+Returns the total number of Bean pairs deployed on Monad.
+
+**Returns** `number`. total count of Bean pairs registered in the factory.
+
+```typescript
+import { getBeanPairCount } from 'rampart-monad'
+
+const count = await getBeanPairCount()
+console.log(`Bean pairs deployed: ${count}`)
+```
+
+<CodeGroup>
+```typescript Scan for Liquid Pairs
+import { getBeanPairs } from 'rampart-monad'
+
+const pairs = await getBeanPairs()
+
+// Find pairs with meaningful reserves
+const liquidPairs = pairs.filter(
+  p => p.reserve0 > 0n && p.reserve1 > 0n
+)
+console.log(`Active pairs: ${liquidPairs.length}/${pairs.length}`)
+
+// Sort by bin step to find stableswap-style pools
+const stablePairs = liquidPairs
+  .filter(p => p.binStep <= 5)
+  .sort((a, b) => a.binStep - b.binStep)
+console.log('Stable-like pairs:', stablePairs)
+```
+
+```typescript Price Monitoring
+import { getBeanPairs } from 'rampart-monad'
+
+// Poll prices every block (~400ms on Monad)
+const pairs = await getBeanPairs()
+const targetPair = pairs.find(
+  p => p.token0 === '0x...' || p.token1 === '0x...'
+)
+
+if (targetPair) {
+  console.log(`Current price: ${targetPair.price}`)
+  console.log(`Active bin: ${targetPair.activeId}`)
+}
+```
+</CodeGroup>
+
+<Note>
+Bean leverages Monad's ~400ms block times for responsive bin transitions. In volatile markets, the active bin ID changes frequently - poll with `getBeanPairs()` rather than caching prices for extended periods.
+</Note>
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| Factory | `0xb0Bd8567b80bB0a24ec92d1e85e5d28b4285e2E4` |

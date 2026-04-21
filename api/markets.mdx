@@ -1,0 +1,163 @@
+---
+title: "GET /markets"
+description: "Fetch all active lending markets and their rates"
+---
+
+<Info>
+Returns live supply and borrow rates from all Monad lending protocols: Euler V2 (108 vaults), Neverland (Aave V3 fork), and Morpho Blue. Filter by protocol using the `protocol` query parameter.
+</Info>
+
+## Endpoint
+
+```http
+GET /api/markets
+```
+
+## Query Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `protocol` | `string` | No | Filter by protocol: `euler`, `neverland`, `morpho` |
+
+Without `protocol`, all lending markets across all protocols are returned.
+
+## Response
+
+```typescript
+interface LendingMarket {
+  protocol: 'euler' | 'neverland' | 'morpho'
+  asset: string
+  supplyApy: number
+  borrowApy: number
+  totalSupplied: number
+  totalBorrowed: number
+  utilizationRate: number
+  collateralFactor?: number
+  vault?: string
+}
+```
+
+## Example Response: All Markets
+
+```json
+{
+  "data": [
+    {
+      "protocol": "euler",
+      "asset": "USDC",
+      "supplyApy": 0.0821,
+      "borrowApy": 0.1134,
+      "totalSupplied": 4200000,
+      "totalBorrowed": 2940000,
+      "utilizationRate": 0.70,
+      "vault": "0x..."
+    },
+    {
+      "protocol": "neverland",
+      "asset": "USDC",
+      "supplyApy": 0.0654,
+      "borrowApy": 0.0923,
+      "totalSupplied": 1800000,
+      "totalBorrowed": 1134000,
+      "utilizationRate": 0.63
+    },
+    {
+      "protocol": "morpho",
+      "asset": "USDT",
+      "supplyApy": 0.0512,
+      "borrowApy": 0.0741,
+      "totalSupplied": 960000,
+      "totalBorrowed": 537600,
+      "utilizationRate": 0.56,
+      "vault": "0x..."
+    }
+  ],
+  "timestamp": 1713600000000
+}
+```
+
+## cURL
+
+```bash
+# All markets
+curl "https://your-app.vercel.app/api/markets"
+
+# Euler only
+curl "https://your-app.vercel.app/api/markets?protocol=euler"
+
+# Neverland only
+curl "https://your-app.vercel.app/api/markets?protocol=neverland"
+
+# Morpho only
+curl "https://your-app.vercel.app/api/markets?protocol=morpho"
+```
+
+## TypeScript Fetch
+
+```typescript
+interface MarketResponse {
+  data: LendingMarket[]
+  timestamp: number
+  error?: string
+}
+
+async function fetchMarkets(protocol?: string): Promise<LendingMarket[]> {
+  const params = protocol ? `?protocol=${protocol}` : ''
+  const res = await fetch(`https://your-app.vercel.app/api/markets${params}`)
+  const json: MarketResponse = await res.json()
+  if (json.error) throw new Error(json.error)
+  return json.data
+}
+
+// All markets
+const all = await fetchMarkets()
+console.log(`${all.length} markets found`)
+
+// Best Euler supply rate
+const euler = await fetchMarkets('euler')
+const best = euler.sort((a, b) => b.supplyApy - a.supplyApy)[0]
+console.log(`Best Euler supply: ${best.asset} @ ${(best.supplyApy * 100).toFixed(2)}%`)
+```
+
+## Next.js Route Implementation
+
+```typescript
+// pages/api/markets.ts
+import { getEulerVaults, getNeverlandRates, getMorphoVaults } from 'rampart-monad'
+import type { NextApiRequest, NextApiResponse } from 'next'
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const { protocol } = req.query
+
+  try {
+    let markets: object[] = []
+
+    if (!protocol || protocol === 'euler') {
+      const vaults = await getEulerVaults()
+      markets.push(...vaults.map(v => ({ ...v, protocol: 'euler' })))
+    }
+
+    if (!protocol || protocol === 'neverland') {
+      const rates = await getNeverlandRates()
+      markets.push(...rates.map(r => ({ ...r, protocol: 'neverland' })))
+    }
+
+    if (!protocol || protocol === 'morpho') {
+      const vaults = await getMorphoVaults()
+      markets.push(...vaults.map(v => ({ ...v, protocol: 'morpho' })))
+    }
+
+    res
+      .setHeader('Cache-Control', 's-maxage=30, stale-while-revalidate=60')
+      .json({ data: markets, timestamp: Date.now() })
+  } catch (err) {
+    res.status(500).json({ data: null, timestamp: Date.now(), error: String(err) })
+  }
+}
+```
+
+## Notes
+
+- Euler V2 APR is computed as `interestRate() / 1e27 * 31_536_000` (annualised from per-second rate).
+- Neverland is an Aave V3 fork - rates are read directly from the DataProvider contract.
+- Morpho vaults may have a `vault` field with the vault contract address for direct interaction.

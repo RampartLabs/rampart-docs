@@ -1,0 +1,73 @@
+---
+title: "Multipli"
+description: "Real-world asset (RWA) yield vaults on Monad"
+---
+
+<Info>
+**Type:** RWA Yield Vaults | **Docs:** [multipli.fi](https://multipli.fi)
+</Info>
+
+## Overview
+
+Multipli brings real-world asset yields on-chain through tokenized vault strategies on Monad. Depositors earn yield sourced from off-chain instruments such as treasuries, bonds, or private credit, bridged into a standard ERC-4626-compatible vault interface.
+
+## Functions
+
+### getMultipliVault()
+
+Returns current state of the Multipli RWA vault.
+
+**Returns** `MultipliVault`
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `address` | `string` | Vault proxy contract address |
+| `asset` | `string` | Underlying token address |
+| `totalAssets` | `bigint` | Total assets under management (raw) |
+| `apy` | `number` | Current APY as a decimal (e.g. `0.052`) |
+| `rwaType` | `string` | Type of real-world asset backing (e.g. `'treasury'`) |
+| `protocol` | `'multipli'` | Protocol identifier |
+
+```typescript
+const vault = await sdk.getMultipliVault()
+// → {
+//   address: '0x8EdB8e82c7E8c4B67ceEB9b77d5A3Cf46B3b65Fa',
+//   asset: '0x...',
+//   totalAssets: 3200000n,
+//   apy: 0.052,
+//   rwaType: 'treasury',
+//   protocol: 'multipli'
+// }
+```
+
+### getMultipliTVL()
+
+Returns total value locked in the Multipli vault in USD.
+
+**Returns** `number`
+
+```typescript
+const tvl = await sdk.getMultipliTVL()
+// → 3200000
+```
+
+## Usage Example
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+
+const vault = await sdk.getMultipliVault()
+const tvl = await sdk.getMultipliTVL()
+
+console.log(`Multipli RWA type: ${vault.rwaType}`)
+console.log(`APY: ${(vault.apy * 100).toFixed(2)}%`)
+console.log(`TVL: $${(tvl / 1e6).toFixed(2)}M`)
+```
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| VaultProxy | `0x8EdB8e82c7E8c4B67ceEB9b77d5A3Cf46B3b65Fa` |

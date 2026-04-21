@@ -1,0 +1,165 @@
+---
+title: "RampartAgent"
+description: "36 Vercel AI SDK tools for autonomous DeFi analysis on Monad"
+---
+
+<Info>
+`RampartAgent` extends the `Rampart` class and exposes every SDK function as a structured Vercel AI SDK v6 tool. Pass `agent.tools` directly to `generateText`, `streamText`, or any AI SDK function - the agent handles schema validation and execution automatically.
+</Info>
+
+## Overview
+
+`RampartAgent` wraps all Rampart SDK functions using `tool()` from the Vercel AI SDK v6. Each tool uses `inputSchema:` (Zod) for input validation and an `execute` function that delegates to the underlying protocol function. This means any LLM with tool-calling support can query Monad DeFi data autonomously.
+
+```typescript
+import { RampartAgent } from 'rampart-monad'
+import { generateText } from 'ai'
+import { anthropic } from '@ai-sdk/anthropic'
+
+const agent = new RampartAgent()
+
+const { text } = await generateText({
+  model: anthropic('claude-3-5-sonnet-20241022'),
+  tools: agent.tools,
+  system: 'You are a Monad DeFi analyst.',
+  prompt: 'Find the best yield for USDC right now',
+  maxSteps: 5,
+})
+
+console.log(text)
+```
+
+## Available Tools (36)
+
+| Tool | Description | Returns |
+|------|-------------|---------|
+| `get_kuru_pools` | Kuru DEX pool list | `KuruPool[]` |
+| `get_kuru_price` | MON price from Kuru | `number` |
+| `get_token_price` | Token price | `TokenPrice` |
+| `get_uniswap_pools` | Uniswap V3 pools | `Pool[]` |
+| `get_euler_vaults` | Euler V2 vaults | `EulerVault[]` |
+| `get_euler_best_supply` | Best Euler supply rate | `EulerVault` |
+| `get_neverland_rates` | Neverland lending rates | `LendingRate[]` |
+| `get_morpho_vaults` | Morpho Blue vaults | `MorphoVault[]` |
+| `get_all_lst_stats` | All 5 LST stats | `LSTStats[]` |
+| `get_best_lst` | Highest APR LST | `LSTStats` |
+| `compare_lsts` | LST APR comparison | `LSTStats[]` |
+| `get_staking_apr` | aPriori staking APR | `StakingAPR` |
+| `get_best_swap_route` | Best DEX route | `RouterResult` |
+| `get_all_swap_quotes` | All DEX quotes | `SwapRoute[]` |
+| `detect_arbitrage` | DEX arbitrage alerts | `ArbitrageAlert[]` |
+| `get_market_overview` | Ecosystem overview | `MonadMarketOverview` |
+| `get_best_yields` | Top yield opportunities | `YieldOpportunity[]` |
+| `get_monad_tvl` | Total DeFi TVL | `TVLBreakdown` |
+| `get_portfolio` | Wallet portfolio | `Portfolio` |
+| `get_token_balances` | ERC20 balances | `TokenBalance[]` |
+| `get_euler_positions` | Euler vault positions | `EulerPosition[]` |
+| `get_lst_positions` | LST holdings | `LSTPosition[]` |
+| `get_verified_price` | Cross-oracle price | `VerifiedPrice` |
+| `get_prices` | Batch oracle prices | `OraclePrice[]` |
+| `detect_oracle_discrepancy` | Oracle price deviation | `object` |
+| `get_lst_ratios` | LST exchange rates | `LSTRatios` |
+| `get_pancakeswap_pools` | PancakeSwap pools | `PancakeSwapPair[]` |
+| `get_nadfun_stats` | nad.fun launchpad | `NadFunStats` |
+| `get_trending_memes` | Trending memecoins | `MemeToken[]` |
+| `get_perp_markets` | Perp market data | `PerpMarket[]` |
+| `get_perp_tvl` | Perpetuals TVL | `number` |
+| `get_curvance_markets` | Curvance markets | `CurvanceMarket[]` |
+| `get_best_yields_for_asset` | Yields for asset | `YieldOpportunity[]` |
+| `get_uniswap_v4_pools` | Uniswap V4 pools | `UniswapV4Pool[]` |
+| `get_mellow_vaults` | Mellow vshMON vaults | `MellowVault[]` |
+| `get_market_intelligence` | Full market intel | `MonadMarketOverview` |
+
+## Tool Input Schema Example
+
+Tools are built internally using the Vercel AI SDK `tool()` helper with `inputSchema:` (not `parameters:`, which is the v5 API):
+
+```typescript
+import { tool } from 'ai'
+import { z } from 'zod'
+
+const get_best_swap_route = tool({
+  description: 'Find best swap route across all DEXes',
+  inputSchema: z.object({
+    tokenIn:  z.string().describe('Input token address'),
+    tokenOut: z.string().describe('Output token address'),
+    amountIn: z.string().describe('Amount in wei'),
+  }),
+  execute: async ({ tokenIn, tokenOut, amountIn }) =>
+    getBestSwapRoute(tokenIn, tokenOut, amountIn),
+})
+```
+
+## Multi-Step Agent Example
+
+```typescript
+import { RampartAgent } from 'rampart-monad'
+import { generateText } from 'ai'
+import { anthropic } from '@ai-sdk/anthropic'
+
+const agent = new RampartAgent()
+
+// Multi-step: the model can call multiple tools in sequence
+const { text, steps } = await generateText({
+  model: anthropic('claude-3-5-sonnet-20241022'),
+  tools: agent.tools,
+  system: `You are a Monad DeFi analyst. Use the available tools to answer
+  questions about yields, prices, liquidity, and portfolio positions.
+  Always verify prices using the cross-oracle tool before making recommendations.`,
+  prompt: 'Compare the best LST option versus the best Euler supply rate for MON.',
+  maxSteps: 8,
+})
+
+console.log(`Model called ${steps.length} tools`)
+console.log(text)
+```
+
+## Streaming Example
+
+```typescript
+import { RampartAgent } from 'rampart-monad'
+import { streamText } from 'ai'
+import { anthropic } from '@ai-sdk/anthropic'
+
+const agent = new RampartAgent()
+
+const result = streamText({
+  model: anthropic('claude-3-5-sonnet-20241022'),
+  tools: agent.tools,
+  system: 'You are a Monad DeFi analyst.',
+  prompt: 'What is the current total TVL on Monad and where is most of it?',
+  maxSteps: 5,
+})
+
+for await (const chunk of result.textStream) {
+  process.stdout.write(chunk)
+}
+```
+
+## Working with Specific Tools
+
+You can destructure individual tools from `agent.tools` if you want to compose a custom subset:
+
+```typescript
+import { RampartAgent } from 'rampart-monad'
+import { generateText } from 'ai'
+import { openai } from '@ai-sdk/openai'
+
+const agent = new RampartAgent()
+
+const { get_market_overview, get_best_yields, get_verified_price } = agent.tools
+
+const { text } = await generateText({
+  model: openai('gpt-4o'),
+  tools: { get_market_overview, get_best_yields, get_verified_price },
+  prompt: 'Give me a market summary and top 3 yields.',
+  maxSteps: 4,
+})
+```
+
+## Notes
+
+- `RampartAgent` is model-agnostic - any AI SDK v6 compatible provider works (Anthropic, OpenAI, Google, etc.).
+- All tools use `inputSchema:` (Vercel AI SDK v6 API). Do not use `parameters:` which is the v5 API and will cause a type error.
+- The `execute` functions are async and call the same underlying RPC functions as the Rampart class methods - there is no additional latency layer.
+- `maxSteps` controls how many sequential tool calls the model may make. For complex multi-protocol queries, set this to at least `5`.

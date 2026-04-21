@@ -1,0 +1,55 @@
+---
+title: "Yield Overview"
+description: "All yield-generating protocols available on Monad through the Rampart SDK"
+---
+
+<Info>
+Rampart provides access to 6 yield protocols on Monad spanning ERC4626 vaults, leveraged yield, token streaming, StableSwap AMMs, weighted pools, and memecoin launchpads.
+</Info>
+
+## Overview
+
+Monad's yield ecosystem covers a wide spectrum - from straightforward ERC4626 vaults like Enjoyoors and Gearbox, to complex AMM pools (Curve StableSwap, Balancer V3), token streaming via Sablier, and high-risk/high-reward memecoin launches on nad.fun.
+
+## Protocol Directory
+
+| Protocol | TVL | Type | Key Function |
+|----------|-----|------|--------------|
+| [Enjoyoors](enjoyoors) | ~$500K | ERC4626 Yield Vaults | `getEnjoyoorsVaults()` |
+| [Gearbox](gearbox) | ~$5M | Leveraged Yield (V3) | `getGearboxPools()` |
+| [Sablier](sablier) | N/A | Token Streaming | `getSablierStats()` |
+| [Balancer V3](balancer) | ~$3M | Weighted Pools | `getBalancerPools()` |
+| [Curve](curve) | ~$5M | StableSwap AMM | `getCurvePools()` |
+| [nad.fun](nadfun) | ~$2M | Memecoin Launchpad | `getNadFunTokens()` |
+
+## Aggregated Access
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+
+// Best ERC4626 vault by APY
+const best = await sdk.getBestUpshiftVault()
+
+// All Curve pools
+const pools = await sdk.getCurvePools()
+
+// Trending memecoins on nad.fun
+const trending = await sdk.getTrendingMemes()
+
+// Token stream details
+const stats = await sdk.getSablierStats()
+```
+
+## Architecture Notes
+
+<Note>
+All yield functions are available both as standalone imports and as methods on the `Rampart` class. The `RampartAgent` exposes them as AI tools for use with the Vercel AI SDK.
+</Note>
+
+- **Enjoyoors** - APY estimated from hourly exchange rate growth × 8760; no explicit reward distribution
+- **Gearbox V3** - credit accounts allow leveraged deposits into external yield sources; underlying pools earn passive yield
+- **Sablier** - not a yield source itself; used for vesting and streaming yield or token payments
+- **Curve / Balancer** - AMM trading fees and gauge incentives are the primary yield sources
+- **nad.fun** - high risk; tokens graduate from bonding curve to DEX listing at a market cap threshold

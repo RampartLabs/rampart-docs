@@ -1,0 +1,85 @@
+---
+title: "Curve Finance"
+description: "StableSwap AMM pools on Monad - low-slippage stablecoin and correlated-asset swaps"
+---
+
+<Info>
+**Type:** StableSwap AMM | **Docs:** [docs.curve.fi](https://docs.curve.fi)
+</Info>
+
+## Overview
+
+Curve Finance is the dominant StableSwap AMM, optimized for trading between assets of similar value (stablecoins, LST pairs, wrapped assets). Its invariant provides extremely low slippage for correlated assets compared to constant-product AMMs.
+
+On Monad, Curve pools are discovered via the on-chain `Registry` contract. Each pool exposes coins, balances, fee parameters, and a virtual price that serves as a proxy for LP share value.
+
+## Types
+
+```typescript
+type CurvePool = {
+  address: `0x${string}`
+  coins: `0x${string}`[]       // token addresses in the pool
+  balances: bigint[]            // current token balances
+  fee: number                   // swap fee in basis points, e.g. 4 = 0.04%
+  virtualPrice: bigint          // LP share virtual price (1e18 = 1.0)
+  tvl: number                   // USD TVL
+  apy: number                   // trading fee APY (annualized from 7-day volume)
+  protocol: 'curve'
+}
+```
+
+## Functions
+
+### getCurvePools()
+
+Returns all Curve pools registered on Monad.
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+const pools = await sdk.getCurvePools()
+// → CurvePool[]
+
+pools.forEach(p => {
+  console.log(
+    `Pool ${p.address}: ` +
+    `TVL $${(p.tvl / 1e6).toFixed(1)}M  ` +
+    `Fee ${p.fee}bps  ` +
+    `APY ${(p.apy * 100).toFixed(2)}%`
+  )
+})
+```
+
+### getCurveTVL()
+
+Returns the total liquidity across all Curve pools on Monad in USD.
+
+```typescript
+const tvl = await sdk.getCurveTVL()
+// → number (USD)
+
+console.log(`Curve TVL: $${(tvl / 1e6).toFixed(1)}M`)
+```
+
+### getCurvePoolByCoins(coinA, coinB)
+
+Finds the Curve pool that contains both specified token addresses. Useful for routing stablecoin swaps.
+
+```typescript
+const USDC = '0x...'
+const USDT = '0x...'
+
+const pool = await sdk.getCurvePoolByCoins(USDC, USDT)
+// → CurvePool | null
+
+if (pool) {
+  console.log(`USDC/USDT pool: ${pool.address}  Fee: ${pool.fee}bps`)
+}
+```
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| Registry | `0xE1a4d6fE70c5f9dBBaE58A2D37a0cF2e44c87490` |

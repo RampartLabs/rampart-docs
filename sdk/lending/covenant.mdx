@@ -1,0 +1,58 @@
+---
+title: "Covenant"
+description: "CDP and structured products protocol on Monad"
+---
+
+<Info>
+**Type:** CDP / Structured Products | **Docs:** [covenant.finance](https://covenant.finance)
+</Info>
+
+## Overview
+
+Covenant is a collateralized debt position (CDP) protocol and structured products platform on Monad. Users lock collateral to mint synthetic debt, similar to MakerDAO's design. Rampart exposes aggregate vault statistics for monitoring system health and collateralization levels.
+
+## Functions
+
+### getCovenantStats()
+
+Returns aggregate statistics across all Covenant vaults.
+
+**Returns** `CovenantStats`
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `vaultCount` | `number` | Total number of open CDP vaults |
+| `totalCollateral` | `number` | Total collateral value locked in USD |
+| `totalDebt` | `number` | Total synthetic debt outstanding in USD |
+| `protocol` | `'covenant'` | Protocol identifier |
+
+```typescript
+const stats = await sdk.getCovenantStats()
+// → {
+//   vaultCount: 142,
+//   totalCollateral: 8500000,
+//   totalDebt: 4200000,
+//   protocol: 'covenant'
+// }
+```
+
+## Usage Example
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+
+const stats = await sdk.getCovenantStats()
+
+const collateralRatio = stats.totalCollateral / stats.totalDebt
+console.log(`Covenant: ${stats.vaultCount} vaults`)
+console.log(`System collateral ratio: ${(collateralRatio * 100).toFixed(0)}%`)
+console.log(`Total debt: $${(stats.totalDebt / 1e6).toFixed(2)}M`)
+```
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| CovenantManager | `0x7d5cf24C05A80d4FfC1D4B2d2E4c47d9b8cE2F5a` |

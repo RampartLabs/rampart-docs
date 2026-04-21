@@ -1,0 +1,179 @@
+---
+title: "Portfolio Tracker"
+description: "Build a real-time Monad DeFi portfolio snapshot"
+---
+
+<Info>
+The portfolio tracker queries native MON balance, ERC20 token holdings, LST positions, and Euler V2 vault positions for any wallet address - all in a single pass. USD values use the cross-oracle verified price from `oracles.ts`.
+</Info>
+
+## How It Works
+
+1. `getPortfolio` returns a complete snapshot in one call
+2. `getPortfolioSummary` returns a lightweight total-only view
+3. `getLSTPositions` and `getEulerPositions` can be called independently for partial views
+
+## Full Example
+
+```typescript
+import {
+  getPortfolio,
+  getPortfolioSummary,
+  getNativeBalance,
+  getTokenBalances,
+  getLSTPositions,
+  getEulerPositions,
+} from 'rampart-monad'
+
+const WALLET = '0xYourWalletAddress' as `0x${string}`
+
+async function trackPortfolio(address: `0x${string}`) {
+  const portfolio = await getPortfolio(address)
+  const summary   = await getPortfolioSummary(address)
+
+  console.log('=== Portfolio Summary ===')
+  console.log(`MON Balance: ${portfolio.nativeBalance.toFixed(4)} MON`)
+  console.log(`Total USD:   $${summary.totalUSD.toFixed(2)}`)
+  console.log(`Tokens:      ${portfolio.tokens.length}`)
+
+  console.log('\n--- LST Positions ---')
+  for (const lst of portfolio.lstPositions) {
+    console.log(`  ${lst.token}: ${lst.balance.toFixed(4)} (≈ $${lst.valueUSD.toFixed(2)})`)
+  }
+
+  console.log('\n--- Euler Vaults ---')
+  for (const pos of portfolio.eulerPositions) {
+    console.log(`  ${pos.asset}: ${pos.supplied.toFixed(4)} supplied @ ${(pos.apr * 100).toFixed(2)}% APR`)
+  }
+}
+
+await trackPortfolio(WALLET)
+```
+
+## Example Output
+
+```
+=== Portfolio Summary ===
+MON Balance: 142.5000 MON
+Total USD:   $3,568.15
+Tokens:      3
+
+--- LST Positions ---
+  aprMON: 50.0000 (≈ $17.70)
+  sMON:   25.0000 (≈ $8.85)
+
+--- Euler Vaults ---
+  USDC: 1000.0000 supplied @ 8.21% APR
+  WETH: 0.5000 supplied @ 3.14% APR
+```
+
+## Partial Queries
+
+If you only need a specific section, use the individual functions to reduce RPC calls:
+
+```typescript
+import { getLSTPositions, getEulerPositions, getTokenBalances } from 'rampart-monad'
+
+const address = '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045' as `0x${string}`
+
+// LST holdings only
+const lsts = await getLSTPositions(address)
+for (const lst of lsts) {
+  console.log(`${lst.token}: ${lst.balance.toFixed(4)} (${lst.underlyingMON.toFixed(4)} MON)`)
+}
+
+// Euler vault positions only
+const euler = await getEulerPositions(address)
+for (const pos of euler) {
+  console.log(`Euler/${pos.asset}: ${pos.supplied.toFixed(4)} @ ${(pos.apr * 100).toFixed(2)}%`)
+}
+
+// ERC20 token balances only
+const tokens = await getTokenBalances(address)
+for (const tok of tokens) {
+  console.log(`${tok.symbol}: ${tok.balance.toFixed(4)} ($${tok.valueUSD.toFixed(2)})`)
+}
+```
+
+## Tracking Multiple Wallets
+
+```typescript
+import { getPortfolioSummary } from 'rampart-monad'
+
+const wallets = [
+  '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',
+  '0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B',
+  '0x742d35Cc6634C0532925a3b8D4c9F8C3b4F7c3d9',
+] as const
+
+const summaries = await Promise.all(
+  wallets.map(async addr => {
+    const summary = await getPortfolioSummary(addr as `0x${string}`)
+    return { address: addr, ...summary }
+  })
+)
+
+summaries.sort((a, b) => b.totalUSD - a.totalUSD)
+
+console.log('Wallet leaderboard:')
+for (const [i, s] of summaries.entries()) {
+  console.log(`  ${i + 1}. ${s.address.slice(0, 10)}…  $${s.totalUSD.toFixed(2)}`)
+}
+```
+
+## Real-Time Polling
+
+```typescript
+import { getPortfolioSummary } from 'rampart-monad'
+
+const address = '0xYourWalletAddress' as `0x${string}`
+let previousTotal = 0
+
+async function watchPortfolio() {
+  while (true) {
+    const summary = await getPortfolioSummary(address)
+
+    const delta = summary.totalUSD - previousTotal
+    const sign  = delta >= 0 ? '+' : ''
+    const changeStr = previousTotal > 0 ? ` (${sign}$${delta.toFixed(2)})` : ''
+
+    console.log(`[${new Date().toISOString()}] $${summary.totalUSD.toFixed(2)}${changeStr}`)
+    previousTotal = summary.totalUSD
+
+    // Poll every 12 seconds (~30 Monad blocks)
+    await new Promise(r => setTimeout(r, 12_000))
+  }
+}
+
+await watchPortfolio()
+```
+
+## Computing Yield on Active Positions
+
+```typescript
+import { getEulerPositions } from 'rampart-monad'
+
+const address = '0xYourWalletAddress' as `0x${string}`
+
+const positions = await getEulerPositions(address)
+
+let totalAnnualYield = 0
+
+for (const pos of positions) {
+  const annualYield = pos.valueUSD * pos.apr
+  totalAnnualYield += annualYield
+  console.log(
+    `Euler/${pos.asset.padEnd(6)}: $${pos.valueUSD.toFixed(2).padStart(10)} ` +
+    `@ ${(pos.apr * 100).toFixed(2)}% = $${annualYield.toFixed(2)}/yr`
+  )
+}
+
+console.log(`\nTotal projected annual yield: $${totalAnnualYield.toFixed(2)}`)
+```
+
+## Notes
+
+- `getPortfolio` makes multiple RPC calls in parallel (native balance, ERC20 balances, LST balances, Euler vault positions). Typical response time on Monad is under 1 second.
+- LST `underlyingMON` reflects the current redemption value at the live exchange rate - useful for comparing LST positions on an apples-to-apples basis.
+- Euler positions report the current supply APR, not a historical average. APR can change every block as utilisation shifts.
+- Use `getPortfolioSummary` for lightweight total-only queries (e.g. dashboard widgets) - it skips detailed position fetching.

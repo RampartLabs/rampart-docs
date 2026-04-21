@@ -1,0 +1,81 @@
+---
+title: "LeverUp"
+description: "Leveraged perpetuals with LVUSD stablecoin minting on Monad"
+---
+
+<Info>
+**Type:** Leveraged Perps + LVUSD Stablecoin | **Docs:** [leverup.fi](https://leverup.fi)
+</Info>
+
+## Overview
+
+LeverUp combines leveraged perpetual positions with a protocol-native stablecoin (LVUSD). Users post collateral to open leveraged perp positions; the protocol mints LVUSD against that collateral. Rampart exposes system-level stats and individual market data for monitoring collateralization and debt health.
+
+## Functions
+
+### getLeverUpStats()
+
+Returns aggregate protocol-level statistics for LeverUp.
+
+**Returns** `LeverUpStats`
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `totalCollateral` | `number` | Total collateral value locked in USD |
+| `totalDebt` | `number` | Total LVUSD debt outstanding in USD |
+| `lvusdSupply` | `number` | Total LVUSD in circulation |
+| `protocol` | `'leverup'` | Protocol identifier |
+
+```typescript
+const stats = await sdk.getLeverUpStats()
+// → {
+//   totalCollateral: 12400000,
+//   totalDebt: 7800000,
+//   lvusdSupply: 7800000,
+//   protocol: 'leverup'
+// }
+```
+
+### getLeverUpMarkets()
+
+Returns all active LeverUp perp markets with current state.
+
+**Returns** `LeverUpMarket[]`
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `address` | `string` | Market contract address |
+| `asset` | `string` | Collateral asset address |
+| `openInterest` | `number` | Total open interest in USD |
+| `collateral` | `number` | Collateral backing this market in USD |
+| `protocol` | `'leverup'` | Protocol identifier |
+
+```typescript
+const markets = await sdk.getLeverUpMarkets()
+// → [
+//   { address: '0x...', asset: '0x...', openInterest: 4200000, collateral: 6100000, protocol: 'leverup' },
+// ]
+```
+
+## Usage Example
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+
+const stats = await sdk.getLeverUpStats()
+
+const systemCR = stats.totalCollateral / stats.totalDebt
+console.log(`LeverUp system CR: ${(systemCR * 100).toFixed(0)}%`)
+console.log(`LVUSD supply: $${(stats.lvusdSupply / 1e6).toFixed(2)}M`)
+
+const markets = await sdk.getLeverUpMarkets()
+console.log(`Active perp markets: ${markets.length}`)
+```
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| LeverUpManager | `0xE62c4454d1d4b5B82Ea9643721690B57D64dEb2C` |

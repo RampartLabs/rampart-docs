@@ -1,0 +1,77 @@
+---
+title: "Mellow Finance"
+description: "vshMON restaking vault - yield-optimized wrapper over FastLane's shMON"
+---
+
+<Info>
+**TVL:** ~$19M | **Type:** Restaking Vault | **Docs:** [mellow.finance](https://mellow.finance)
+</Info>
+
+## Overview
+
+Mellow Finance deploys modular ERC4626-compatible vaults that hold underlying LSTs and apply additional yield strategies on top. On Monad, the primary Mellow vault holds **shMON** (FastLane's liquid staking token) and issues **vshMON** to depositors.
+
+vshMON earns both the base shMON staking APR (~6.5%) plus Mellow's on-top yield layer, resulting in the highest combined APR in the Monad LST ecosystem (~9%). The `VaultFactory` contract is used to enumerate all deployed Mellow vaults on Monad.
+
+## Types
+
+```typescript
+type MellowVault = {
+  address: `0x${string}`
+  underlying: `0x${string}`   // shMON or other LST
+  totalAssets: bigint
+  exchangeRate: number         // vshMON per 1 underlying token
+  apy: number                  // e.g. 0.09 = 9%
+  protocol: 'mellow'
+}
+```
+
+## Functions
+
+### getMellowVaults()
+
+Returns all Mellow vaults deployed on Monad by iterating the `VaultFactory`.
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+const vaults = await sdk.getMellowVaults()
+// → MellowVault[]
+
+vaults.forEach(v => {
+  console.log(`${v.address}: APY ${(v.apy * 100).toFixed(2)}%`)
+})
+```
+
+### getMellowAPY(vaultAddress)
+
+Returns the current APY for a specific Mellow vault. APY is derived from the vault's exchange rate delta over the last 500k blocks.
+
+```typescript
+const apy = await sdk.getMellowAPY('0x...')
+// → number, e.g. 0.09
+
+console.log(`Vault APY: ${(apy * 100).toFixed(2)}%`)
+```
+
+### getVshMONRate()
+
+Returns the current vshMON exchange rate - how much shMON one vshMON can be redeemed for.
+
+```typescript
+const rate = await sdk.getVshMONRate()
+// → number, e.g. 1.034
+
+console.log(`1 vshMON = ${rate.toFixed(4)} shMON`)
+```
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| VaultFactory | `0xC9Da1Fe5B70e40C60e4028da5b1d7b8BD8e19c82` |
+
+<Note>
+Individual vault addresses are discovered dynamically from the VaultFactory. Call `getMellowVaults()` to enumerate them at runtime rather than hardcoding vault addresses.
+</Note>

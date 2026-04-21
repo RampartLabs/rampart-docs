@@ -1,0 +1,79 @@
+---
+title: "DEX Overview"
+description: "All decentralized exchanges supported by Rampart SDK on Monad Mainnet"
+---
+
+<Info>
+Rampart SDK integrates **14 DEX protocols** on Monad Mainnet - from orderbook AMMs and concentrated liquidity pools to DEX aggregators and on-chain orderbooks.
+</Info>
+
+## Supported DEXes
+
+| Protocol | Type | Est. TVL | Status |
+|----------|------|----------|--------|
+| [Kuru](kuru) | Orderbook AMM | ~$5M | Live |
+| [Uniswap V3](uniswap) | Concentrated Liquidity | ~$10M | Live |
+| [Uniswap V4](uniswap-v4) | V4 Hooks AMM | ~$2M | Live |
+| [PancakeSwap](pancakeswap) | V3 Concentrated Liquidity | ~$8M | Live |
+| [Clober](clober) | On-chain Orderbook | ~$1M | Live |
+| [iZiSwap](iziswap) | iZi Concentrated Liquidity | ~$1M | Live |
+| [Capricorn](capricorn) | Uniswap V3 Fork | ~$1M | Live |
+| [KyberSwap](kyberswap) | DEX Aggregator | ~$300K | Live |
+| [Swaap](swaap) | Market-Maker DEX | ~$500K | Live |
+| [WooFi](woofi) | PMM (Proactive Market Maker) | ~$1M | Live |
+| [LFJ (Trader Joe)](lfj) | DLMM (Liquidity Book) | ~$2M | Live |
+| [OpenOcean](openocean) | DEX Aggregator | ~$200K | Live |
+| [Bean](bean) | DLMM DEX | ~$500K | Live |
+
+## DEX Categories
+
+### Orderbook DEXes
+Kuru and Clober provide on-chain orderbook mechanics - limit orders, bid/ask spreads, and price-level depth. Best for precision trading and arbitrage strategies.
+
+### Concentrated Liquidity AMMs
+Uniswap V3, Uniswap V4, PancakeSwap, iZiSwap, and Capricorn allow liquidity providers to concentrate capital in specific price ranges, improving capital efficiency vs. traditional AMMs.
+
+### DLMM (Discrete Liquidity Market Maker)
+LFJ and Bean implement the Liquidity Book model - discrete price bins instead of continuous curves, enabling zero-slippage trades within a bin.
+
+### PMM / Market-Maker DEXes
+WooFi uses a Proactive Market Maker model with off-chain price feeds. Swaap uses professional market-maker algorithms for tighter spreads.
+
+### DEX Aggregators
+KyberSwap and OpenOcean route orders across multiple DEXes to find the best execution price. Useful when building swap UIs or comparing prices across the ecosystem.
+
+## Quick Start
+
+```typescript
+import {
+  getKuruPools,
+  getUniswapPools,
+  getPancakeSwapPools,
+  compareWithKuru
+} from 'rampart-monad'
+
+// Get all pools from the two largest DEXes
+const [kuruPools, uniPools] = await Promise.all([
+  getKuruPools(),
+  getUniswapPools()
+])
+
+console.log(`Kuru: ${kuruPools.length} pools`)
+console.log(`Uniswap V3: ${uniPools.length} pools`)
+
+// Find best MON/USDC price across Kuru vs Uniswap
+const comparison = await compareWithKuru(
+  '0x...', // tokenA (MON)
+  '0x...', // tokenB (USDC)
+  1_000_000n // 1 USDC
+)
+console.log(comparison)
+```
+
+## Architecture Note
+
+All DEX functions are standalone - import only what you need. They use `publicClient` from `chain.ts` under the hood, which connects to Monad Mainnet at `https://rpc.monad.xyz` (chain ID 143).
+
+<Note>
+Uniswap V3, V4, and Capricorn use `simulateContract` instead of `readContract` for QuoterV2 calls, as Monad's RPC does not support `eth_call` with view overrides for non-view functions.
+</Note>

@@ -1,0 +1,54 @@
+---
+title: "Perps Overview"
+description: "All 3 perpetuals protocols available on Monad through the Rampart SDK"
+---
+
+<Info>
+Rampart provides a unified interface to 3 perpetuals protocols on Monad, covering order-book perps, GMX-style concentrated liquidity venues, and fully on-chain perpetual AMMs.
+</Info>
+
+## Overview
+
+Perpetuals trading on Monad spans multiple architectures - from GMX-style liquidity vaults to fully on-chain order books operating at Monad's 10,000 TPS. Rampart normalizes access to all of them through consistent TypeScript functions.
+
+## Protocol Directory
+
+| Protocol | Type | TVL | Key Function |
+|----------|------|-----|--------------|
+| [Monday Markets](perps) | Perpetuals DEX | ~$500K | `getMondayMarkets()` |
+| [Narwhal](perps) | Perpetuals DEX | ~$1M | `getNarwhalStats()` |
+| [Pingu Exchange](pingu) | Concentrated Liquidity DEX | ~$1M | `getPinguStats()` |
+| [Purps](purps) | Perpetuals DEX | ~$2M | `getPurpsMarkets()` |
+
+## Aggregated Access
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+
+// Combined TVL across all perps protocols
+const totalTVL = await sdk.getTotalPerpTVL()
+// → number (USD)
+
+// Funding rates across all active markets
+const funding = await sdk.getFundingRates()
+// → [{ market, longFundingRate, shortFundingRate, protocol }, ...]
+
+// Monday Markets market data
+const monday = await sdk.getMondayMarkets()
+
+// Narwhal vault stats
+const narwhal = await sdk.getNarwhalStats()
+```
+
+## Architecture Notes
+
+<Note>
+Some perpetuals protocol addresses on Monad are pending final deployment confirmation. Functions for those protocols will return placeholder data until addresses are updated. See individual protocol pages for current address status.
+</Note>
+
+- **Monday Markets** - GMX V2-style perps with multi-asset liquidity pools
+- **Narwhal** - vault-based perpetuals with a single unified liquidity source
+- **Pingu** - concentrated liquidity venue; uses a DataStore/Positions architecture similar to GMX
+- **Purps** - fully on-chain perpetual AMM with factory-deployed market contracts

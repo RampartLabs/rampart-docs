@@ -1,0 +1,67 @@
+---
+title: "Swaap"
+description: "Market-maker DEX - professional MM algorithms for tighter spreads on Monad"
+---
+
+<Info>
+**Type:** Market-Maker DEX | **Docs:** [docs.swaap.finance](https://docs.swaap.finance)
+</Info>
+
+## Overview
+
+Swaap is a market-maker DEX that uses professional market-making algorithms - dynamic fee adjustments, volatility-aware pricing, and oracle-assisted liquidity - to provide tighter spreads than passive AMMs. Liquidity is pooled in a single Vault contract (Balancer-style), with pools identified by pool IDs.
+
+## Functions
+
+### getSwaapPools()
+
+Returns all active Swaap liquidity pools on Monad.
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `poolId` | `Hex` | 32-byte pool identifier |
+| `tokens` | `Address[]` | Tokens in the pool |
+| `balances` | `bigint[]` | Token balances corresponding to `tokens` |
+| `swapFee` | `number` | Current swap fee (dynamic, in bps) |
+| `paused` | `boolean` | Whether the pool is paused |
+| `tvl` | `number` | Total value locked in USD |
+
+```typescript
+import { getSwaapPools } from 'rampart-monad'
+
+const pools = await getSwaapPools()
+for (const pool of pools) {
+  if (!pool.paused) {
+    console.log(`Pool ${pool.poolId.slice(0, 10)}...`)
+    console.log(`TVL: $${pool.tvl.toLocaleString()}`)
+    console.log(`Fee: ${pool.swapFee} bps (dynamic)`)
+  }
+}
+```
+
+---
+
+### getSwaapTVL()
+
+Returns the total value locked across all Swaap pools on Monad.
+
+**Returns** `number`. total TVL in USD.
+
+```typescript
+import { getSwaapTVL } from 'rampart-monad'
+
+const tvl = await getSwaapTVL()
+console.log(`Swaap total TVL: $${tvl.toLocaleString()}`)
+```
+
+<Note>
+Swaap uses dynamic fees that adjust based on market volatility. The `swapFee` field in each pool reflects the current fee, not a static value. Fees may spike during high-volatility periods to protect LPs.
+</Note>
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| Vault | `0x4a4Fe6b1059C9A33b97df9E13eFf81b1eBCCcEf8` |

@@ -1,0 +1,64 @@
+---
+title: "Lending Overview"
+description: "All 14 lending protocols available on Monad through the Rampart SDK"
+---
+
+<Info>
+Rampart provides a unified interface to 14 lending protocols on Monad, covering Aave forks, Euler vaults, Morpho, CDP systems, cross-chain spokes, RWA vaults, and more.
+</Info>
+
+## Overview
+
+Monad hosts a rich lending ecosystem spanning multiple protocol architectures. Rampart normalizes access to all of them through consistent TypeScript functions and AI-ready tools.
+
+## Protocol Directory
+
+| Protocol | TVL | Type | Key Function |
+|----------|-----|------|--------------|
+| [Neverland](neverland) | ~$15M | Aave V3 Fork | `getLendingRates()` |
+| [Euler](euler) | ~$20M | Euler V2 (108 vaults) | `getEulerVaults()` |
+| [Morpho](morpho) | ~$5M | Morpho Blue / MetaMorpho | `getMorphoVaults()` |
+| [Curvance](curvance) | ~$58.9M | Multi-Collateral Lending | `getCurvanceMarkets()` |
+| [Sherpa](sherpa) | ~$3M | Delta-Neutral USDC Vault | `getSherpaVaults()` |
+| [Accountable](accountable) | ~$2M | Undercollateralized Lending | `getAccountableVaults()` |
+| [Folks Finance](folks) | ~$8M | Cross-Chain Lending (spokes) | `getFolksMarkets()` |
+| [Sumer Money](sumer) | ~$4M | Compound V2 Fork | `getSumerMarkets()` |
+| [TownSquare](townsquare) | ~$2M | Cross-Chain Spoke/Hub | `getTownSquareMarkets()` |
+| [Timeswap](timeswap) | ~$500K | Fixed-Maturity Options | `getTimeswapStats()` |
+| [Nabla](nabla) | ~$3M | Single-Sided AMM | `getNablaPools()` |
+| [Covenant](covenant) | ~$500K | CDP / Structured Products | `getCovenantStats()` |
+| [Multipli](multipli) | ~$1M | RWA Yield Vaults | `getMultipliVault()` |
+| [LeverUp](leverup) | ~$500K | Leveraged Perps + LVUSD | `getLeverUpStats()` |
+
+## Aggregated Access
+
+You can pull supply rates from all protocols in a single call using the market intelligence aggregator:
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+
+// Best supply rate across all lending protocols
+const best = await sdk.getBestSupplyAsset()
+// → { protocol: 'euler', asset: '0x...', apr: 0.087 }
+
+// All Euler vaults sorted by APR
+const vaults = await sdk.getEulerVaults()
+// → [{ address, asset, apr, totalSupply, utilization, protocol: 'euler' }, ...]
+
+// Neverland supply/borrow rates
+const rates = await sdk.getLendingRates()
+// → [{ asset, supplyAPY, borrowAPY, protocol: 'neverland' }, ...]
+```
+
+## Architecture Notes
+
+<Note>
+All lending functions are available both as standalone imports and as methods on the `Rampart` class. The `RampartAgent` exposes them as AI tools for use with the Vercel AI SDK.
+</Note>
+
+- **Euler V2** - 108 vaults discovered by iterating factory events; APR computed as `interestRate() / 1e27 * 31_536_000`
+- **Morpho** - MetaMorpho vaults on top of Morpho Blue core; curated by third parties
+- **Curvance** - Largest TVL lender on Monad at ~$58.9M; supports multi-collateral positions
+- **Cross-chain protocols** (Folks, TownSquare) - use spoke/hub architecture; Monad is a spoke chain

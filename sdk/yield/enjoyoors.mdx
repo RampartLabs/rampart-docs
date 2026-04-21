@@ -1,0 +1,83 @@
+---
+title: "Enjoyoors"
+description: "ERC4626 yield vaults on Monad with auto-accruing exchange rates"
+---
+
+<Info>
+**TVL:** ~$500K | **Type:** ERC4626 Yield Vaults | **Docs:** [docs.enjoyoors.finance](https://docs.enjoyoors.finance)
+</Info>
+
+## Overview
+
+Enjoyoors deploys ERC4626 vaults on Monad that accrue yield by continuously increasing the share-to-asset exchange rate. There are no explicit reward distributions - holders earn simply by holding vault shares, with APY reflected in the appreciating share price.
+
+APY is estimated by reading the exchange rate at the current block and comparing it to the rate one hour ago, then annualizing: `growth_per_hour × 24 × 365`.
+
+## Types
+
+```typescript
+type EnjoyoorsVault = {
+  address: `0x${string}`
+  name: string
+  asset: `0x${string}`        // underlying token
+  totalAssets: bigint
+  totalSupply: bigint
+  exchangeRate: number         // assets per 1 vault share
+  tvlUSD: number
+  apy: number                  // annualized from hourly exchange rate growth × 8760
+  protocol: 'enjoyoors'
+}
+```
+
+## Functions
+
+### getEnjoyoorsVault()
+
+Returns stats for the primary Enjoyoors vault.
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+const vault = await sdk.getEnjoyoorsVault()
+// → EnjoyoorsVault
+
+console.log(`Vault: ${vault.name}`)
+console.log(`Exchange rate: ${vault.exchangeRate.toFixed(6)}`)
+console.log(`APY: ${(vault.apy * 100).toFixed(2)}%`)
+console.log(`TVL: $${(vault.tvlUSD / 1e3).toFixed(0)}K`)
+```
+
+### getEnjoyoorsVaults()
+
+Returns all Enjoyoors vaults.
+
+```typescript
+const vaults = await sdk.getEnjoyoorsVaults()
+// → EnjoyoorsVault[]
+
+vaults.forEach(v => {
+  console.log(`${v.name}: ${(v.apy * 100).toFixed(2)}% APY  $${(v.tvlUSD / 1e3).toFixed(0)}K TVL`)
+})
+```
+
+### getEnjoyoorsTVL()
+
+Returns the total TVL across all Enjoyoors vaults in USD.
+
+```typescript
+const tvl = await sdk.getEnjoyoorsTVL()
+// → number (USD)
+
+console.log(`Enjoyoors TVL: $${(tvl / 1e3).toFixed(0)}K`)
+```
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| Primary Vault | `0x6B5E332387e8beC98C52F10A72952B17176B4f1b` |
+
+<Note>
+APY is estimated, not guaranteed. It is derived from `hourlyExchangeRateGrowth × 24 × 365` and will fluctuate as the underlying yield source changes. High short-term readings may not be sustainable annualized rates.
+</Note>

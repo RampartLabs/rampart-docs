@@ -1,0 +1,77 @@
+---
+title: "aPriori"
+description: "aprMON liquid staking - ERC4626 vault with auto-compounding staking rewards"
+---
+
+<Info>
+**TVL:** ~$48M | **Type:** Liquid Staking | **Docs:** [apriori.xyz](https://apriori.xyz)
+</Info>
+
+## Overview
+
+aPriori is the largest liquid staking protocol on Monad by TVL. Users deposit MON and receive **aprMON**, an ERC4626 vault token whose exchange rate increases continuously as staking rewards accrue. There is no manual claim step - rewards are automatically reflected in the aprMON/MON rate.
+
+The aPriori pool contract acts as both the ERC4626 vault and the staking manager. The `previewRedeem` function gives the current redemption rate without any gas cost.
+
+## Functions
+
+### getAPrioriLST()
+
+Returns the full `LSTStats` snapshot for aprMON.
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+const lst = await sdk.getAPrioriLST()
+// → LSTStats
+
+console.log(`aprMON APR: ${(lst.apr * 100).toFixed(2)}%`)
+console.log(`Exchange rate: 1 MON = ${lst.exchangeRate} aprMON`)
+console.log(`TVL: $${(lst.tvl / 1e6).toFixed(1)}M`)
+```
+
+### getAPrioriExchangeRate()
+
+Returns the current aprMON/MON exchange rate as a plain number. This is derived from `previewRedeem(1e18)` on the pool contract.
+
+```typescript
+const rate = await sdk.getAPrioriExchangeRate()
+// → number, e.g. 1.082
+
+console.log(`1 aprMON redeems for ${rate.toFixed(4)} MON`)
+```
+
+### getAPrioriTVL()
+
+Returns the total MON deposited into the aPriori pool, denominated in USD using the current MON price.
+
+```typescript
+const tvl = await sdk.getAPrioriTVL()
+// → number (USD)
+
+console.log(`aPriori TVL: $${(tvl / 1e6).toFixed(1)}M`)
+```
+
+### getStakingAPR()
+
+Returns a `StakingAPR` object with the annualized percentage rate for aprMON computed from the exchange rate delta over the last 500k blocks (~56 hours on Monad).
+
+```typescript
+import { getStakingAPR } from 'rampart-monad'
+
+const apr = await getStakingAPR('apriori')
+// → { token: 'aprMON', apr: 0.08, basis: 'exchange-rate-delta', protocol: 'apriori' }
+
+console.log(`APR: ${(apr.apr * 100).toFixed(2)}%`)
+```
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| aprMON token / aPrioriPool | `0xb2f82D0f38dc453D596Ad40A37799446Cc89274A` |
+
+<Note>
+The aprMON token address and the aPriori pool address are the same contract - it is a unified ERC4626 vault.
+</Note>

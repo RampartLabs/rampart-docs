@@ -1,0 +1,163 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Rampart SDK",
+  "colors": {
+    "primary": "#836ef9",
+    "light": "#a893fb",
+    "dark": "#6247e8"
+  },
+  "favicon": "/logo/rampart-dark.svg",
+  "logo": {
+    "light": "/logo/rampart-light.svg",
+    "dark": "/logo/rampart-dark.svg"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "GitHub",
+        "href": "https://github.com/monad-crypto/rampart"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "npm install",
+      "href": "https://www.npmjs.com/package/rampart-monad"
+    }
+  },
+  "navigation": [
+    {
+      "group": "Getting Started",
+      "pages": ["introduction", "quickstart"]
+    },
+    {
+      "group": "DEX",
+      "pages": [
+        "sdk/dex/overview",
+        "sdk/dex/kuru",
+        "sdk/dex/uniswap",
+        "sdk/dex/uniswap-v4",
+        "sdk/dex/pancakeswap",
+        "sdk/dex/clober",
+        "sdk/dex/iziswap",
+        "sdk/dex/capricorn",
+        "sdk/dex/kyberswap",
+        "sdk/dex/swaap",
+        "sdk/dex/woofi",
+        "sdk/dex/lfj",
+        "sdk/dex/openocean",
+        "sdk/dex/bean"
+      ]
+    },
+    {
+      "group": "Lending",
+      "pages": [
+        "sdk/lending/overview",
+        "sdk/lending/neverland",
+        "sdk/lending/euler",
+        "sdk/lending/morpho",
+        "sdk/lending/curvance",
+        "sdk/lending/sherpa",
+        "sdk/lending/accountable",
+        "sdk/lending/folks",
+        "sdk/lending/sumer",
+        "sdk/lending/townsquare",
+        "sdk/lending/timeswap",
+        "sdk/lending/nabla",
+        "sdk/lending/covenant",
+        "sdk/lending/multipli",
+        "sdk/lending/leverup"
+      ]
+    },
+    {
+      "group": "LST",
+      "pages": [
+        "sdk/lst/overview",
+        "sdk/lst/staking",
+        "sdk/lst/apriori",
+        "sdk/lst/mellow",
+        "sdk/lst/renzo",
+        "sdk/lst/lagoon",
+        "sdk/lst/upshift",
+        "sdk/lst/beefy"
+      ]
+    },
+    {
+      "group": "Perps",
+      "pages": [
+        "sdk/perps/overview",
+        "sdk/perps/perps",
+        "sdk/perps/pingu",
+        "sdk/perps/purps"
+      ]
+    },
+    {
+      "group": "Yield",
+      "pages": [
+        "sdk/yield/overview",
+        "sdk/yield/enjoyoors",
+        "sdk/yield/gearbox",
+        "sdk/yield/sablier",
+        "sdk/yield/balancer",
+        "sdk/yield/curve",
+        "sdk/yield/nadfun"
+      ]
+    },
+    {
+      "group": "Oracles",
+      "pages": ["sdk/oracles/oracles"]
+    },
+    {
+      "group": "Aggregators",
+      "pages": [
+        "sdk/aggregators/router",
+        "sdk/aggregators/market"
+      ]
+    },
+    {
+      "group": "AI Agent",
+      "pages": ["sdk/ai-agent/rampart-agent"]
+    },
+    {
+      "group": "REST API",
+      "pages": [
+        "api/overview",
+        "api/price",
+        "api/markets",
+        "api/tvl",
+        "api/portfolio"
+      ]
+    },
+    {
+      "group": "Examples",
+      "pages": [
+        "examples/yield-finder",
+        "examples/arbitrage-scanner",
+        "examples/portfolio-tracker"
+      ]
+    }
+  ],
+  "footer": {
+    "socials": {
+      "github": "https://github.com/monad-crypto/rampart",
+      "x": "https://x.com/monad_xyz"
+    }
+  },
+  "anchors": [
+    {
+      "name": "npm",
+      "icon": "box",
+      "url": "https://www.npmjs.com/package/rampart-monad"
+    },
+    {
+      "name": "GitHub",
+      "icon": "github",
+      "url": "https://github.com/monad-crypto/rampart"
+    },
+    {
+      "name": "Monad",
+      "icon": "bolt",
+      "url": "https://monad.xyz"
+    }
+  ]
+}

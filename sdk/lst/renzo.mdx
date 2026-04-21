@@ -1,0 +1,65 @@
+---
+title: "Renzo"
+description: "ezETH liquid restaking on Monad - cross-chain restaked ETH exposure"
+---
+
+<Info>
+**TVL:** ~$500K | **Type:** Liquid Restaking | **Docs:** [docs.renzoprotocol.com](https://docs.renzoprotocol.com)
+</Info>
+
+## Overview
+
+Renzo is a liquid restaking protocol that issues **ezETH**, a token representing restaked ETH across EigenLayer operators. On Monad, ezETH is bridged and can be used as collateral or held for restaking yield. The Rampart SDK reads ezETH supply, TVL, and the current exchange rate directly from the on-chain `RestakeManager` contract.
+
+ezETH is an ETH-denominated asset rather than a MON-denominated one, making it distinct from the other Monad LSTs. Its APY reflects EigenLayer restaking rewards on Ethereum rather than Monad validator yields.
+
+## Types
+
+```typescript
+type RenzoStats = {
+  totalETH: number       // total ETH backing ezETH
+  ezETHSupply: number    // circulating ezETH supply
+  exchangeRate: number   // ETH per 1 ezETH
+  apy: number            // annualized restaking yield
+  protocol: 'renzo'
+}
+```
+
+## Functions
+
+### getRenzoStats()
+
+Returns the full `RenzoStats` snapshot for ezETH on Monad.
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+const stats = await sdk.getRenzoStats()
+// → RenzoStats
+
+console.log(`ezETH supply: ${stats.ezETHSupply.toFixed(2)} ezETH`)
+console.log(`Exchange rate: 1 ezETH = ${stats.exchangeRate.toFixed(6)} ETH`)
+console.log(`APY: ${(stats.apy * 100).toFixed(2)}%`)
+```
+
+### getRenzoTVL()
+
+Returns the total value locked in Renzo on Monad denominated in USD.
+
+```typescript
+const tvl = await sdk.getRenzoTVL()
+// → number (USD)
+
+console.log(`Renzo TVL: $${(tvl / 1e3).toFixed(0)}K`)
+```
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| ezETH token (`RENZO_EZ_ETH`) | `0x2416092f143378750bb29b79eD961ab195CcEea5` |
+
+<Note>
+The `RENZO_EZ_ETH` constant is exported directly from `rampart-monad` for use in allowlists and contract calls.
+</Note>

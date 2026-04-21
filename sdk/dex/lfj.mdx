@@ -1,0 +1,117 @@
+---
+title: "LFJ (Trader Joe)"
+description: "DLMM Liquidity Book - discrete price bins for zero-slippage trades on Monad"
+---
+
+<Info>
+**Type:** DLMM (Liquidity Book) | **Docs:** [docs.traderjoexyz.com](https://docs.traderjoexyz.com)
+</Info>
+
+## Overview
+
+LFJ (formerly Trader Joe) implements the Liquidity Book model - a Discrete Liquidity Market Maker (DLMM) that organizes liquidity into discrete price bins. Within a single bin, trades execute at a constant price with zero slippage. Bin sizes are defined by the `binStep` parameter (in bps), allowing LPs to control their price exposure granularity.
+
+## Functions
+
+### getLFJPools()
+
+Returns all active LFJ Liquidity Book pairs on Monad.
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `pairAddress` | `Address` | LB pair contract address |
+| `tokenX` | `Address` | Token X address |
+| `tokenY` | `Address` | Token Y address |
+| `binStep` | `number` | Bin size in bps (e.g. 20 = 0.2%) |
+| `activeId` | `number` | Current active bin ID |
+| `reserveX` | `bigint` | Total tokenX reserves |
+| `reserveY` | `bigint` | Total tokenY reserves |
+| `feesX` | `bigint` | Accumulated tokenX fees |
+| `feesY` | `bigint` | Accumulated tokenY fees |
+
+```typescript
+import { getLFJPools } from 'rampart-monad'
+
+const pools = await getLFJPools()
+for (const pool of pools) {
+  console.log(`binStep: ${pool.binStep} bps - active bin: ${pool.activeId}`)
+}
+```
+
+---
+
+### getLFJPrice()
+
+Returns the spot price for a token pair from the best LFJ pair.
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tokenA` | `Address` | First token address |
+| `tokenB` | `Address` | Second token address |
+
+**Returns** `number`. price of tokenA in units of tokenB from the active bin.
+
+```typescript
+import { getLFJPrice } from 'rampart-monad'
+
+const price = await getLFJPrice(
+  '0x...', // MON
+  '0x...'  // USDC
+)
+console.log(`LFJ price: ${price} USDC per MON`)
+```
+
+---
+
+### getLFJPairCount()
+
+Returns the total number of LFJ pairs deployed on Monad.
+
+**Returns** `number`. count of all LFJ LB pairs.
+
+```typescript
+import { getLFJPairCount } from 'rampart-monad'
+
+const count = await getLFJPairCount()
+console.log(`Total LFJ pairs: ${count}`)
+```
+
+---
+
+### getLFJPairsForTokens()
+
+Finds all LFJ pairs for a specific token combination across all bin steps.
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tokenA` | `Address` | First token address |
+| `tokenB` | `Address` | Second token address |
+
+**Returns** `LFJPool[]`. all pairs matching the token combination, sorted by liquidity.
+
+```typescript
+import { getLFJPairsForTokens } from 'rampart-monad'
+
+// Find all MON/USDC pairs (different bin steps)
+const pairs = await getLFJPairsForTokens('0x...', '0x...')
+
+for (const pair of pairs) {
+  console.log(`Bin step ${pair.binStep}: reserves ${pair.reserveX}/${pair.reserveY}`)
+}
+```
+
+<Note>
+LFJ pairs with smaller `binStep` values (e.g. 1–5 bps) are suitable for stableswap-like pairs. Pairs with larger bin steps (20–100 bps) are better for volatile asset pairs.
+</Note>
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| LBFactory | `0xBB4B38A8D3f3afa9Fc6D4d6498b47ADa7D29cDC3` |

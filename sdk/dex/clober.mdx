@@ -1,0 +1,93 @@
+---
+title: "Clober"
+description: "On-chain orderbook DEX - fully on-chain limit orders on Monad"
+---
+
+<Info>
+**TVL:** ~$1M | **Type:** On-chain Orderbook | **Docs:** [clober.io](https://clober.io)
+</Info>
+
+## Overview
+
+Clober is a fully on-chain central limit order book (CLOB) DEX. Unlike AMMs, Clober allows traders to place limit orders at specific price levels, with matching happening entirely on-chain. This is made practical on Monad due to its sub-second block times (~400ms).
+
+Each market is represented as a "Book" with discrete price tick levels. The `BookManager` contract handles all order placement, cancellation, and matching.
+
+## Functions
+
+### getCloberBooks()
+
+Returns all active Clober order books (markets).
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `bookId` | `bigint` | Unique book identifier |
+| `base` | `Address` | Base token address |
+| `quote` | `Address` | Quote token address |
+| `unitSize` | `bigint` | Minimum order unit in base token |
+| `makerPolicy` | `object` | Maker fee/rebate policy |
+| `takerPolicy` | `object` | Taker fee policy |
+| `bestBid` | `number` | Best bid price |
+| `bestAsk` | `number` | Best ask price |
+| `spread` | `number` | Spread in basis points |
+
+```typescript
+import { getCloberBooks } from 'rampart-monad'
+
+const books = await getCloberBooks()
+for (const book of books) {
+  console.log(`Book ${book.bookId}: bid=${book.bestBid} ask=${book.bestAsk}`)
+  console.log(`Spread: ${book.spread} bps`)
+}
+```
+
+---
+
+### getCloberBookById()
+
+Returns the full state of a specific Clober order book.
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `bookId` | `bigint` | Book identifier from `getCloberBooks()` |
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `bookId` | `bigint` | Book ID |
+| `base` | `Address` | Base token |
+| `quote` | `Address` | Quote token |
+| `bestBid` | `number` | Current best bid price |
+| `bestAsk` | `number` | Current best ask price |
+| `spread` | `number` | Spread in bps |
+| `bidDepth` | `DepthLevel[]` | Bid side depth `{ price, size }[]` |
+| `askDepth` | `DepthLevel[]` | Ask side depth `{ price, size }[]` |
+| `lastTradePrice` | `number` | Price of the most recent trade |
+| `volume24h` | `number` | 24h volume in quote token |
+
+```typescript
+import { getCloberBooks, getCloberBookById } from 'rampart-monad'
+
+// Get all books, then read full state of the first one
+const books = await getCloberBooks()
+const detail = await getCloberBookById(books[0].bookId)
+
+console.log(`Last trade: ${detail.lastTradePrice}`)
+console.log(`Bid depth levels: ${detail.bidDepth.length}`)
+console.log(`Ask depth levels: ${detail.askDepth.length}`)
+```
+
+<Note>
+Clober's on-chain orderbook is particularly efficient on Monad due to ~400ms block times. Price levels update in near real-time without requiring WebSocket feeds.
+</Note>
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| CloberBookManager | `0xAaA0e933C1E46d04b261e9B4FaAc7AeB93BcCeC1` |

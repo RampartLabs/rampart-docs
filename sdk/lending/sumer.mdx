@@ -1,0 +1,78 @@
+---
+title: "Sumer Money"
+description: "Compound V2 fork with multi-asset lending markets on Monad"
+---
+
+<Info>
+**TVL:** ~$4M | **Type:** Compound V2 Fork | **Docs:** [sumer.money](https://sumer.money)
+</Info>
+
+## Overview
+
+Sumer Money is a Compound V2 fork deployed on Monad. It follows the proven cToken/Comptroller architecture with per-market supply and borrow rates determined by utilization-based interest rate models. Each market is independent with its own reserve factor and collateral factor.
+
+## Functions
+
+### getSumerMarkets()
+
+Returns all active Sumer lending markets with current rates and liquidity.
+
+**Returns** `SumerMarket[]`
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `address` | `string` | cToken market contract address |
+| `asset` | `string` | Underlying token address |
+| `supplyRate` | `number` | Current supply rate per second (annualized) |
+| `borrowRate` | `number` | Current borrow rate per second (annualized) |
+| `totalSupply` | `bigint` | Total cToken supply (raw) |
+| `totalBorrows` | `bigint` | Total borrows outstanding (raw) |
+| `protocol` | `'sumer'` | Protocol identifier |
+
+```typescript
+const markets = await sdk.getSumerMarkets()
+// → [
+//   {
+//     address: '0x...',
+//     asset: '0x...',
+//     supplyRate: 0.041,
+//     borrowRate: 0.068,
+//     totalSupply: 3200000n,
+//     totalBorrows: 1800000n,
+//     protocol: 'sumer'
+//   },
+// ]
+```
+
+### getSumerTVL()
+
+Returns total value locked across all Sumer markets in USD.
+
+**Returns** `number`
+
+```typescript
+const tvl = await sdk.getSumerTVL()
+// → 4100000
+```
+
+## Usage Example
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+
+const markets = await sdk.getSumerMarkets()
+
+// Compare supply vs borrow spread
+for (const m of markets) {
+  const spread = m.borrowRate - m.supplyRate
+  console.log(`${m.asset}: supply ${(m.supplyRate * 100).toFixed(2)}%, borrow ${(m.borrowRate * 100).toFixed(2)}%, spread ${(spread * 100).toFixed(2)}%`)
+}
+```
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| Comptroller | `0xA0b3E538e9d2E66A04BEa2BEdff3a0F80fBB1da3` |

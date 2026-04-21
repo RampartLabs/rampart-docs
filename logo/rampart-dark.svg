@@ -1,0 +1,17 @@
+<svg width="160" height="32" viewBox="0 0 160 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Castle/Rampart icon -->
+  <g>
+    <!-- Battlements -->
+    <rect x="2" y="2" width="6" height="8" rx="1" fill="#a893fb"/>
+    <rect x="11" y="2" width="6" height="8" rx="1" fill="#a893fb"/>
+    <rect x="20" y="2" width="6" height="8" rx="1" fill="#a893fb"/>
+    <!-- Main wall -->
+    <rect x="2" y="8" width="24" height="16" rx="1" fill="#836ef9"/>
+    <!-- Gate arch -->
+    <path d="M11 24 L11 16 Q14 13 17 16 L17 24 Z" fill="#0f0f14"/>
+    <!-- Moat hint -->
+    <rect x="0" y="26" width="28" height="3" rx="1.5" fill="#6247e8" opacity="0.5"/>
+  </g>
+  <!-- Wordmark -->
+  <text x="36" y="22" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="16" fill="#ffffff" letter-spacing="-0.3">Rampart</text>
+</svg>

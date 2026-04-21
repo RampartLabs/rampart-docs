@@ -1,0 +1,118 @@
+---
+title: "Neverland"
+description: "Aave V3 fork on Monad - supply/borrow rates and TVL"
+---
+
+<Info>
+**TVL:** ~$15M | **Type:** Aave V3 Fork | **Docs:** [neverland.finance](https://neverland.finance)
+</Info>
+
+## Overview
+
+Neverland is an Aave V3 fork deployed on Monad. It supports multi-asset lending and borrowing with variable and stable interest rates. Rampart exposes the lending pool's rate data and TVL through a set of read-only functions.
+
+## Functions
+
+### getLendingRates()
+
+Returns supply and borrow APYs for all active assets in the Neverland lending pool.
+
+**Returns** `LendingRate[]`
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `asset` | `string` | Token address |
+| `symbol` | `string` | Token symbol |
+| `supplyAPY` | `number` | Annual supply yield (e.g. `0.045` = 4.5%) |
+| `borrowAPY` | `number` | Annual borrow cost |
+| `totalSupply` | `bigint` | Total supplied liquidity (raw) |
+| `totalBorrow` | `bigint` | Total borrowed amount (raw) |
+| `utilization` | `number` | Borrow / supply ratio (0–1) |
+| `protocol` | `'neverland'` | Protocol identifier |
+
+```typescript
+const rates = await sdk.getLendingRates()
+// → [
+//   { asset: '0x...', symbol: 'USDC', supplyAPY: 0.045, borrowAPY: 0.072, utilization: 0.63, protocol: 'neverland' },
+//   { asset: '0x...', symbol: 'WETH', supplyAPY: 0.021, borrowAPY: 0.038, utilization: 0.55, protocol: 'neverland' },
+// ]
+```
+
+### getBestSupplyAsset()
+
+Returns the asset with the highest current supply APY in Neverland.
+
+**Returns** `LendingRate`
+
+```typescript
+const best = await sdk.getBestSupplyAsset()
+// → { asset: '0x...', symbol: 'USDC', supplyAPY: 0.045, protocol: 'neverland' }
+```
+
+### getBestBorrowAsset()
+
+Returns the asset with the lowest current borrow APY in Neverland.
+
+**Returns** `LendingRate`
+
+```typescript
+const cheapest = await sdk.getBestBorrowAsset()
+// → { asset: '0x...', symbol: 'WETH', borrowAPY: 0.038, protocol: 'neverland' }
+```
+
+### getNeverlandTVL()
+
+Returns total value locked across all Neverland pools in USD.
+
+**Returns** `number`
+
+```typescript
+const tvl = await sdk.getNeverlandTVL()
+// → 15200000
+```
+
+### compareYields(asset)
+
+Compares Neverland supply APY for a given asset against other lending protocols tracked by Rampart.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `asset` | `string` | Token address to compare |
+
+**Returns** `YieldComparison[]`
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `protocol` | `string` | Protocol name |
+| `supplyAPY` | `number` | Supply APY on that protocol |
+| `borrowAPY` | `number` | Borrow APY on that protocol |
+
+```typescript
+const USDC = '0xf817257fed379853cDe0fa4F97AB987181B1E5Ea'
+const comparison = await sdk.compareYields(USDC)
+// → [
+//   { protocol: 'neverland', supplyAPY: 0.045, borrowAPY: 0.072 },
+//   { protocol: 'euler',     supplyAPY: 0.051, borrowAPY: 0.081 },
+//   { protocol: 'morpho',    supplyAPY: 0.038, borrowAPY: 0.065 },
+// ]
+```
+
+## Usage Example
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+
+const rates = await sdk.getLendingRates()
+const best = rates.sort((a, b) => b.supplyAPY - a.supplyAPY)[0]
+
+console.log(`Best Neverland yield: ${(best.supplyAPY * 100).toFixed(2)}% on ${best.symbol}`)
+console.log(`Utilization: ${(best.utilization * 100).toFixed(1)}%`)
+```
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| LendingPool | `0x7EeCA4205fF31f947EdFd49aa1f09cf9532B8A15` |

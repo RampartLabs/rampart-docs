@@ -1,0 +1,142 @@
+---
+title: "OpenOcean"
+description: "DEX aggregator - full liquidity aggregation via OpenOcean REST API on Monad"
+---
+
+<Info>
+**Type:** DEX Aggregator | **Docs:** [docs.openocean.finance](https://docs.openocean.finance)
+</Info>
+
+## Overview
+
+OpenOcean is a DEX aggregator that sources liquidity from all major DEXes on Monad to find the optimal swap route. The SDK integrates the OpenOcean REST API (`https://open-api.openocean.finance/v4/monad`) - no on-chain quote calls are needed. OpenOcean supports both single-path and multi-path split routing.
+
+<Note>
+If the OpenOcean API is unavailable or returns an error, functions gracefully degrade: `getOpenOceanQuote` returns `amountOut: 0` and `isOpenOceanAvailable` returns `false`. Always check availability before building swap UIs.
+</Note>
+
+## Functions
+
+### getOpenOceanQuote()
+
+Returns an optimized swap quote via the OpenOcean routing API.
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tokenIn` | `Address` | Input token address |
+| `tokenOut` | `Address` | Output token address |
+| `amountIn` | `bigint` | Exact input amount |
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `amountOut` | `bigint` | Expected output amount (0 if unavailable) |
+| `amountOutUsd` | `number` | Output value in USD |
+| `price` | `number` | Execution price |
+| `priceImpact` | `number` | Price impact as a percentage |
+| `gasEstimate` | `number` | Estimated gas cost |
+| `route` | `RouteStep[]` | Array of routing steps with exchange names |
+| `callData` | `Hex` | Transaction calldata for execution |
+
+```typescript
+import { getOpenOceanQuote, isOpenOceanAvailable } from 'rampart-monad'
+
+if (await isOpenOceanAvailable()) {
+  const quote = await getOpenOceanQuote(
+    '0x...', // tokenIn (MON)
+    '0x...', // tokenOut (USDC)
+    1_000_000_000_000_000_000n // 1 MON
+  )
+  console.log(`Amount out: ${quote.amountOut}`)
+  console.log(`Route: ${quote.route.map(s => s.name).join(' → ')}`)
+} else {
+  console.log('OpenOcean API unavailable, using fallback')
+}
+```
+
+---
+
+### getOpenOceanPrice()
+
+Returns the current spot price for a token pair via OpenOcean.
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tokenIn` | `Address` | Input token address |
+| `tokenOut` | `Address` | Output token address |
+
+**Returns** `number`. price of tokenIn in units of tokenOut. Returns `0` if API is unavailable.
+
+```typescript
+import { getOpenOceanPrice } from 'rampart-monad'
+
+const price = await getOpenOceanPrice(
+  '0x...', // MON
+  '0x...'  // USDC
+)
+if (price > 0) {
+  console.log(`OpenOcean: 1 MON = ${price} USDC`)
+}
+```
+
+---
+
+### isOpenOceanAvailable()
+
+Checks whether the OpenOcean API is reachable on Monad.
+
+**Returns** `boolean`. `true` if the API is live and responding.
+
+```typescript
+import { isOpenOceanAvailable } from 'rampart-monad'
+
+const available = await isOpenOceanAvailable()
+console.log(`OpenOcean available: ${available}`)
+```
+
+<CodeGroup>
+```typescript Aggregator Comparison
+import {
+  getOpenOceanQuote,
+  getKyberSwapQuote,
+  isOpenOceanAvailable
+} from 'rampart-monad'
+
+const tokenIn = '0x...'
+const tokenOut = '0x...'
+const amount = 1_000_000_000_000_000_000n
+
+const results = await Promise.allSettled([
+  isOpenOceanAvailable().then(ok =>
+    ok ? getOpenOceanQuote(tokenIn, tokenOut, amount) : null
+  ),
+  getKyberSwapQuote(tokenIn, tokenOut, amount)
+])
+
+const [openocean, kyber] = results.map(r =>
+  r.status === 'fulfilled' ? r.value : null
+)
+
+if (openocean && kyber) {
+  const best = openocean.amountOut > kyber.amountOut ? 'OpenOcean' : 'KyberSwap'
+  console.log(`Best aggregator: ${best}`)
+}
+```
+</CodeGroup>
+
+## API Endpoint
+
+| Endpoint | URL |
+|----------|-----|
+| Monad V4 API | `https://open-api.openocean.finance/v4/monad` |
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| ExchangeProxy | `0x6352a56caadC4F1E25CD6c75970Fa768A3304e64` |

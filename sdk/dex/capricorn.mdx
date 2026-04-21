@@ -1,0 +1,105 @@
+---
+title: "Capricorn"
+description: "Uniswap V3 fork with native Monad optimizations"
+---
+
+<Info>
+**Type:** Uniswap V3 Fork | **Docs:** [capricorn.finance](https://capricorn.finance)
+</Info>
+
+## Overview
+
+Capricorn is a Uniswap V3 fork deployed natively on Monad. It uses identical pool mechanics to Uniswap V3 (concentrated liquidity, tick-based pricing) but with a separate factory and router. Capricorn tends to have deeper liquidity for Monad-native tokens that may not have established pools on Uniswap.
+
+<Note>
+Like Uniswap V3, Capricorn's QuoterV2 is not a view function. The SDK uses `simulateContract` for all quote operations - do not use `readContract` directly.
+</Note>
+
+## Functions
+
+### getCapricornPools()
+
+Returns all active Capricorn liquidity pools on Monad.
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `poolAddress` | `Address` | Pool contract address |
+| `token0` | `Address` | First token address |
+| `token1` | `Address` | Second token address |
+| `fee` | `number` | Fee tier in bps (500, 3000, 10000) |
+| `sqrtPriceX96` | `bigint` | Current sqrt price Q64.96 |
+| `liquidity` | `bigint` | Active liquidity |
+| `tick` | `number` | Current tick |
+
+```typescript
+import { getCapricornPools } from 'rampart-monad'
+
+const pools = await getCapricornPools()
+console.log(`${pools.length} Capricorn pools`)
+
+// Find pools for a specific token
+const monPools = pools.filter(p =>
+  p.token0 === '0x...' || p.token1 === '0x...'
+)
+console.log(`MON pools: ${monPools.length}`)
+```
+
+---
+
+### getCapricornPrice()
+
+Returns the spot price for a token pair across the best available Capricorn pool.
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tokenA` | `Address` | Input token address |
+| `tokenB` | `Address` | Output token address |
+
+**Returns** `number`. price of tokenA denominated in tokenB.
+
+```typescript
+import { getCapricornPrice } from 'rampart-monad'
+
+const price = await getCapricornPrice(
+  '0x...', // MON
+  '0x...'  // USDC
+)
+console.log(`1 MON = ${price} USDC on Capricorn`)
+```
+
+<CodeGroup>
+```typescript Arbitrage Check
+import { getCapricornPrice, getUniswapPrice } from 'rampart-monad'
+
+const [capricorn, uniswap] = await Promise.all([
+  getCapricornPrice('0x...', '0x...'),
+  getUniswapPrice('0x...', '0x...')
+])
+
+const spreadBps = Math.abs(capricorn - uniswap) / uniswap * 10000
+if (spreadBps > 10) {
+  console.log(`Arb opportunity: ${spreadBps.toFixed(1)} bps spread`)
+}
+```
+
+```typescript Pool Discovery
+import { getCapricornPools } from 'rampart-monad'
+
+const pools = await getCapricornPools()
+const deepPools = pools
+  .filter(p => p.liquidity > 1_000_000_000n)
+  .sort((a, b) => Number(b.liquidity - a.liquidity))
+
+console.log('Top pools by liquidity:', deepPools.slice(0, 3))
+```
+</CodeGroup>
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| Factory | `0x6A1E0A0B03d2EC1C4A4D09FC1856F4Dba5862e7D` |

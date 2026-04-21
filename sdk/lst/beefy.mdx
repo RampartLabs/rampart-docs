@@ -1,0 +1,82 @@
+---
+title: "Beefy Finance"
+description: "Auto-compounding yield optimizer vaults on Monad"
+---
+
+<Info>
+**Type:** Yield Optimizer | **Docs:** [docs.beefy.finance](https://docs.beefy.finance)
+</Info>
+
+## Overview
+
+Beefy Finance is a multichain yield optimizer that auto-compounds rewards from liquidity pools and yield farms. On Monad, Beefy deploys **Moo vaults** - ERC4626-compatible contracts that accept LP or single-asset deposits and continuously compound earned rewards back into the position.
+
+Users receive `mooToken` shares whose price appreciates over time as rewards are harvested and reinvested, meaning yield is realized through share price growth rather than explicit reward claims.
+
+## Types
+
+```typescript
+type BeefyVault = {
+  address: `0x${string}`
+  asset: `0x${string}`        // underlying LP or single token
+  apy: number                  // current APY after compounding, e.g. 0.15 = 15%
+  tvl: number                  // USD value locked in vault
+  strategy: string             // underlying strategy contract address
+  protocol: 'beefy'
+}
+```
+
+## Functions
+
+### getBeefyVaults()
+
+Returns all Beefy vaults deployed on Monad from the vault factory.
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+const vaults = await sdk.getBeefyVaults()
+// → BeefyVault[]
+
+vaults.forEach(v => {
+  console.log(`${v.address}: APY ${(v.apy * 100).toFixed(2)}%  TVL $${(v.tvl / 1e3).toFixed(0)}K`)
+})
+```
+
+### getBeefyBestVault(asset?)
+
+Returns the Beefy vault with the highest current APY, optionally filtered by underlying asset.
+
+```typescript
+// Best vault across all assets
+const best = await sdk.getBeefyBestVault()
+// → BeefyVault
+
+// Best vault for a specific LP token
+const bestLP = await sdk.getBeefyBestVault('0x...')
+// → BeefyVault | null
+
+console.log(`Best Beefy vault: ${best.address} @ ${(best.apy * 100).toFixed(2)}% APY`)
+```
+
+### getBeefyTVL()
+
+Returns the sum of TVL across all Beefy vaults on Monad in USD.
+
+```typescript
+const tvl = await sdk.getBeefyTVL()
+// → number (USD)
+
+console.log(`Beefy total TVL: $${(tvl / 1e6).toFixed(2)}M`)
+```
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| BeefyVaultFactory | `0xf3f8607bf0d94B57E28F01E1b2E2bE0F3af8af8c` |
+
+<Note>
+Beefy vault APYs include the effect of auto-compounding. The raw farm APR is lower - the difference represents the compounding frequency premium. Strategy contract addresses are stored in `BeefyVault.strategy` and can be queried for underlying farm details.
+</Note>
