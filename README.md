@@ -7,12 +7,3 @@ Documentation for [Rampart](https://rampartlabs.xyz) - Multi-chain Protocol Aggr
 ## Contributing
 
 To add or update a protocol page, edit the relevant `.mdx` file in `sdk/` and push to `main`. Mintlify auto-deploys on every push.
-
-## Local Preview
-
-```bash
-npm install -g mintlify
-mintlify dev
-```
-
-Opens at `http://localhost:3000`.
