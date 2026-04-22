@@ -7,7 +7,7 @@
     "light": "#a893fb",
     "dark": "#6247e8"
   },
-  "favicon": "/logo/rampart-dark.svg",
+  "favicon": "/logo/favicon.svg",
   "logo": {
     "light": "/logo/rampart-light.svg",
     "dark": "/logo/rampart-dark.svg"

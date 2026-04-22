@@ -1,17 +1,6 @@
-<svg width="160" height="32" viewBox="0 0 160 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Castle/Rampart icon -->
-  <g>
-    <!-- Battlements -->
-    <rect x="2" y="2" width="6" height="8" rx="1" fill="#6247e8"/>
-    <rect x="11" y="2" width="6" height="8" rx="1" fill="#6247e8"/>
-    <rect x="20" y="2" width="6" height="8" rx="1" fill="#6247e8"/>
-    <!-- Main wall -->
-    <rect x="2" y="8" width="24" height="16" rx="1" fill="#836ef9"/>
-    <!-- Gate arch -->
-    <path d="M11 24 L11 16 Q14 13 17 16 L17 24 Z" fill="#ffffff"/>
-    <!-- Moat hint -->
-    <rect x="0" y="26" width="28" height="3" rx="1.5" fill="#836ef9" opacity="0.4"/>
-  </g>
-  <!-- Wordmark -->
-  <text x="36" y="22" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="16" fill="#1a1a2e" letter-spacing="-0.3">Rampart</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 40" fill="none">
+  <rect width="36" height="40" rx="8" fill="#836ef9"/>
+  <path fill="white" d="M18,3L22,3L22,7L23,7L23,4L27,4L27,8L28,8L25,36L15,36L15,14L7,14L5,13L7,12L15,12L15,7L14,7L14,4L17,4L17,7L18,7Z" transform="scale(0.95) translate(0.5,0.5)"/>
+  <polygon fill="white" points="9,8 9,11 12,9.5" transform="scale(0.95) translate(0.5,0.5)"/>
+  <text x="48" y="27" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="18" fill="#1a1a2e" letter-spacing="-0.5">Rampart</text>
 </svg>
