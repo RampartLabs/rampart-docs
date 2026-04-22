@@ -28,7 +28,7 @@ type MemeToken = {
   marketCap: number           // current USD market cap
   volume24h: number           // 24h trading volume in USD
   graduated: boolean          // true if moved to DEX
-  bondingCurveProgress: number // 0–1, how full the bonding curve is
+  bondingCurveProgress: number // 0-1, how full the bonding curve is
   protocol: 'nadfun'
 }
 
@@ -103,5 +103,5 @@ console.log(`Cumulative volume: $${(stats.totalVolume / 1e6).toFixed(1)}M`)
 | Factory | `0x822c...placeholder` | Pending confirmation |
 
 <Note>
-Factory address will be updated once the nad.fun Mainnet deployment is confirmed. Track the [GitHub repo](https://github.com/monad-crypto/rampart) for updates.
+Factory address will be updated once the nad.fun Mainnet deployment is confirmed. Track the [GitHub repo](https://github.com/RampartLabs/rampart-monad) for updates.
 </Note>

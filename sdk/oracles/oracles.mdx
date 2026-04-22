@@ -29,7 +29,7 @@ Chainlink has **no MON/USD feed** on Monad. Any function requesting a Chainlink 
 type VerifiedPrice = {
   symbol: string
   price: number           // consensus price in USD
-  confidence: number      // 0–1 score; lower = higher discrepancy between sources
+  confidence: number      // 0-1 score; lower = higher discrepancy between sources
   sources: string[]       // which oracles contributed, e.g. ['pyth', 'kuru']
   timestamp: number       // unix seconds of the freshest source
 }

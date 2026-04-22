@@ -117,7 +117,7 @@ app.listen(3000)
 
 The Monad public RPC (`https://rpc.monad.xyz`) imposes rate limits. To avoid 429 errors in production:
 
-- Cache responses in Redis or a KV store (prices for 10–30 s, TVL for 60 s)
+- Cache responses in Redis or a KV store (prices for 10-30 s, TVL for 60 s)
 - Use a dedicated RPC endpoint from a node provider
 - Run multiple Vitest tests with `singleFork` to avoid parallel RPC saturation
 
