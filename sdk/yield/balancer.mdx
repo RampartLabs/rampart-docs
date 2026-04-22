@@ -11,7 +11,7 @@ description: "Weighted liquidity pools on Monad via Balancer V3"
 
 Balancer V3 introduces a redesigned vault architecture where all pool assets are held in a single central `Vault` contract. Individual pool contracts implement only the swap logic (weighted, stable, composable stable, etc.), while the vault handles custody, accounting, and flash loans.
 
-On Monad, the Rampart SDK reads Balancer weighted pool data - token composition, weights, TVL, and trading fee APY - directly from the central Vault.
+On Monad, the Rampart reads Balancer weighted pool data - token composition, weights, TVL, and trading fee APY - directly from the central Vault.
 
 ## Types
 

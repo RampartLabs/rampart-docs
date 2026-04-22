@@ -9,7 +9,7 @@ description: "36 Vercel AI SDK tools for autonomous DeFi analysis on Monad"
 
 ## Overview
 
-`RampartAgent` wraps all Rampart SDK functions using `tool()` from the Vercel AI SDK v6. Each tool uses `inputSchema:` (Zod) for input validation and an `execute` function that delegates to the underlying protocol function. This means any LLM with tool-calling support can query Monad DeFi data autonomously.
+`RampartAgent` wraps all Rampart functions using `tool()` from the Vercel AI SDK v6. Each tool uses `inputSchema:` (Zod) for input validation and an `execute` function that delegates to the underlying protocol function. This means any LLM with tool-calling support can query Monad DeFi data autonomously.
 
 ```typescript
 import { RampartAgent } from 'rampart-monad'

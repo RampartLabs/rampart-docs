@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Rampart SDK",
+  "name": "Rampart",
   "colors": {
     "primary": "#836ef9",
     "light": "#a893fb",
