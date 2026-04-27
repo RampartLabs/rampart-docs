@@ -1,0 +1,93 @@
+---
+title: "Supported Protocols"
+description: "55+ protocols integrated across Monad Mainnet - lending, staking, DEX, yield, perps, oracles and more"
+---
+
+export const Proto = ({ name, href, slug }) => (
+  <a href={href} target="_blank" rel="noopener noreferrer" style={{display:'flex',alignItems:'center',gap:'12px',padding:'12px 16px',borderRadius:'12px',border:'1px solid rgba(131,110,249,0.2)',textDecoration:'none',color:'inherit',background:'rgba(131,110,249,0.04)',transition:'border-color 0.2s, background 0.2s'}}>
+    <img
+      src={`https://icons.llamao.fi/icons/protocols/${slug}?w=48&h=48`}
+      style={{width:'32px',height:'32px',borderRadius:'8px',flexShrink:0}}
+      onError={(e) => { e.target.style.display='none' }}
+    />
+    <span style={{fontWeight:600,fontSize:'14px'}}>{name}</span>
+  </a>
+)
+
+export const Category = ({ label, count, children }) => (
+  <div style={{marginBottom:'32px'}}>
+    <div style={{display:'flex',alignItems:'center',gap:'10px',marginBottom:'14px'}}>
+      <span style={{fontWeight:700,fontSize:'16px'}}>{label}</span>
+      <span style={{fontSize:'12px',fontWeight:600,padding:'2px 8px',borderRadius:'999px',background:'rgba(131,110,249,0.15)',color:'#836ef9'}}>{count}</span>
+    </div>
+    <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(200px,1fr))',gap:'10px'}}>
+      {children}
+    </div>
+  </div>
+)
+
+<div className="not-prose" style={{marginTop:'8px'}}>
+
+<Category label="Lending" count={6}>
+  <Proto name="Morpho Blue"    href="https://morpho.org"           slug="morpho" />
+  <Proto name="Curvance"       href="https://curvance.com"         slug="curvance" />
+  <Proto name="Neverland"      href="https://neverland.fi"         slug="neverland" />
+  <Proto name="Euler V2"       href="https://euler.finance"        slug="euler" />
+  <Proto name="Gearbox V3"     href="https://gearbox.fi"           slug="gearbox" />
+  <Proto name="Folks Finance"  href="https://folks.finance"        slug="folks-finance" />
+</Category>
+
+<Category label="Liquid Staking" count={6}>
+  <Proto name="aPriori"   href="https://apriori.xyz"           slug="apriori" />
+  <Proto name="FastLane"  href="https://www.fastlane.finance"  slug="fastlane" />
+  <Proto name="Kintsu"    href="https://kintsu.xyz"            slug="kintsu" />
+  <Proto name="Magma"     href="https://magmastaking.xyz"      slug="magma" />
+  <Proto name="Mellow"    href="https://mellow.finance"        slug="mellow" />
+  <Proto name="Renzo"     href="https://renzoprotocol.com"     slug="renzo" />
+</Category>
+
+<Category label="DEX & AMM" count={11}>
+  <Proto name="Uniswap V4"      href="https://uniswap.org"          slug="uniswap" />
+  <Proto name="Uniswap V3"      href="https://uniswap.org"          slug="uniswap-v3" />
+  <Proto name="Curve Finance"   href="https://curve.fi"             slug="curve" />
+  <Proto name="Balancer V3"     href="https://balancer.fi"          slug="balancer" />
+  <Proto name="PancakeSwap"     href="https://pancakeswap.finance"  slug="pancakeswap" />
+  <Proto name="Kuru"            href="https://kuru.io"              slug="kuru" />
+  <Proto name="Clober"          href="https://clober.io"            slug="clober" />
+  <Proto name="iZiSwap"         href="https://izumi.finance"        slug="izumi" />
+  <Proto name="WooFi"           href="https://fi.woo.org"           slug="woofi" />
+  <Proto name="Trader Joe"      href="https://traderjoexyz.com"     slug="trader-joe" />
+  <Proto name="Bean Exchange"   href="https://bean.exchange"        slug="bean-exchange" />
+</Category>
+
+<Category label="Yield" count={3}>
+  <Proto name="Multipli.fi"  href="https://multipli.fi"   slug="multipli" />
+  <Proto name="Upshift"      href="https://upshift.fi"    slug="upshift" />
+  <Proto name="Beefy"        href="https://beefy.com"     slug="beefy" />
+</Category>
+
+<Category label="Perpetuals" count={2}>
+  <Proto name="Monday Trade"  href="https://mondaytrade.xyz"  slug="monday-trade" />
+  <Proto name="Perpl"         href="https://perpl.trade"      slug="perpl" />
+</Category>
+
+<Category label="Oracles" count={4}>
+  <Proto name="Chainlink"  href="https://chain.link"             slug="chainlink" />
+  <Proto name="Pyth"       href="https://pyth.network"           slug="pyth" />
+  <Proto name="Redstone"   href="https://redstone.finance"       slug="redstone" />
+  <Proto name="Chronicle"  href="https://chroniclelabs.org"      slug="chronicle-labs" />
+</Category>
+
+<Category label="Streaming" count={1}>
+  <Proto name="Sablier"  href="https://sablier.com"  slug="sablier" />
+</Category>
+
+<Category label="CDP" count={1}>
+  <Proto name="Covenant"  href="https://covenant.fi"  slug="covenant" />
+</Category>
+
+<Category label="Launchpad" count={1}>
+  <Proto name="nad.fun"  href="https://nad.fun"  slug="nad-fun" />
+</Category>
+
+</div>
