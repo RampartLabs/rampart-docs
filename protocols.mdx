@@ -1,32 +1,24 @@
 ---
 title: "Supported Protocols"
-description: "55+ protocols integrated on Monad Mainnet - accessible via a single import"
+description: "45+ protocols integrated on Monad Mainnet - accessible via a single import"
 ---
 
-Rampart integrates 55+ protocols on Monad. All are accessible via a single import with full TypeScript types.
+Rampart integrates 45+ protocols on Monad. All are accessible via a single import with full TypeScript types.
 
 ```typescript
 import { getMorphoVaults, getStakingAPR, getBestSwapRoute } from 'rampart-monad'
 ```
 
 <CardGroup cols={4}>
-  <Card title="55 protocols" icon="hexagon-nodes">14 categories, one package</Card>
+  <Card title="45 protocols" icon="hexagon-nodes">14 categories, one package</Card>
   <Card title="$800M+ TVL" icon="chart-line">Tracked across all protocols</Card>
   <Card title="41 AI tools" icon="microchip">Vercel AI SDK compatible</Card>
   <Card title="Single import" icon="box">No per-protocol setup</Card>
 </CardGroup>
 
-export const Icon = ({ slug }) => (
-  <img
-    src={`https://icons.llamao.fi/icons/protocols/${slug}?w=48&h=48`}
-    style={{width:'32px',height:'32px',borderRadius:'8px',flexShrink:0,objectFit:'cover'}}
-    onError={(e)=>{e.currentTarget.style.display='none'}}
-  />
-)
-
-export const Row = ({ name, href, slug, desc }) => (
+export const Row = ({ name, href, slug, icon, desc }) => (
   <a href={href} target="_blank" rel="noopener noreferrer" style={{display:'flex',alignItems:'center',gap:'12px',padding:'12px 16px',borderRadius:'12px',border:'1px solid rgba(131,110,249,0.15)',textDecoration:'none',color:'inherit',background:'rgba(131,110,249,0.03)',transition:'border-color 0.15s,background 0.15s'}}>
-    <Icon slug={slug} />
+    <img src={icon || `https://icons.llamao.fi/icons/protocols/${slug}?w=48&h=48`} style={{width:'32px',height:'32px',borderRadius:'8px',flexShrink:0,objectFit:'cover'}} onError={(e)=>{e.currentTarget.style.display='none'}} />
     <div>
       <div style={{fontWeight:600,fontSize:'14px',lineHeight:'1.3'}}>{name}</div>
       {desc && <div style={{fontSize:'12px',color:'#9ca3af',marginTop:'2px',lineHeight:'1.3'}}>{desc}</div>}
@@ -48,18 +40,16 @@ export const Section = ({ title, count, children }) => (
 
 <div className="not-prose" style={{marginTop:'24px'}}>
 
-<Section title="Lending" count={11}>
+<Section title="Lending" count={9}>
   <Row name="Morpho Blue"    href="https://morpho.org"              slug="morpho"        desc="Permissionless vault-based lending" />
   <Row name="Neverland"      href="https://neverland.fi"            slug="neverland"     desc="Aave V3 fork on Monad" />
   <Row name="Euler V2"       href="https://euler.finance"           slug="euler"         desc="108 permissionless vaults" />
   <Row name="Gearbox V3"     href="https://gearbox.fi"              slug="gearbox"       desc="Composable leverage protocol" />
   <Row name="Curvance"       href="https://curvance.com"            slug="curvance"      desc="Cross-chain lending with gauges" />
   <Row name="Folks Finance"  href="https://folks.finance"           slug="folks-finance" desc="Algorithmic lending, account model" />
-  <Row name="Sumer"          href="https://sumer.money"             slug="sumer"         desc="Multi-asset lending protocol" />
   <Row name="Timeswap"       href="https://timeswap.io"             slug="timeswap"      desc="Oracle-free fixed-rate lending" />
   <Row name="Lagoon"         href="https://lagoon.finance"          slug="lagoon"        desc="Yield-bearing vault lending" />
-  <Row name="Accountable"    href="https://accountable.finance"     slug="accountable"   desc="Undercollateralized lending" />
-  <Row name="TownSquare"     href="https://townsquare.fi"           slug="townsquare"    desc="Community-governed lending pools" />
+  <Row name="TownSquare"     href="https://app.townsq.xyz"          icon="https://pbs.twimg.com/profile_images/1563311542334267398/gaQXK0FD_400x400.jpg" desc="Community-governed lending pools" />
 </Section>
 
 <Section title="Liquid Staking" count={5}>
@@ -74,7 +64,7 @@ export const Section = ({ title, count, children }) => (
   <Row name="Renzo" href="https://renzoprotocol.com" slug="renzo" desc="ezETH - EigenLayer liquid restaking" />
 </Section>
 
-<Section title="DEX & AMM" count={14}>
+<Section title="DEX & AMM" count={11}>
   <Row name="Uniswap V4"     href="https://uniswap.org"         slug="uniswap"       desc="Hooks-based concentrated liquidity" />
   <Row name="Uniswap V3"     href="https://uniswap.org"         slug="uniswap-v3"    desc="Concentrated liquidity with tick ranges" />
   <Row name="Uniswap V2"     href="https://uniswap.org"         slug="uniswap-v2"    desc="Classic constant-product AMM" />
@@ -85,10 +75,7 @@ export const Section = ({ title, count, children }) => (
   <Row name="iZiSwap"        href="https://izumi.finance"       slug="izumi"         desc="Discretized liquidity AMM (DLAMM)" />
   <Row name="WooFi"          href="https://fi.woo.org"          slug="woofi"         desc="Synthetic proactive market maker" />
   <Row name="Bean Exchange"  href="https://bean.exchange"       slug="bean-exchange" desc="Native Monad AMM" />
-  <Row name="Swaap"          href="https://swaap.finance"       slug="swaap"         desc="Market-neutral AMM with oracle pricing" />
-  <Row name="Nabla"          href="https://nabla.finance"       slug="nabla"         desc="Single-sided liquidity AMM" />
-  <Row name="Capricorn"      href="https://capricorn.finance"   slug="capricorn"     desc="Native Monad concentrated AMM" />
-  <Row name="Pingu"          href="https://pingu.exchange"      slug="pingu"         desc="Perp DEX with integrated spot AMM" />
+  <Row name="Pingu"          href="https://pingu.exchange"      icon="https://pbs.twimg.com/profile_images/1969166356009373696/TQYJNyzA_400x400.png" desc="Perp DEX with integrated spot AMM" />
 </Section>
 
 <Section title="CLOB & Trading" count={3}>
@@ -97,19 +84,14 @@ export const Section = ({ title, count, children }) => (
   <Row name="Monday Trade"  href="https://monday.trade"  slug="monday-trade" desc="Perpetuals and spot, unified margin" />
 </Section>
 
-<Section title="Perpetuals" count={4}>
-  <Row name="Perpl"            href="https://perpl.io"          slug="perpl"    desc="On-chain perpetuals with liquidity vaults" />
-  <Row name="Narwhal Finance"  href="https://narwhal.finance"   slug="narwhal"  desc="GLP-model perpetuals DEX" />
-  <Row name="Purps"            href="https://purps.xyz"         slug="purps"    desc="Minimalist perp trading on Monad" />
-  <Row name="LeverUp"          href="https://leverup.io"        slug="leverup"  desc="Leveraged yield positions" />
+<Section title="Perpetuals" count={1}>
+  <Row name="Perpl" href="https://app.perpl.xyz" slug="perpl" desc="On-chain perpetuals with liquidity vaults" />
 </Section>
 
-<Section title="Yield" count={5}>
+<Section title="Yield" count={3}>
   <Row name="Multipli.fi"  href="https://multipli.fi"        slug="multipli"  desc="RWA-backed yield strategies" />
   <Row name="Upshift"      href="https://upshift.finance"    slug="upshift"   desc="Auto-compounding yield vaults" />
   <Row name="Beefy"        href="https://beefy.com"          slug="beefy"     desc="Multi-chain yield optimizer" />
-  <Row name="Sherpa"       href="https://sherpa.cash"        slug="sherpa"    desc="Yield aggregator with auto-routing" />
-  <Row name="Enjoyoors"    href="https://enjoyoors.finance"  slug="enjoyoors" desc="Points and yield farming vaults" />
 </Section>
 
 <Section title="Aggregators" count={2}>
@@ -118,14 +100,14 @@ export const Section = ({ title, count, children }) => (
 </Section>
 
 <Section title="Oracles" count={4}>
-  <Row name="Chainlink"  href="https://chain.link"         slug="chainlink"     desc="Decentralized price feeds" />
-  <Row name="Pyth"       href="https://pyth.network"       slug="pyth"          desc="High-frequency pull-based oracle" />
-  <Row name="Redstone"   href="https://redstone.finance"   slug="redstone"      desc="Modular oracle with calldata delivery" />
+  <Row name="Chainlink"  href="https://chain.link"         slug="chainlink"      desc="Decentralized price feeds" />
+  <Row name="Pyth"       href="https://pyth.network"       icon="https://pbs.twimg.com/profile_images/1948404937857122304/XPBCFnR5_400x400.jpg" desc="High-frequency pull-based oracle" />
+  <Row name="Redstone"   href="https://redstone.finance"   slug="redstone"       desc="Modular oracle with calldata delivery" />
   <Row name="Chronicle"  href="https://chroniclelabs.org"  slug="chronicle-labs" desc="Whitelisted oracle by MakerDAO" />
 </Section>
 
 <Section title="Launchpad" count={2}>
-  <Row name="nad.fun"  href="https://nad.fun"    slug="nad-fun" desc="Memecoin launchpad with bonding curves" />
+  <Row name="nad.fun"  href="https://nad.fun"     slug="nad-fun" desc="Memecoin launchpad with bonding curves" />
   <Row name="Doppler"  href="https://doppler.xyz" slug="doppler" desc="Token launch with dynamic pricing" />
 </Section>
 
@@ -134,15 +116,15 @@ export const Section = ({ title, count, children }) => (
 </Section>
 
 <Section title="CDP" count={1}>
-  <Row name="Covenant" href="https://covenant.finance" slug="covenant" desc="Collateralized debt position protocol" />
+  <Row name="Covenant" href="https://covenant.finance" icon="https://pbs.twimg.com/profile_images/1760674458497654784/SeqF3eEq_400x400.jpg" desc="Collateralized debt position protocol" />
 </Section>
 
 <Section title="Cross-chain" count={1}>
-  <Row name="Skate" href="https://skatechain.org" slug="skate" desc="Unified liquidity across chains" />
+  <Row name="Skate" href="https://skatechain.org" icon="https://pbs.twimg.com/profile_images/1873921084871106563/NEW0LSI6_400x400.jpg" desc="Unified liquidity across chains" />
 </Section>
 
 <Section title="Indexer" count={1}>
-  <Row name="Envio" href="https://envio.dev" slug="envio" desc="High-performance on-chain data indexer" />
+  <Row name="Envio" href="https://envio.dev" icon="https://pbs.twimg.com/profile_images/2033922478461095937/apEVFaCD_400x400.png" desc="High-performance on-chain data indexer" />
 </Section>
 
 </div>
