@@ -16,239 +16,133 @@ import { getMorphoVaults, getStakingAPR, getBestSwapRoute } from 'rampart-monad'
   <Card title="Single import" icon="box">No per-protocol setup</Card>
 </CardGroup>
 
----
+export const Icon = ({ slug }) => (
+  <img
+    src={`https://icons.llamao.fi/icons/protocols/${slug}?w=48&h=48`}
+    style={{width:'32px',height:'32px',borderRadius:'8px',flexShrink:0,objectFit:'cover'}}
+    onError={(e)=>{e.currentTarget.style.display='none'}}
+  />
+)
 
-## Lending
+export const Row = ({ name, href, slug, desc }) => (
+  <a href={href} target="_blank" rel="noopener noreferrer" style={{display:'flex',alignItems:'center',gap:'12px',padding:'12px 16px',borderRadius:'12px',border:'1px solid rgba(131,110,249,0.15)',textDecoration:'none',color:'inherit',background:'rgba(131,110,249,0.03)',transition:'border-color 0.15s,background 0.15s'}}>
+    <Icon slug={slug} />
+    <div>
+      <div style={{fontWeight:600,fontSize:'14px',lineHeight:'1.3'}}>{name}</div>
+      {desc && <div style={{fontSize:'12px',color:'#9ca3af',marginTop:'2px',lineHeight:'1.3'}}>{desc}</div>}
+    </div>
+  </a>
+)
 
-<CardGroup cols={3}>
-  <Card title="Morpho Blue" href="https://morpho.org" img="https://icons.llamao.fi/icons/protocols/morpho?w=48&h=48">
-    Permissionless vault-based lending
-  </Card>
-  <Card title="Neverland" href="https://neverland.fi" img="https://icons.llamao.fi/icons/protocols/neverland?w=48&h=48">
-    Aave V3 fork on Monad
-  </Card>
-  <Card title="Euler V2" href="https://euler.finance" img="https://icons.llamao.fi/icons/protocols/euler?w=48&h=48">
-    108 permissionless vaults
-  </Card>
-  <Card title="Gearbox V3" href="https://gearbox.fi" img="https://icons.llamao.fi/icons/protocols/gearbox?w=48&h=48">
-    Composable leverage protocol
-  </Card>
-  <Card title="Curvance" href="https://curvance.com" img="https://icons.llamao.fi/icons/protocols/curvance?w=48&h=48">
-    Cross-chain lending with gauge incentives
-  </Card>
-  <Card title="Folks Finance" href="https://folks.finance" img="https://icons.llamao.fi/icons/protocols/folks-finance?w=48&h=48">
-    Algorithmic lending with account model
-  </Card>
-  <Card title="Sumer" href="https://sumer.money" img="https://icons.llamao.fi/icons/protocols/sumer?w=48&h=48">
-    Multi-asset lending protocol
-  </Card>
-  <Card title="Timeswap" href="https://timeswap.io" img="https://icons.llamao.fi/icons/protocols/timeswap?w=48&h=48">
-    Oracle-free fixed-rate lending
-  </Card>
-  <Card title="Lagoon" href="https://lagoon.finance" img="https://icons.llamao.fi/icons/protocols/lagoon?w=48&h=48">
-    Yield-bearing vault lending
-  </Card>
-  <Card title="Accountable" href="https://accountable.finance" img="https://icons.llamao.fi/icons/protocols/accountable?w=48&h=48">
-    Undercollateralized lending
-  </Card>
-  <Card title="TownSquare" href="https://townsquare.fi" img="https://icons.llamao.fi/icons/protocols/townsquare?w=48&h=48">
-    Community-governed lending pools
-  </Card>
-</CardGroup>
+export const Section = ({ title, count, children }) => (
+  <div style={{marginBottom:'36px'}}>
+    <div style={{display:'flex',alignItems:'center',gap:'8px',marginBottom:'12px'}}>
+      <h2 style={{margin:0,fontSize:'18px',fontWeight:700}}>{title}</h2>
+      <span style={{fontSize:'11px',fontWeight:700,padding:'2px 8px',borderRadius:'999px',background:'rgba(131,110,249,0.15)',color:'#836ef9'}}>{count}</span>
+    </div>
+    <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(230px,1fr))',gap:'8px'}}>
+      {children}
+    </div>
+  </div>
+)
 
-## Liquid Staking
+<div className="not-prose" style={{marginTop:'24px'}}>
 
-<CardGroup cols={3}>
-  <Card title="aPriori" href="https://apriori.xyz" img="https://icons.llamao.fi/icons/protocols/apriori?w=48&h=48">
-    aprMON - native MON liquid staking
-  </Card>
-  <Card title="FastLane" href="https://fastlane.finance" img="https://icons.llamao.fi/icons/protocols/fastlane?w=48&h=48">
-    shMON - MEV-boosted staking yield
-  </Card>
-  <Card title="Kintsu" href="https://kintsu.xyz" img="https://icons.llamao.fi/icons/protocols/kintsu?w=48&h=48">
-    sMON - liquid staking with validator set
-  </Card>
-  <Card title="Magma" href="https://magmastaking.xyz" img="https://icons.llamao.fi/icons/protocols/magma?w=48&h=48">
-    gMON - gamified staking rewards
-  </Card>
-  <Card title="Mellow" href="https://mellow.finance" img="https://icons.llamao.fi/icons/protocols/mellow?w=48&h=48">
-    vshMON - modular restaking vaults
-  </Card>
-</CardGroup>
+<Section title="Lending" count={11}>
+  <Row name="Morpho Blue"    href="https://morpho.org"              slug="morpho"        desc="Permissionless vault-based lending" />
+  <Row name="Neverland"      href="https://neverland.fi"            slug="neverland"     desc="Aave V3 fork on Monad" />
+  <Row name="Euler V2"       href="https://euler.finance"           slug="euler"         desc="108 permissionless vaults" />
+  <Row name="Gearbox V3"     href="https://gearbox.fi"              slug="gearbox"       desc="Composable leverage protocol" />
+  <Row name="Curvance"       href="https://curvance.com"            slug="curvance"      desc="Cross-chain lending with gauges" />
+  <Row name="Folks Finance"  href="https://folks.finance"           slug="folks-finance" desc="Algorithmic lending, account model" />
+  <Row name="Sumer"          href="https://sumer.money"             slug="sumer"         desc="Multi-asset lending protocol" />
+  <Row name="Timeswap"       href="https://timeswap.io"             slug="timeswap"      desc="Oracle-free fixed-rate lending" />
+  <Row name="Lagoon"         href="https://lagoon.finance"          slug="lagoon"        desc="Yield-bearing vault lending" />
+  <Row name="Accountable"    href="https://accountable.finance"     slug="accountable"   desc="Undercollateralized lending" />
+  <Row name="TownSquare"     href="https://townsquare.fi"           slug="townsquare"    desc="Community-governed lending pools" />
+</Section>
 
-## Liquid Restaking
+<Section title="Liquid Staking" count={5}>
+  <Row name="aPriori"   href="https://apriori.xyz"          slug="apriori"  desc="aprMON - native MON liquid staking" />
+  <Row name="FastLane"  href="https://fastlane.finance"     slug="fastlane" desc="shMON - MEV-boosted staking yield" />
+  <Row name="Kintsu"    href="https://kintsu.xyz"           slug="kintsu"   desc="sMON - liquid staking with validator set" />
+  <Row name="Magma"     href="https://magmastaking.xyz"     slug="magma"    desc="gMON - gamified staking rewards" />
+  <Row name="Mellow"    href="https://mellow.finance"       slug="mellow"   desc="vshMON - modular restaking vaults" />
+</Section>
 
-<CardGroup cols={3}>
-  <Card title="Renzo" href="https://renzoprotocol.com" img="https://icons.llamao.fi/icons/protocols/renzo?w=48&h=48">
-    ezETH - EigenLayer liquid restaking
-  </Card>
-</CardGroup>
+<Section title="Liquid Restaking" count={1}>
+  <Row name="Renzo" href="https://renzoprotocol.com" slug="renzo" desc="ezETH - EigenLayer liquid restaking" />
+</Section>
 
-## DEX & AMM
+<Section title="DEX & AMM" count={14}>
+  <Row name="Uniswap V4"     href="https://uniswap.org"         slug="uniswap"       desc="Hooks-based concentrated liquidity" />
+  <Row name="Uniswap V3"     href="https://uniswap.org"         slug="uniswap-v3"    desc="Concentrated liquidity with tick ranges" />
+  <Row name="Uniswap V2"     href="https://uniswap.org"         slug="uniswap-v2"    desc="Classic constant-product AMM" />
+  <Row name="Curve Finance"  href="https://curve.fi"            slug="curve"         desc="Stableswap AMM for pegged assets" />
+  <Row name="Balancer V3"    href="https://balancer.fi"         slug="balancer"      desc="Weighted and composable stable pools" />
+  <Row name="PancakeSwap V3" href="https://pancakeswap.finance" slug="pancakeswap"   desc="Concentrated liquidity with CAKE rewards" />
+  <Row name="Trader Joe"     href="https://traderjoexyz.com"    slug="trader-joe"    desc="DLMM Liquidity Book, discrete bins" />
+  <Row name="iZiSwap"        href="https://izumi.finance"       slug="izumi"         desc="Discretized liquidity AMM (DLAMM)" />
+  <Row name="WooFi"          href="https://fi.woo.org"          slug="woofi"         desc="Synthetic proactive market maker" />
+  <Row name="Bean Exchange"  href="https://bean.exchange"       slug="bean-exchange" desc="Native Monad AMM" />
+  <Row name="Swaap"          href="https://swaap.finance"       slug="swaap"         desc="Market-neutral AMM with oracle pricing" />
+  <Row name="Nabla"          href="https://nabla.finance"       slug="nabla"         desc="Single-sided liquidity AMM" />
+  <Row name="Capricorn"      href="https://capricorn.finance"   slug="capricorn"     desc="Native Monad concentrated AMM" />
+  <Row name="Pingu"          href="https://pingu.exchange"      slug="pingu"         desc="Perp DEX with integrated spot AMM" />
+</Section>
 
-<CardGroup cols={3}>
-  <Card title="Uniswap V4" href="https://uniswap.org" img="https://icons.llamao.fi/icons/protocols/uniswap?w=48&h=48">
-    Hooks-based concentrated liquidity AMM
-  </Card>
-  <Card title="Uniswap V3" href="https://uniswap.org" img="https://icons.llamao.fi/icons/protocols/uniswap-v3?w=48&h=48">
-    Concentrated liquidity with tick ranges
-  </Card>
-  <Card title="Uniswap V2" href="https://uniswap.org" img="https://icons.llamao.fi/icons/protocols/uniswap-v2?w=48&h=48">
-    Classic constant-product AMM
-  </Card>
-  <Card title="Curve Finance" href="https://curve.fi" img="https://icons.llamao.fi/icons/protocols/curve?w=48&h=48">
-    Stableswap AMM optimized for pegged assets
-  </Card>
-  <Card title="Balancer V3" href="https://balancer.fi" img="https://icons.llamao.fi/icons/protocols/balancer?w=48&h=48">
-    Weighted and composable stable pools
-  </Card>
-  <Card title="PancakeSwap V3" href="https://pancakeswap.finance" img="https://icons.llamao.fi/icons/protocols/pancakeswap?w=48&h=48">
-    Concentrated liquidity with CAKE rewards
-  </Card>
-  <Card title="Trader Joe" href="https://traderjoexyz.com" img="https://icons.llamao.fi/icons/protocols/trader-joe?w=48&h=48">
-    DLMM Liquidity Book with discrete bins
-  </Card>
-  <Card title="iZiSwap" href="https://izumi.finance" img="https://icons.llamao.fi/icons/protocols/izumi?w=48&h=48">
-    Discretized liquidity AMM (DLAMM)
-  </Card>
-  <Card title="WooFi" href="https://fi.woo.org" img="https://icons.llamao.fi/icons/protocols/woofi?w=48&h=48">
-    Synthetic proactive market maker
-  </Card>
-  <Card title="Bean Exchange" href="https://bean.exchange" img="https://icons.llamao.fi/icons/protocols/bean-exchange?w=48&h=48">
-    Native Monad AMM with liquidity farming
-  </Card>
-  <Card title="Swaap" href="https://swaap.finance" img="https://icons.llamao.fi/icons/protocols/swaap?w=48&h=48">
-    Market-neutral AMM with oracle pricing
-  </Card>
-  <Card title="Nabla" href="https://nabla.finance" img="https://icons.llamao.fi/icons/protocols/nabla?w=48&h=48">
-    Single-sided liquidity AMM
-  </Card>
-  <Card title="Capricorn" href="https://capricorn.finance" img="https://icons.llamao.fi/icons/protocols/capricorn?w=48&h=48">
-    Native Monad concentrated AMM
-  </Card>
-  <Card title="Pingu" href="https://pingu.exchange" img="https://icons.llamao.fi/icons/protocols/pingu?w=48&h=48">
-    Perp DEX with integrated spot AMM
-  </Card>
-</CardGroup>
+<Section title="CLOB & Trading" count={3}>
+  <Row name="Kuru"          href="https://kuru.io"       slug="kuru"         desc="On-chain orderbook AMM native to Monad" />
+  <Row name="Clober V2"     href="https://clober.io"     slug="clober"       desc="Fully on-chain central limit order book" />
+  <Row name="Monday Trade"  href="https://monday.trade"  slug="monday-trade" desc="Perpetuals and spot, unified margin" />
+</Section>
 
-## CLOB & Trading
+<Section title="Perpetuals" count={4}>
+  <Row name="Perpl"            href="https://perpl.io"          slug="perpl"    desc="On-chain perpetuals with liquidity vaults" />
+  <Row name="Narwhal Finance"  href="https://narwhal.finance"   slug="narwhal"  desc="GLP-model perpetuals DEX" />
+  <Row name="Purps"            href="https://purps.xyz"         slug="purps"    desc="Minimalist perp trading on Monad" />
+  <Row name="LeverUp"          href="https://leverup.io"        slug="leverup"  desc="Leveraged yield positions" />
+</Section>
 
-<CardGroup cols={3}>
-  <Card title="Kuru" href="https://kuru.io" img="https://icons.llamao.fi/icons/protocols/kuru?w=48&h=48">
-    On-chain orderbook AMM native to Monad
-  </Card>
-  <Card title="Clober V2" href="https://clober.io" img="https://icons.llamao.fi/icons/protocols/clober?w=48&h=48">
-    Fully on-chain central limit order book
-  </Card>
-  <Card title="Monday Trade" href="https://monday.trade" img="https://icons.llamao.fi/icons/protocols/monday-trade?w=48&h=48">
-    Perpetuals and spot with unified margin
-  </Card>
-</CardGroup>
+<Section title="Yield" count={5}>
+  <Row name="Multipli.fi"  href="https://multipli.fi"        slug="multipli"  desc="RWA-backed yield strategies" />
+  <Row name="Upshift"      href="https://upshift.finance"    slug="upshift"   desc="Auto-compounding yield vaults" />
+  <Row name="Beefy"        href="https://beefy.com"          slug="beefy"     desc="Multi-chain yield optimizer" />
+  <Row name="Sherpa"       href="https://sherpa.cash"        slug="sherpa"    desc="Yield aggregator with auto-routing" />
+  <Row name="Enjoyoors"    href="https://enjoyoors.finance"  slug="enjoyoors" desc="Points and yield farming vaults" />
+</Section>
 
-## Perpetuals
+<Section title="Aggregators" count={2}>
+  <Row name="KyberSwap"   href="https://kyberswap.com"       slug="kyberswap"  desc="Multi-chain DEX aggregator" />
+  <Row name="OpenOcean"   href="https://openocean.finance"   slug="openocean"  desc="Cross-chain swap aggregator" />
+</Section>
 
-<CardGroup cols={3}>
-  <Card title="Perpl" href="https://perpl.io" img="https://icons.llamao.fi/icons/protocols/perpl?w=48&h=48">
-    On-chain perpetuals with liquidity vaults
-  </Card>
-  <Card title="Narwhal Finance" href="https://narwhal.finance" img="https://icons.llamao.fi/icons/protocols/narwhal?w=48&h=48">
-    GLP-model perpetuals DEX
-  </Card>
-  <Card title="Purps" href="https://purps.xyz" img="https://icons.llamao.fi/icons/protocols/purps?w=48&h=48">
-    Minimalist perp trading on Monad
-  </Card>
-  <Card title="LeverUp" href="https://leverup.io" img="https://icons.llamao.fi/icons/protocols/leverup?w=48&h=48">
-    Leveraged yield positions
-  </Card>
-</CardGroup>
+<Section title="Oracles" count={4}>
+  <Row name="Chainlink"  href="https://chain.link"         slug="chainlink"     desc="Decentralized price feeds" />
+  <Row name="Pyth"       href="https://pyth.network"       slug="pyth"          desc="High-frequency pull-based oracle" />
+  <Row name="Redstone"   href="https://redstone.finance"   slug="redstone"      desc="Modular oracle with calldata delivery" />
+  <Row name="Chronicle"  href="https://chroniclelabs.org"  slug="chronicle-labs" desc="Whitelisted oracle by MakerDAO" />
+</Section>
 
-## Yield
+<Section title="Launchpad" count={2}>
+  <Row name="nad.fun"  href="https://nad.fun"    slug="nad-fun" desc="Memecoin launchpad with bonding curves" />
+  <Row name="Doppler"  href="https://doppler.xyz" slug="doppler" desc="Token launch with dynamic pricing" />
+</Section>
 
-<CardGroup cols={3}>
-  <Card title="Multipli.fi" href="https://multipli.fi" img="https://icons.llamao.fi/icons/protocols/multipli?w=48&h=48">
-    RWA-backed yield strategies
-  </Card>
-  <Card title="Upshift" href="https://upshift.finance" img="https://icons.llamao.fi/icons/protocols/upshift?w=48&h=48">
-    Auto-compounding yield vaults
-  </Card>
-  <Card title="Beefy" href="https://beefy.com" img="https://icons.llamao.fi/icons/protocols/beefy?w=48&h=48">
-    Multi-chain yield optimizer
-  </Card>
-  <Card title="Sherpa" href="https://sherpa.cash" img="https://icons.llamao.fi/icons/protocols/sherpa?w=48&h=48">
-    Yield aggregator with auto-routing
-  </Card>
-  <Card title="Enjoyoors" href="https://enjoyoors.finance" img="https://icons.llamao.fi/icons/protocols/enjoyoors?w=48&h=48">
-    Points and yield farming vaults
-  </Card>
-</CardGroup>
+<Section title="Streaming" count={1}>
+  <Row name="Sablier" href="https://sablier.com" slug="sablier" desc="Real-time token streaming and vesting" />
+</Section>
 
-## Aggregators
+<Section title="CDP" count={1}>
+  <Row name="Covenant" href="https://covenant.finance" slug="covenant" desc="Collateralized debt position protocol" />
+</Section>
 
-<CardGroup cols={3}>
-  <Card title="KyberSwap" href="https://kyberswap.com" img="https://icons.llamao.fi/icons/protocols/kyberswap?w=48&h=48">
-    Multi-chain DEX aggregator with dynamic routing
-  </Card>
-  <Card title="OpenOcean" href="https://openocean.finance" img="https://icons.llamao.fi/icons/protocols/openocean?w=48&h=48">
-    Cross-chain swap aggregator
-  </Card>
-</CardGroup>
+<Section title="Cross-chain" count={1}>
+  <Row name="Skate" href="https://skatechain.org" slug="skate" desc="Unified liquidity across chains" />
+</Section>
 
-## Oracles
+<Section title="Indexer" count={1}>
+  <Row name="Envio" href="https://envio.dev" slug="envio" desc="High-performance on-chain data indexer" />
+</Section>
 
-<CardGroup cols={3}>
-  <Card title="Chainlink" href="https://chain.link" img="https://icons.llamao.fi/icons/protocols/chainlink?w=48&h=48">
-    Industry-standard decentralized price feeds
-  </Card>
-  <Card title="Pyth" href="https://pyth.network" img="https://icons.llamao.fi/icons/protocols/pyth?w=48&h=48">
-    High-frequency pull-based oracle network
-  </Card>
-  <Card title="Redstone" href="https://redstone.finance" img="https://icons.llamao.fi/icons/protocols/redstone?w=48&h=48">
-    Modular oracle with calldata delivery
-  </Card>
-  <Card title="Chronicle" href="https://chroniclelabs.org" img="https://icons.llamao.fi/icons/protocols/chronicle-labs?w=48&h=48">
-    Whitelisted oracle system by MakerDAO
-  </Card>
-</CardGroup>
-
-## Launchpad
-
-<CardGroup cols={3}>
-  <Card title="nad.fun" href="https://nad.fun" img="https://icons.llamao.fi/icons/protocols/nad-fun?w=48&h=48">
-    Memecoin launchpad with bonding curves
-  </Card>
-  <Card title="Doppler" href="https://doppler.xyz" img="https://icons.llamao.fi/icons/protocols/doppler?w=48&h=48">
-    Token launch with dynamic pricing
-  </Card>
-</CardGroup>
-
-## Streaming
-
-<CardGroup cols={3}>
-  <Card title="Sablier" href="https://sablier.com" img="https://icons.llamao.fi/icons/protocols/sablier?w=48&h=48">
-    Real-time token streaming and vesting
-  </Card>
-</CardGroup>
-
-## CDP
-
-<CardGroup cols={3}>
-  <Card title="Covenant" href="https://covenant.finance" img="https://icons.llamao.fi/icons/protocols/covenant?w=48&h=48">
-    Collateralized debt position protocol
-  </Card>
-</CardGroup>
-
-## Cross-chain
-
-<CardGroup cols={3}>
-  <Card title="Skate" href="https://skatechain.org" img="https://icons.llamao.fi/icons/protocols/skate?w=48&h=48">
-    Unified liquidity across chains
-  </Card>
-</CardGroup>
-
-## Indexer
-
-<CardGroup cols={3}>
-  <Card title="Envio" href="https://envio.dev" img="https://icons.llamao.fi/icons/protocols/envio?w=48&h=48">
-    High-performance on-chain data indexer
-  </Card>
-</CardGroup>
+</div>
