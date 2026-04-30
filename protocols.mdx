@@ -40,7 +40,7 @@ export const Section = ({ title, count, children }) => (
 
 <div className="not-prose" style={{marginTop:'24px'}}>
 
-<Section title="Lending" count={9}>
+<Section title="Lending" count={12}>
   <Row name="Morpho Blue"    href="https://morpho.org"              slug="morpho"        desc="Permissionless vault-based lending" />
   <Row name="Neverland"      href="https://neverland.fi"            slug="neverland"     desc="Aave V3 fork on Monad" />
   <Row name="Euler V2"       href="https://euler.finance"           slug="euler"         desc="108 permissionless vaults" />
@@ -50,6 +50,9 @@ export const Section = ({ title, count, children }) => (
   <Row name="Timeswap"       href="https://timeswap.io"             slug="timeswap"      desc="Oracle-free fixed-rate lending" />
   <Row name="Lagoon"         href="https://lagoon.finance"          slug="lagoon"        desc="Yield-bearing vault lending" />
   <Row name="TownSquare"     href="https://app.townsq.xyz"          icon="https://pbs.twimg.com/profile_images/1563311542334267398/gaQXK0FD_400x400.jpg" desc="Community-governed lending pools" />
+  <Row name="Accountable"    href="https://accountable.finance"     icon="https://pbs.twimg.com/profile_images/1760695497716203522/mvdR-2oP_400x400.jpg" desc="Undercollateralized institutional lending" />
+  <Row name="Sumer Money"    href="https://sumer.money"             icon="https://pbs.twimg.com/profile_images/1611413613541924864/rPPtMWRr_400x400.jpg" desc="Compound V2 fork with cross-chain synths" />
+  <Row name="Mu Digital"     href="https://mu.xyz"                  icon="https://pbs.twimg.com/profile_images/1858158948825714688/RkHJFsKA_400x400.jpg" desc="RWA structured credit: AZND, loAZND, muBOND" />
 </Section>
 
 <Section title="Liquid Staking" count={5}>
@@ -64,7 +67,7 @@ export const Section = ({ title, count, children }) => (
   <Row name="Renzo" href="https://renzoprotocol.com" slug="renzo" desc="ezETH - EigenLayer liquid restaking" />
 </Section>
 
-<Section title="DEX & AMM" count={11}>
+<Section title="DEX & AMM" count={13}>
   <Row name="Uniswap V4"     href="https://uniswap.org"         slug="uniswap"       desc="Hooks-based concentrated liquidity" />
   <Row name="Uniswap V3"     href="https://uniswap.org"         slug="uniswap-v3"    desc="Concentrated liquidity with tick ranges" />
   <Row name="Uniswap V2"     href="https://uniswap.org"         slug="uniswap-v2"    desc="Classic constant-product AMM" />
@@ -76,6 +79,8 @@ export const Section = ({ title, count, children }) => (
   <Row name="WooFi"          href="https://fi.woo.org"          slug="woofi"         desc="Synthetic proactive market maker" />
   <Row name="Bean Exchange"  href="https://bean.exchange"       slug="bean-exchange" desc="Native Monad AMM" />
   <Row name="Pingu"          href="https://pingu.exchange"      icon="https://pbs.twimg.com/profile_images/1969166356009373696/TQYJNyzA_400x400.png" desc="Perp DEX with integrated spot AMM" />
+  <Row name="Capricorn"      href="https://capricorn.finance"   icon="https://pbs.twimg.com/profile_images/1865437217823051776/P6J3Rmqv_400x400.jpg" desc="Concentrated liquidity DEX (Uniswap V3 fork)" />
+  <Row name="Nabla"          href="https://nabla.fi"            slug="nabla"         desc="Single-sided AMM with insurance pools" />
 </Section>
 
 <Section title="CLOB & Trading" count={3}>
@@ -84,14 +89,18 @@ export const Section = ({ title, count, children }) => (
   <Row name="Monday Trade"  href="https://monday.trade"  icon="https://unavatar.io/twitter/MondayTrade_" desc="Perpetuals and spot, unified margin" />
 </Section>
 
-<Section title="Perpetuals" count={1}>
-  <Row name="Perpl" href="https://app.perpl.xyz" slug="perpl" desc="On-chain perpetuals with liquidity vaults" />
+<Section title="Perpetuals" count={2}>
+  <Row name="Perpl"    href="https://app.perpl.xyz"        slug="perpl"    desc="On-chain perpetuals with liquidity vaults" />
+  <Row name="LeverUp"  href="https://leverup.finance"      icon="https://pbs.twimg.com/profile_images/1893297819754049536/2TkBSx2s_400x400.jpg" desc="Leveraged perps with LVUSD synthetic dollar" />
 </Section>
 
-<Section title="Yield" count={3}>
-  <Row name="Multipli.fi"  href="https://multipli.fi"        slug="multipli"  desc="RWA-backed yield strategies" />
-  <Row name="Upshift"      href="https://upshift.finance"    slug="upshift"   desc="Auto-compounding yield vaults" />
-  <Row name="Beefy"        href="https://beefy.com"          slug="beefy"     desc="Multi-chain yield optimizer" />
+<Section title="Yield" count={6}>
+  <Row name="Multipli.fi"        href="https://multipli.fi"           slug="multipli"  desc="RWA-backed yield strategies" />
+  <Row name="Upshift"            href="https://upshift.finance"       slug="upshift"   desc="Auto-compounding yield vaults" />
+  <Row name="Beefy"              href="https://beefy.com"             slug="beefy"     desc="Multi-chain yield optimizer" />
+  <Row name="Enjoyoors"          href="https://enjoyoors.xyz"         icon="https://pbs.twimg.com/profile_images/1876281291685879808/Kj1BDWjC_400x400.jpg" desc="Yield vaults with boosted rewards" />
+  <Row name="Sherpa Finance"     href="https://sherpa.finance"        icon="https://pbs.twimg.com/profile_images/1823421234782093312/3I8fVa3A_400x400.jpg" desc="Delta-neutral USDC yield vault" />
+  <Row name="UltraYield by Edge" href="https://ultrayield.edge.capital" icon="https://pbs.twimg.com/profile_images/1882140657296347136/P6EBXFhO_400x400.jpg" desc="ERC-4626 vaults on Gearbox V3 (~$24M TVL)" />
 </Section>
 
 <Section title="Aggregators" count={2}>
