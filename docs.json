@@ -35,76 +35,86 @@
             "pages": ["introduction", "quickstart", "protocols"]
           },
           {
-            "group": "DEX",
-            "pages": [
-              "sdk/dex/overview",
-              "sdk/dex/kuru",
-              "sdk/dex/uniswap",
-              "sdk/dex/uniswap-v4",
-              "sdk/dex/pancakeswap",
-              "sdk/dex/clober",
-              "sdk/dex/iziswap",
-              "sdk/dex/capricorn",
-              "sdk/dex/kyberswap",
-              "sdk/dex/swaap",
-              "sdk/dex/woofi",
-              "sdk/dex/lfj",
-              "sdk/dex/openocean",
-              "sdk/dex/bean"
-            ]
-          },
-          {
             "group": "Lending",
             "pages": [
               "sdk/lending/overview",
+              "sdk/lending/morpho",
               "sdk/lending/neverland",
               "sdk/lending/euler",
-              "sdk/lending/morpho",
+              "sdk/lending/gearbox",
               "sdk/lending/curvance",
-              "sdk/lending/sherpa",
-              "sdk/lending/accountable",
               "sdk/lending/folks",
-              "sdk/lending/sumer",
               "sdk/lending/townsquare",
-              "sdk/lending/timeswap",
-              "sdk/lending/nabla",
-              "sdk/lending/covenant",
-              "sdk/lending/multipli",
-              "sdk/lending/leverup"
+              "sdk/lending/accountable",
+              "sdk/lending/sumer",
+              "sdk/lending/mu"
             ]
           },
           {
-            "group": "LST",
+            "group": "Liquid Staking",
             "pages": [
               "sdk/lst/overview",
               "sdk/lst/staking",
               "sdk/lst/apriori",
-              "sdk/lst/mellow",
-              "sdk/lst/renzo",
-              "sdk/lst/lagoon",
-              "sdk/lst/upshift",
-              "sdk/lst/beefy"
+              "sdk/lst/fastlane",
+              "sdk/lst/kintsu",
+              "sdk/lst/magma",
+              "sdk/lst/mellow"
             ]
           },
           {
-            "group": "Perps",
+            "group": "Liquid Restaking",
+            "pages": ["sdk/lst/renzo"]
+          },
+          {
+            "group": "DEX & AMM",
+            "pages": [
+              "sdk/dex/overview",
+              "sdk/dex/uniswap-v4",
+              "sdk/dex/uniswap",
+              "sdk/dex/curve",
+              "sdk/dex/balancer",
+              "sdk/dex/pancakeswap",
+              "sdk/dex/lfj",
+              "sdk/dex/iziswap",
+              "sdk/dex/woofi",
+              "sdk/dex/bean",
+              "sdk/dex/capricorn"
+            ]
+          },
+          {
+            "group": "CLOB & Trading",
+            "pages": [
+              "sdk/dex/kuru",
+              "sdk/dex/clober"
+            ]
+          },
+          {
+            "group": "Perpetuals",
             "pages": [
               "sdk/perps/overview",
-              "sdk/perps/perps",
-              "sdk/perps/pingu",
-              "sdk/perps/purps"
+              "sdk/perps/perpl",
+              "sdk/perps/leverup"
             ]
           },
           {
             "group": "Yield",
             "pages": [
               "sdk/yield/overview",
-              "sdk/yield/enjoyoors",
-              "sdk/yield/gearbox",
-              "sdk/yield/sablier",
-              "sdk/yield/balancer",
-              "sdk/yield/curve",
-              "sdk/yield/nadfun"
+              "sdk/yield/multipli",
+              "sdk/yield/upshift",
+              "sdk/yield/beefy",
+              "sdk/yield/sherpa",
+              "sdk/yield/ultrayield"
+            ]
+          },
+          {
+            "group": "Aggregators",
+            "pages": [
+              "sdk/aggregators/router",
+              "sdk/aggregators/market",
+              "sdk/dex/kyberswap",
+              "sdk/dex/openocean"
             ]
           },
           {
@@ -112,11 +122,16 @@
             "pages": ["sdk/oracles/oracles"]
           },
           {
-            "group": "Aggregators",
-            "pages": [
-              "sdk/aggregators/router",
-              "sdk/aggregators/market"
-            ]
+            "group": "Launchpad",
+            "pages": ["sdk/launchpad/nadfun"]
+          },
+          {
+            "group": "Streaming",
+            "pages": ["sdk/streaming/sablier"]
+          },
+          {
+            "group": "Indexer",
+            "pages": ["sdk/indexer/envio"]
           },
           {
             "group": "AI Agent",

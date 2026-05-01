@@ -1,0 +1,58 @@
+---
+title: "UltraYield by Edge"
+description: "ERC-4626 vaults on Gearbox V3 by Edge Capital (~$24M TVL)"
+---
+
+<Info>
+**TVL:** ~$24M | **Type:** ERC-4626 Yield Vaults | **Docs:** [ultrayield.edge.capital](https://ultrayield.edge.capital)
+</Info>
+
+## Overview
+
+UltraYield by Edge Capital wraps Gearbox V3 credit accounts into ERC-4626 vaults, providing a simple deposit interface for passive LPs. Depositors earn leveraged yield from Gearbox's credit account strategies without managing positions directly.
+
+## Functions
+
+### getUltraYieldVaults()
+
+Returns all UltraYield vaults with current APY and total assets.
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+const vaults = await sdk.getUltraYieldVaults()
+// → UltraYieldVault[]
+
+vaults.forEach(v => {
+  console.log(`${v.asset}: ${(v.apy * 100).toFixed(2)}% APY | TVL $${(v.totalAssets / 1e6).toFixed(1)}M`)
+})
+```
+
+### getUltraYieldAPY()
+
+Returns the best current APY across all UltraYield vaults.
+
+```typescript
+const apy = await sdk.getUltraYieldAPY()
+// → number, e.g. 0.21
+```
+
+### getUltraYieldTVL()
+
+Returns total value locked across all UltraYield vaults in USD.
+
+```typescript
+const tvl = await sdk.getUltraYieldTVL()
+// → number (USD)
+```
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| USDC Vault | `0x2F8a1dC7e9B3fA5c6D4e2b1A9c8E7d0F3b2a1c5e` |
+
+<Note>
+UltraYield vaults source yield from Gearbox V3 credit accounts. APY reflects current Gearbox utilization rates and may vary significantly.
+</Note>

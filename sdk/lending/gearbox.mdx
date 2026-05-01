@@ -1,0 +1,68 @@
+---
+title: "Gearbox"
+description: "Leveraged yield via Gearbox V3 credit accounts on Monad"
+---
+
+<Info>
+**Type:** Leveraged Yield (Gearbox V3) | **Docs:** [docs.gearbox.finance](https://docs.gearbox.finance)
+</Info>
+
+## Overview
+
+Gearbox V3 is a composable leverage protocol. **Passive LPs** deposit assets into Gearbox pools and earn interest from borrowers. **Active borrowers** open credit accounts and use leveraged capital across whitelisted DeFi protocols (Curve, Convex, Yearn-style vaults, etc.).
+
+On Monad, the Rampart reads Gearbox pool data - total liquidity, utilization rate, and the APY passive LPs currently earn. This is the **passive yield** side; credit account management is out of scope.
+
+## Types
+
+```typescript
+type GearboxPool = {
+  address: `0x${string}`
+  asset: `0x${string}`          // underlying token
+  apy: number                    // current passive LP APY
+  totalLiquidity: number         // USD value of assets in the pool
+  protocol: 'gearbox'
+}
+```
+
+## Functions
+
+### getGearboxPools()
+
+Returns all Gearbox pools on Monad with their current APY and liquidity.
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+const pools = await sdk.getGearboxPools()
+// → GearboxPool[]
+
+pools.forEach(p => {
+  console.log(
+    `Pool ${p.address}: APY ${(p.apy * 100).toFixed(2)}%  ` +
+    `Liquidity $${(p.totalLiquidity / 1e6).toFixed(1)}M`
+  )
+})
+```
+
+### getGearboxTVL()
+
+Returns the total liquidity deposited across all Gearbox pools on Monad in USD.
+
+```typescript
+const tvl = await sdk.getGearboxTVL()
+// → number (USD)
+
+console.log(`Gearbox TVL: $${(tvl / 1e6).toFixed(1)}M`)
+```
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| PoolFactory | `0x9f0f0B07fFBf9C2F0a70B7bFdF9d5F84C434e1D8` |
+
+<Note>
+Pool APY on Gearbox depends on utilization rate. Higher borrower demand = higher passive LP yield. APYs are more volatile than simple vault yields.
+</Note>

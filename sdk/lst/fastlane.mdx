@@ -1,0 +1,52 @@
+---
+title: "FastLane"
+description: "shMON liquid staking with MEV-boosted yield on Monad"
+---
+
+<Info>
+**Type:** Liquid Staking | **Token:** shMON | **Docs:** [fastlane.finance](https://www.fastlane.finance)
+</Info>
+
+## Overview
+
+FastLane issues **shMON** — a liquid staking token that captures both native staking rewards and MEV income redirected back to stakers. The exchange rate between shMON and MON increases continuously as rewards accrue.
+
+## Functions
+
+### getFastLaneLST()
+
+Returns the full `LSTStats` snapshot for shMON.
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+const lst = await sdk.getFastLaneLST()
+
+console.log(`shMON APR: ${(lst.apr * 100).toFixed(2)}%`)
+console.log(`Exchange rate: 1 shMON = ${lst.exchangeRate} MON`)
+```
+
+### getFastLaneExchangeRate()
+
+Returns the current shMON/MON exchange rate.
+
+```typescript
+const rate = await sdk.getFastLaneExchangeRate()
+// → number, e.g. 1.543
+```
+
+### getFastLaneTVL()
+
+Returns total MON deposited, denominated in USD.
+
+```typescript
+const tvl = await sdk.getFastLaneTVL()
+// → number (USD)
+```
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| shMON token | `0x6B28C42d9E3dB8dAB55F85e3B05D63A2B7F9B7d2` |

@@ -1,0 +1,54 @@
+---
+title: "Perpl"
+description: "On-chain perpetuals with liquidity vaults on Monad"
+---
+
+<Info>
+**Type:** Perpetuals | **Docs:** [perpl.xyz](https://app.perpl.xyz)
+</Info>
+
+## Overview
+
+Perpl is a fully on-chain perpetuals exchange on Monad. Liquidity providers deposit into vaults and act as the counterparty to traders. The protocol uses an oracle-based pricing model and supports cross-margined positions.
+
+## Functions
+
+### getPerplMarkets()
+
+Returns all active Perpl perpetual markets.
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+const markets = await sdk.getPerplMarkets()
+// → PerplMarket[]
+
+markets.forEach(m => {
+  console.log(`${m.pair}: OI $${(m.openInterest / 1e6).toFixed(1)}M`)
+})
+```
+
+### getPerplVaults()
+
+Returns all Perpl liquidity vaults with current APY and TVL.
+
+```typescript
+const vaults = await sdk.getPerplVaults()
+// → [{ asset: 'USDC', apy: 0.18, tvl: 4200000, protocol: 'perpl' }]
+```
+
+### getPerplTVL()
+
+Returns total value locked across all Perpl vaults in USD.
+
+```typescript
+const tvl = await sdk.getPerplTVL()
+// → number (USD)
+```
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| Vault | `0x3A7c8E5fB3d2A1C9D8e4f6B2a5c7E9d0F1b3a2c4` |

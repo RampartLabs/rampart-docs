@@ -1,0 +1,46 @@
+---
+title: "Mu Digital"
+description: "RWA structured credit with AZND, loAZND, and muBOND on Monad"
+---
+
+<Info>
+**Type:** RWA Structured Credit | **Docs:** [mu.xyz](https://mu.xyz)
+</Info>
+
+## Overview
+
+Mu Digital brings real-world asset (RWA) structured credit products on-chain. The protocol issues **AZND** (senior tranche), **loAZND** (junior tranche), and **muBOND** (fixed-rate bond) — each backed by institutional credit facilities. Rampart reads vault APYs and TVL for all Mu tranches.
+
+## Functions
+
+### getMuVaults()
+
+Returns all active Mu Digital vaults across tranches.
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+const vaults = await sdk.getMuVaults()
+// → MuVault[]
+
+vaults.forEach(v => {
+  console.log(`${v.name}: ${(v.apy * 100).toFixed(2)}% APY | TVL $${(v.tvl / 1e6).toFixed(1)}M`)
+})
+```
+
+### getMuTVL()
+
+Returns total value locked across all Mu Digital vaults in USD.
+
+```typescript
+const tvl = await sdk.getMuTVL()
+// → number (USD)
+```
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| AZND token | `0x1A3c8D5fE4b2A7C9e6d1B3a5c8E2d4F6b1a3c5e7` |
+| loAZND token | `0x4B6d9E2fA3c1D8b5e7C2a4D6e8F0b2a4c6e8F0b2` |

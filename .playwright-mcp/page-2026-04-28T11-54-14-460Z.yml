@@ -1,0 +1,637 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - link "Skip to main content" [ref=e3] [cursor=pointer]:
+      - /url: "#content-area"
+    - generic [ref=e5]:
+      - generic [ref=e10]:
+        - generic [ref=e12]:
+          - link "RampartLabs home page light logo" [ref=e14] [cursor=pointer]:
+            - /url: /
+            - generic [ref=e15]: RampartLabs home page
+            - img "light logo" [ref=e16]
+          - generic [ref=e17]:
+            - button "Open search" [ref=e18] [cursor=pointer]:
+              - generic [ref=e19]: Search...
+              - img [ref=e20]
+            - button [ref=e21] [cursor=pointer]:
+              - img [ref=e22]
+            - button "More actions" [ref=e25] [cursor=pointer]:
+              - img [ref=e26]
+        - button "Navigation Getting Started Supported Protocols" [ref=e27] [cursor=pointer]:
+          - generic [ref=e28]:
+            - generic [ref=e29]: Navigation
+            - img [ref=e30]
+          - generic [ref=e32]:
+            - generic [ref=e33]:
+              - generic [ref=e34]: Getting Started
+              - img [ref=e35]
+            - generic [ref=e37]: Supported Protocols
+      - generic [ref=e41]:
+        - banner [ref=e42]:
+          - generic [ref=e43]:
+            - generic [ref=e44]: Getting Started
+            - heading "Supported Protocols" [level=1] [ref=e46]
+          - paragraph [ref=e48]: 55+ protocols integrated on Monad Mainnet - accessible via a single import
+        - generic [ref=e49]:
+          - generic [ref=e50]: Rampart integrates 55+ protocols on Monad. All are accessible via a single import with full TypeScript types.
+          - generic [ref=e51]:
+            - generic [ref=e52]:
+              - button "Copy the contents from the code block" [ref=e54] [cursor=pointer]:
+                - img [ref=e55]
+              - button "Ask AI" [ref=e59] [cursor=pointer]:
+                - img [ref=e60]
+            - code [ref=e66]:
+              - generic [ref=e67]: "import { getMorphoVaults, getStakingAPR, getBestSwapRoute } from 'rampart-monad'"
+          - generic [ref=e68]:
+            - generic [ref=e70]:
+              - img [ref=e72]
+              - generic [ref=e73]:
+                - heading "55 protocols" [level=2] [ref=e74]
+                - generic [ref=e75]: 14 categories, one package
+            - generic [ref=e77]:
+              - img [ref=e79]
+              - generic [ref=e80]:
+                - heading "$800M+ TVL" [level=2] [ref=e81]
+                - generic [ref=e82]: Tracked across all protocols
+            - generic [ref=e84]:
+              - img [ref=e86]
+              - generic [ref=e87]:
+                - heading "41 AI tools" [level=2] [ref=e88]
+                - generic [ref=e89]: Vercel AI SDK compatible
+            - generic [ref=e91]:
+              - img [ref=e93]
+              - generic [ref=e94]:
+                - heading "Single import" [level=2] [ref=e95]
+                - generic [ref=e96]: No per-protocol setup
+          - separator [ref=e97]
+          - heading "Navigate to header Lending" [level=2] [ref=e98]:
+            - link "Navigate to header" [ref=e99] [cursor=pointer]:
+              - /url: "#lending"
+              - img [ref=e101]
+            - generic [ref=e103] [cursor=pointer]: Lending
+          - generic [ref=e104]:
+            - link "icons.llamao" [ref=e105] [cursor=pointer]:
+              - img "icons.llamao" [ref=e106]
+              - link [ref=e108]:
+                - /url: https://morpho.org
+                - img [ref=e110]
+                - generic [ref=e113]:
+                  - heading [level=2] [ref=e114]: Morpho Blue
+                  - generic [ref=e116]: Permissionless vault-based lending
+            - link "icons.llamao" [ref=e117] [cursor=pointer]:
+              - img "icons.llamao" [ref=e118]
+              - link [ref=e120]:
+                - /url: https://neverland.fi
+                - img [ref=e122]
+                - generic [ref=e125]:
+                  - heading [level=2] [ref=e126]: Neverland
+                  - generic [ref=e128]: Aave V3 fork on Monad
+            - link "icons.llamao" [ref=e129] [cursor=pointer]:
+              - img "icons.llamao" [ref=e130]
+              - link [ref=e132]:
+                - /url: https://euler.finance
+                - img [ref=e134]
+                - generic [ref=e137]:
+                  - heading [level=2] [ref=e138]: Euler V2
+                  - generic [ref=e140]: 108 permissionless vaults
+            - link "icons.llamao" [ref=e141] [cursor=pointer]:
+              - img "icons.llamao" [ref=e142]
+              - link [ref=e144]:
+                - /url: https://gearbox.fi
+                - img [ref=e146]
+                - generic [ref=e149]:
+                  - heading [level=2] [ref=e150]: Gearbox V3
+                  - generic [ref=e152]: Composable leverage protocol
+            - link "icons.llamao" [ref=e153] [cursor=pointer]:
+              - img "icons.llamao" [ref=e154]
+              - link [ref=e156]:
+                - /url: https://curvance.com
+                - img [ref=e158]
+                - generic [ref=e161]:
+                  - heading [level=2] [ref=e162]: Curvance
+                  - generic [ref=e164]: Cross-chain lending with gauge incentives
+            - link "icons.llamao" [ref=e165] [cursor=pointer]:
+              - img "icons.llamao" [ref=e166]
+              - link [ref=e168]:
+                - /url: https://folks.finance
+                - img [ref=e170]
+                - generic [ref=e173]:
+                  - heading [level=2] [ref=e174]: Folks Finance
+                  - generic [ref=e176]: Algorithmic lending with account model
+            - link "icons.llamao" [ref=e177] [cursor=pointer]:
+              - img "icons.llamao" [ref=e178]
+              - link [ref=e180]:
+                - /url: https://sumer.money
+                - img [ref=e182]
+                - generic [ref=e185]:
+                  - heading [level=2] [ref=e186]: Sumer
+                  - generic [ref=e188]: Multi-asset lending protocol
+            - link "icons.llamao" [ref=e189] [cursor=pointer]:
+              - img "icons.llamao" [ref=e190]
+              - link [ref=e192]:
+                - /url: https://timeswap.io
+                - img [ref=e194]
+                - generic [ref=e197]:
+                  - heading [level=2] [ref=e198]: Timeswap
+                  - generic [ref=e200]: Oracle-free fixed-rate lending
+            - link "icons.llamao" [ref=e201] [cursor=pointer]:
+              - img "icons.llamao" [ref=e202]
+              - link [ref=e204]:
+                - /url: https://lagoon.finance
+                - img [ref=e206]
+                - generic [ref=e209]:
+                  - heading [level=2] [ref=e210]: Lagoon
+                  - generic [ref=e212]: Yield-bearing vault lending
+            - link "icons.llamao" [ref=e213] [cursor=pointer]:
+              - img "icons.llamao" [ref=e214]
+              - link [ref=e216]:
+                - /url: https://accountable.finance
+                - img [ref=e218]
+                - generic [ref=e221]:
+                  - heading [level=2] [ref=e222]: Accountable
+                  - generic [ref=e224]: Undercollateralized lending
+            - link "icons.llamao" [ref=e225] [cursor=pointer]:
+              - img "icons.llamao" [ref=e226]
+              - link [ref=e228]:
+                - /url: https://townsquare.fi
+                - img [ref=e230]
+                - generic [ref=e233]:
+                  - heading [level=2] [ref=e234]: TownSquare
+                  - generic [ref=e236]: Community-governed lending pools
+          - heading "Navigate to header Liquid Staking" [level=2] [ref=e237]:
+            - link "Navigate to header" [ref=e238] [cursor=pointer]:
+              - /url: "#liquid-staking"
+              - img [ref=e240]
+            - generic [ref=e242] [cursor=pointer]: Liquid Staking
+          - generic [ref=e243]:
+            - link "icons.llamao" [ref=e244] [cursor=pointer]:
+              - img "icons.llamao" [ref=e245]
+              - link [ref=e247]:
+                - /url: https://apriori.xyz
+                - img [ref=e249]
+                - generic [ref=e252]:
+                  - heading [level=2] [ref=e253]: aPriori
+                  - generic [ref=e255]: aprMON - native MON liquid staking
+            - link "icons.llamao" [ref=e256] [cursor=pointer]:
+              - img "icons.llamao" [ref=e257]
+              - link [ref=e259]:
+                - /url: https://fastlane.finance
+                - img [ref=e261]
+                - generic [ref=e264]:
+                  - heading [level=2] [ref=e265]: FastLane
+                  - generic [ref=e267]: shMON - MEV-boosted staking yield
+            - link "icons.llamao" [ref=e268] [cursor=pointer]:
+              - img "icons.llamao" [ref=e269]
+              - link [ref=e271]:
+                - /url: https://kintsu.xyz
+                - img [ref=e273]
+                - generic [ref=e276]:
+                  - heading [level=2] [ref=e277]: Kintsu
+                  - generic [ref=e279]: sMON - liquid staking with validator set
+            - link "icons.llamao" [ref=e280] [cursor=pointer]:
+              - img "icons.llamao" [ref=e281]
+              - link [ref=e283]:
+                - /url: https://magmastaking.xyz
+                - img [ref=e285]
+                - generic [ref=e288]:
+                  - heading [level=2] [ref=e289]: Magma
+                  - generic [ref=e291]: gMON - gamified staking rewards
+            - link "icons.llamao" [ref=e292] [cursor=pointer]:
+              - img "icons.llamao" [ref=e293]
+              - link [ref=e295]:
+                - /url: https://mellow.finance
+                - img [ref=e297]
+                - generic [ref=e300]:
+                  - heading [level=2] [ref=e301]: Mellow
+                  - generic [ref=e303]: vshMON - modular restaking vaults
+          - heading "Navigate to header Liquid Restaking" [level=2] [ref=e304]:
+            - link "Navigate to header" [ref=e305] [cursor=pointer]:
+              - /url: "#liquid-restaking"
+              - img [ref=e307]
+            - generic [ref=e309] [cursor=pointer]: Liquid Restaking
+          - link "icons.llamao" [ref=e311] [cursor=pointer]:
+            - img "icons.llamao" [ref=e312]
+            - link [ref=e314]:
+              - /url: https://renzoprotocol.com
+              - img [ref=e316]
+              - generic [ref=e319]:
+                - heading [level=2] [ref=e320]: Renzo
+                - generic [ref=e322]: ezETH - EigenLayer liquid restaking
+          - heading "Navigate to header DEX & AMM" [level=2] [ref=e323]:
+            - link "Navigate to header" [ref=e324] [cursor=pointer]:
+              - /url: "#dex-&-amm"
+              - img [ref=e326]
+            - generic [ref=e328] [cursor=pointer]: DEX & AMM
+          - generic [ref=e329]:
+            - link "icons.llamao" [ref=e330] [cursor=pointer]:
+              - img "icons.llamao" [ref=e331]
+              - link [ref=e333]:
+                - /url: https://uniswap.org
+                - img [ref=e335]
+                - generic [ref=e338]:
+                  - heading [level=2] [ref=e339]: Uniswap V4
+                  - generic [ref=e341]: Hooks-based concentrated liquidity AMM
+            - link "icons.llamao" [ref=e342] [cursor=pointer]:
+              - img "icons.llamao" [ref=e343]
+              - link [ref=e345]:
+                - /url: https://uniswap.org
+                - img [ref=e347]
+                - generic [ref=e350]:
+                  - heading [level=2] [ref=e351]: Uniswap V3
+                  - generic [ref=e353]: Concentrated liquidity with tick ranges
+            - link "icons.llamao" [ref=e354] [cursor=pointer]:
+              - img "icons.llamao" [ref=e355]
+              - link [ref=e357]:
+                - /url: https://uniswap.org
+                - img [ref=e359]
+                - generic [ref=e362]:
+                  - heading [level=2] [ref=e363]: Uniswap V2
+                  - generic [ref=e365]: Classic constant-product AMM
+            - link "icons.llamao" [ref=e366] [cursor=pointer]:
+              - img "icons.llamao" [ref=e367]
+              - link [ref=e369]:
+                - /url: https://curve.fi
+                - img [ref=e371]
+                - generic [ref=e374]:
+                  - heading [level=2] [ref=e375]: Curve Finance
+                  - generic [ref=e377]: Stableswap AMM optimized for pegged assets
+            - link "icons.llamao" [ref=e378] [cursor=pointer]:
+              - img "icons.llamao" [ref=e379]
+              - link [ref=e381]:
+                - /url: https://balancer.fi
+                - img [ref=e383]
+                - generic [ref=e386]:
+                  - heading [level=2] [ref=e387]: Balancer V3
+                  - generic [ref=e389]: Weighted and composable stable pools
+            - link "icons.llamao" [ref=e390] [cursor=pointer]:
+              - img "icons.llamao" [ref=e391]
+              - link [ref=e393]:
+                - /url: https://pancakeswap.finance
+                - img [ref=e395]
+                - generic [ref=e398]:
+                  - heading [level=2] [ref=e399]: PancakeSwap V3
+                  - generic [ref=e401]: Concentrated liquidity with CAKE rewards
+            - link "icons.llamao" [ref=e402] [cursor=pointer]:
+              - img "icons.llamao" [ref=e403]
+              - link [ref=e405]:
+                - /url: https://traderjoexyz.com
+                - img [ref=e407]
+                - generic [ref=e410]:
+                  - heading [level=2] [ref=e411]: Trader Joe
+                  - generic [ref=e413]: DLMM Liquidity Book with discrete bins
+            - link "icons.llamao" [ref=e414] [cursor=pointer]:
+              - img "icons.llamao" [ref=e415]
+              - link [ref=e417]:
+                - /url: https://izumi.finance
+                - img [ref=e419]
+                - generic [ref=e422]:
+                  - heading [level=2] [ref=e423]: iZiSwap
+                  - generic [ref=e425]: Discretized liquidity AMM (DLAMM)
+            - link "icons.llamao" [ref=e426] [cursor=pointer]:
+              - img "icons.llamao" [ref=e427]
+              - link [ref=e429]:
+                - /url: https://fi.woo.org
+                - img [ref=e431]
+                - generic [ref=e434]:
+                  - heading [level=2] [ref=e435]: WooFi
+                  - generic [ref=e437]: Synthetic proactive market maker
+            - link "icons.llamao" [ref=e438] [cursor=pointer]:
+              - img "icons.llamao" [ref=e439]
+              - link [ref=e441]:
+                - /url: https://bean.exchange
+                - img [ref=e443]
+                - generic [ref=e446]:
+                  - heading [level=2] [ref=e447]: Bean Exchange
+                  - generic [ref=e449]: Native Monad AMM with liquidity farming
+            - link "icons.llamao" [ref=e450] [cursor=pointer]:
+              - img "icons.llamao" [ref=e451]
+              - link [ref=e453]:
+                - /url: https://swaap.finance
+                - img [ref=e455]
+                - generic [ref=e458]:
+                  - heading [level=2] [ref=e459]: Swaap
+                  - generic [ref=e461]: Market-neutral AMM with oracle pricing
+            - link "icons.llamao" [ref=e462] [cursor=pointer]:
+              - img "icons.llamao" [ref=e463]
+              - link [ref=e465]:
+                - /url: https://nabla.finance
+                - img [ref=e467]
+                - generic [ref=e470]:
+                  - heading [level=2] [ref=e471]: Nabla
+                  - generic [ref=e473]: Single-sided liquidity AMM
+            - link "icons.llamao" [ref=e474] [cursor=pointer]:
+              - img "icons.llamao" [ref=e475]
+              - link [ref=e477]:
+                - /url: https://capricorn.finance
+                - img [ref=e479]
+                - generic [ref=e482]:
+                  - heading [level=2] [ref=e483]: Capricorn
+                  - generic [ref=e485]: Native Monad concentrated AMM
+            - link "icons.llamao" [ref=e486] [cursor=pointer]:
+              - img "icons.llamao" [ref=e487]
+              - link [ref=e489]:
+                - /url: https://pingu.exchange
+                - img [ref=e491]
+                - generic [ref=e494]:
+                  - heading [level=2] [ref=e495]: Pingu
+                  - generic [ref=e497]: Perp DEX with integrated spot AMM
+          - heading "Navigate to header CLOB & Trading" [level=2] [ref=e498]:
+            - link "Navigate to header" [ref=e499] [cursor=pointer]:
+              - /url: "#clob-&-trading"
+              - img [ref=e501]
+            - generic [ref=e503] [cursor=pointer]: CLOB & Trading
+          - generic [ref=e504]:
+            - link "icons.llamao" [ref=e505] [cursor=pointer]:
+              - img "icons.llamao" [ref=e506]
+              - link [ref=e508]:
+                - /url: https://kuru.io
+                - img [ref=e510]
+                - generic [ref=e513]:
+                  - heading [level=2] [ref=e514]: Kuru
+                  - generic [ref=e516]: On-chain orderbook AMM native to Monad
+            - link "icons.llamao" [ref=e517] [cursor=pointer]:
+              - img "icons.llamao" [ref=e518]
+              - link [ref=e520]:
+                - /url: https://clober.io
+                - img [ref=e522]
+                - generic [ref=e525]:
+                  - heading [level=2] [ref=e526]: Clober V2
+                  - generic [ref=e528]: Fully on-chain central limit order book
+            - link "icons.llamao" [ref=e529] [cursor=pointer]:
+              - img "icons.llamao" [ref=e530]
+              - link [ref=e532]:
+                - /url: https://monday.trade
+                - img [ref=e534]
+                - generic [ref=e537]:
+                  - heading [level=2] [ref=e538]: Monday Trade
+                  - generic [ref=e540]: Perpetuals and spot with unified margin
+          - heading "Navigate to header Perpetuals" [level=2] [ref=e541]:
+            - link "Navigate to header" [ref=e542] [cursor=pointer]:
+              - /url: "#perpetuals"
+              - img [ref=e544]
+            - generic [ref=e546] [cursor=pointer]: Perpetuals
+          - generic [ref=e547]:
+            - link "icons.llamao" [ref=e548] [cursor=pointer]:
+              - img "icons.llamao" [ref=e549]
+              - link [ref=e551]:
+                - /url: https://perpl.io
+                - img [ref=e553]
+                - generic [ref=e556]:
+                  - heading [level=2] [ref=e557]: Perpl
+                  - generic [ref=e559]: On-chain perpetuals with liquidity vaults
+            - link "icons.llamao" [ref=e560] [cursor=pointer]:
+              - img "icons.llamao" [ref=e561]
+              - link [ref=e563]:
+                - /url: https://narwhal.finance
+                - img [ref=e565]
+                - generic [ref=e568]:
+                  - heading [level=2] [ref=e569]: Narwhal Finance
+                  - generic [ref=e571]: GLP-model perpetuals DEX
+            - link "icons.llamao" [ref=e572] [cursor=pointer]:
+              - img "icons.llamao" [ref=e573]
+              - link [ref=e575]:
+                - /url: https://purps.xyz
+                - img [ref=e577]
+                - generic [ref=e580]:
+                  - heading [level=2] [ref=e581]: Purps
+                  - generic [ref=e583]: Minimalist perp trading on Monad
+            - link "icons.llamao" [ref=e584] [cursor=pointer]:
+              - img "icons.llamao" [ref=e585]
+              - link [ref=e587]:
+                - /url: https://leverup.io
+                - img [ref=e589]
+                - generic [ref=e592]:
+                  - heading [level=2] [ref=e593]: LeverUp
+                  - generic [ref=e595]: Leveraged yield positions
+          - heading "Navigate to header Yield" [level=2] [ref=e596]:
+            - link "Navigate to header" [ref=e597] [cursor=pointer]:
+              - /url: "#yield"
+              - img [ref=e599]
+            - generic [ref=e601] [cursor=pointer]: Yield
+          - generic [ref=e602]:
+            - link "icons.llamao" [ref=e603] [cursor=pointer]:
+              - img "icons.llamao" [ref=e604]
+              - link [ref=e606]:
+                - /url: https://multipli.fi
+                - img [ref=e608]
+                - generic [ref=e611]:
+                  - heading [level=2] [ref=e612]: Multipli.fi
+                  - generic [ref=e614]: RWA-backed yield strategies
+            - link "icons.llamao" [ref=e615] [cursor=pointer]:
+              - img "icons.llamao" [ref=e616]
+              - link [ref=e618]:
+                - /url: https://upshift.finance
+                - img [ref=e620]
+                - generic [ref=e623]:
+                  - heading [level=2] [ref=e624]: Upshift
+                  - generic [ref=e626]: Auto-compounding yield vaults
+            - link "icons.llamao" [ref=e627] [cursor=pointer]:
+              - img "icons.llamao" [ref=e628]
+              - link [ref=e630]:
+                - /url: https://beefy.com
+                - img [ref=e632]
+                - generic [ref=e635]:
+                  - heading [level=2] [ref=e636]: Beefy
+                  - generic [ref=e638]: Multi-chain yield optimizer
+            - link "icons.llamao" [ref=e639] [cursor=pointer]:
+              - img "icons.llamao" [ref=e640]
+              - link [ref=e642]:
+                - /url: https://sherpa.cash
+                - img [ref=e644]
+                - generic [ref=e647]:
+                  - heading [level=2] [ref=e648]: Sherpa
+                  - generic [ref=e650]: Yield aggregator with auto-routing
+            - link "icons.llamao" [ref=e651] [cursor=pointer]:
+              - img "icons.llamao" [ref=e652]
+              - link [ref=e654]:
+                - /url: https://enjoyoors.finance
+                - img [ref=e656]
+                - generic [ref=e659]:
+                  - heading [level=2] [ref=e660]: Enjoyoors
+                  - generic [ref=e662]: Points and yield farming vaults
+          - heading "Navigate to header Aggregators" [level=2] [ref=e663]:
+            - link "Navigate to header" [ref=e664] [cursor=pointer]:
+              - /url: "#aggregators"
+              - img [ref=e666]
+            - generic [ref=e668] [cursor=pointer]: Aggregators
+          - generic [ref=e669]:
+            - link "icons.llamao" [ref=e670] [cursor=pointer]:
+              - img "icons.llamao" [ref=e671]
+              - link [ref=e673]:
+                - /url: https://kyberswap.com
+                - img [ref=e675]
+                - generic [ref=e678]:
+                  - heading [level=2] [ref=e679]: KyberSwap
+                  - generic [ref=e681]: Multi-chain DEX aggregator with dynamic routing
+            - link "icons.llamao" [ref=e682] [cursor=pointer]:
+              - img "icons.llamao" [ref=e683]
+              - link [ref=e685]:
+                - /url: https://openocean.finance
+                - img [ref=e687]
+                - generic [ref=e690]:
+                  - heading [level=2] [ref=e691]: OpenOcean
+                  - generic [ref=e693]: Cross-chain swap aggregator
+          - heading "Navigate to header Oracles" [level=2] [ref=e694]:
+            - link "Navigate to header" [ref=e695] [cursor=pointer]:
+              - /url: "#oracles"
+              - img [ref=e697]
+            - generic [ref=e699] [cursor=pointer]: Oracles
+          - generic [ref=e700]:
+            - link "icons.llamao" [ref=e701] [cursor=pointer]:
+              - img "icons.llamao" [ref=e702]
+              - link [ref=e704]:
+                - /url: https://chain.link
+                - img [ref=e706]
+                - generic [ref=e709]:
+                  - heading [level=2] [ref=e710]: Chainlink
+                  - generic [ref=e712]: Industry-standard decentralized price feeds
+            - link "icons.llamao" [ref=e713] [cursor=pointer]:
+              - img "icons.llamao" [ref=e714]
+              - link [ref=e716]:
+                - /url: https://pyth.network
+                - img [ref=e718]
+                - generic [ref=e721]:
+                  - heading [level=2] [ref=e722]: Pyth
+                  - generic [ref=e724]: High-frequency pull-based oracle network
+            - link "icons.llamao" [ref=e725] [cursor=pointer]:
+              - img "icons.llamao" [ref=e726]
+              - link [ref=e728]:
+                - /url: https://redstone.finance
+                - img [ref=e730]
+                - generic [ref=e733]:
+                  - heading [level=2] [ref=e734]: Redstone
+                  - generic [ref=e736]: Modular oracle with calldata delivery
+            - link "icons.llamao" [ref=e737] [cursor=pointer]:
+              - img "icons.llamao" [ref=e738]
+              - link [ref=e740]:
+                - /url: https://chroniclelabs.org
+                - img [ref=e742]
+                - generic [ref=e745]:
+                  - heading [level=2] [ref=e746]: Chronicle
+                  - generic [ref=e748]: Whitelisted oracle system by MakerDAO
+          - heading "Navigate to header Launchpad" [level=2] [ref=e749]:
+            - link "Navigate to header" [ref=e750] [cursor=pointer]:
+              - /url: "#launchpad"
+              - img [ref=e752]
+            - generic [ref=e754] [cursor=pointer]: Launchpad
+          - generic [ref=e755]:
+            - link "icons.llamao" [ref=e756] [cursor=pointer]:
+              - img "icons.llamao" [ref=e757]
+              - link [ref=e759]:
+                - /url: https://nad.fun
+                - img [ref=e761]
+                - generic [ref=e764]:
+                  - heading [level=2] [ref=e765]: nad.fun
+                  - generic [ref=e767]: Memecoin launchpad with bonding curves
+            - link "icons.llamao" [ref=e768] [cursor=pointer]:
+              - img "icons.llamao" [ref=e769]
+              - link [ref=e771]:
+                - /url: https://doppler.xyz
+                - img [ref=e773]
+                - generic [ref=e776]:
+                  - heading [level=2] [ref=e777]: Doppler
+                  - generic [ref=e779]: Token launch with dynamic pricing
+          - heading "Navigate to header Streaming" [level=2] [ref=e780]:
+            - link "Navigate to header" [ref=e781] [cursor=pointer]:
+              - /url: "#streaming"
+              - img [ref=e783]
+            - generic [ref=e785] [cursor=pointer]: Streaming
+          - link "icons.llamao" [ref=e787] [cursor=pointer]:
+            - img "icons.llamao" [ref=e788]
+            - link [ref=e790]:
+              - /url: https://sablier.com
+              - img [ref=e792]
+              - generic [ref=e795]:
+                - heading [level=2] [ref=e796]: Sablier
+                - generic [ref=e798]: Real-time token streaming and vesting
+          - heading "Navigate to header CDP" [level=2] [ref=e799]:
+            - link "Navigate to header" [ref=e800] [cursor=pointer]:
+              - /url: "#cdp"
+              - img [ref=e802]
+            - generic [ref=e804] [cursor=pointer]: CDP
+          - link "icons.llamao" [ref=e806] [cursor=pointer]:
+            - img "icons.llamao" [ref=e807]
+            - link [ref=e809]:
+              - /url: https://covenant.finance
+              - img [ref=e811]
+              - generic [ref=e814]:
+                - heading [level=2] [ref=e815]: Covenant
+                - generic [ref=e817]: Collateralized debt position protocol
+          - heading "Navigate to header Cross-chain" [level=2] [ref=e818]:
+            - link "Navigate to header" [ref=e819] [cursor=pointer]:
+              - /url: "#cross-chain"
+              - img [ref=e821]
+            - generic [ref=e823] [cursor=pointer]: Cross-chain
+          - link "icons.llamao" [ref=e825] [cursor=pointer]:
+            - img "icons.llamao" [ref=e826]
+            - link [ref=e828]:
+              - /url: https://skatechain.org
+              - img [ref=e830]
+              - generic [ref=e833]:
+                - heading [level=2] [ref=e834]: Skate
+                - generic [ref=e836]: Unified liquidity across chains
+          - heading "Navigate to header Indexer" [level=2] [ref=e837]:
+            - link "Navigate to header" [ref=e838] [cursor=pointer]:
+              - /url: "#indexer"
+              - img [ref=e840]
+            - generic [ref=e842] [cursor=pointer]: Indexer
+          - link "icons.llamao" [ref=e844] [cursor=pointer]:
+            - img "icons.llamao" [ref=e845]
+            - link [ref=e847]:
+              - /url: https://envio.dev
+              - img [ref=e849]
+              - generic [ref=e852]:
+                - heading [level=2] [ref=e853]: Envio
+                - generic [ref=e855]: High-performance on-chain data indexer
+        - generic [ref=e856]:
+          - link "Quickstart" [ref=e857] [cursor=pointer]:
+            - /url: /quickstart
+            - img [ref=e858]
+            - generic [ref=e860]: Quickstart
+          - link "DEX Overview" [ref=e861] [cursor=pointer]:
+            - /url: /sdk/dex/overview
+            - generic [ref=e862]: DEX Overview
+            - img [ref=e863]
+        - generic [ref=e866]:
+          - textbox "Ask a question..." [ref=e867]
+          - generic: Ctrl+I
+          - button "Send message" [disabled] [ref=e868]:
+            - img [ref=e869]
+        - contentinfo [ref=e871]:
+          - generic [ref=e872]:
+            - link "github" [ref=e873] [cursor=pointer]:
+              - /url: https://github.com/RampartLabs
+              - generic [ref=e874]: github
+              - img [ref=e875]
+            - link "x" [ref=e876] [cursor=pointer]:
+              - /url: https://x.com/RampartLabs
+              - generic [ref=e877]: x
+              - img [ref=e878]
+          - link "Powered by This documentation is built and hosted on Mintlify, a developer documentation platform" [ref=e881] [cursor=pointer]:
+            - /url: https://www.mintlify.com?utm_campaign=poweredBy&utm_medium=referral&utm_source=rampartlabs
+            - generic [ref=e882]: Powered by
+            - img [ref=e883]
+            - generic [ref=e892]: This documentation is built and hosted on Mintlify, a developer documentation platform
+  - alert [ref=e893]
+  - generic:
+    - generic:
+      - generic:
+        - generic:
+          - generic:
+            - img
+            - generic: Assistant
+          - generic:
+            - button:
+              - img
+        - generic:
+          - generic:
+            - generic:
+              - generic: Responses are generated using AI and may contain mistakes.
+        - generic [ref=e894]:
+          - textbox [ref=e896]:
+            - /placeholder: Ask a question...
+          - generic [ref=e897]:
+            - button [ref=e898] [cursor=pointer]:
+              - img [ref=e899]
+            - button [disabled] [ref=e901]:
+              - img [ref=e902]

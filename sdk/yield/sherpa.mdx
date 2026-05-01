@@ -1,0 +1,97 @@
+---
+title: "Sherpa"
+description: "Delta-neutral USDC yield vaults on Monad"
+---
+
+<Info>
+**TVL:** ~$3M | **Type:** Delta-Neutral USDC Vault | **Docs:** [sherpa.fi](https://sherpa.fi)
+</Info>
+
+## Overview
+
+Sherpa runs delta-neutral strategies to generate yield on USDC without directional market exposure. Depositors receive vault shares; yield is accrued continuously and reflected in the share price. Multiple vaults may run distinct strategies with different risk/reward profiles.
+
+## Functions
+
+### getSherpaVaults()
+
+Returns all active Sherpa vaults with current APY and total assets.
+
+**Returns** `SherpaVault[]`
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `address` | `string` | Vault contract address |
+| `asset` | `string` | Underlying token address (typically USDC) |
+| `totalAssets` | `bigint` | Total assets under management (raw) |
+| `apy` | `number` | Current APY as a decimal (e.g. `0.118`) |
+| `strategy` | `string` | Strategy description or name |
+| `protocol` | `'sherpa'` | Protocol identifier |
+
+```typescript
+const vaults = await sdk.getSherpaVaults()
+// → [
+//   { address: '0x...', asset: '0x...', totalAssets: 2400000n, apy: 0.118, strategy: 'delta-neutral-usdc', protocol: 'sherpa' },
+// ]
+```
+
+### getSherpaVault(address)
+
+Returns data for a single Sherpa vault by address.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `address` | `string` | Vault contract address |
+
+**Returns** `SherpaVault`
+
+```typescript
+const vault = await sdk.getSherpaVault('0x...')
+// → { address: '0x...', apy: 0.118, strategy: 'delta-neutral-usdc', protocol: 'sherpa' }
+```
+
+### getSherpaAPY()
+
+Returns the best current APY across all Sherpa vaults.
+
+**Returns** `number`
+
+```typescript
+const apy = await sdk.getSherpaAPY()
+// → 0.118
+```
+
+### getSherpaTVL()
+
+Returns total value locked across all Sherpa vaults in USD.
+
+**Returns** `number`
+
+```typescript
+const tvl = await sdk.getSherpaTVL()
+// → 3100000
+```
+
+## Usage Example
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+
+const vaults = await sdk.getSherpaVaults()
+const apy = await sdk.getSherpaAPY()
+
+console.log(`Sherpa best APY: ${(apy * 100).toFixed(2)}%`)
+console.log(`Active vaults: ${vaults.length}`)
+
+for (const v of vaults) {
+  console.log(`  ${v.strategy}: ${(v.apy * 100).toFixed(2)}% APY`)
+}
+```
+
+## Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| VaultFactory | `0x8A5Ef4f01DC60f3a7b1a5C91c08c2a8F0d59b786` |

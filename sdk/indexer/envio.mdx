@@ -1,0 +1,47 @@
+---
+title: "Envio"
+description: "High-performance on-chain data indexer for Monad"
+---
+
+<Info>
+**Type:** On-chain Indexer | **Docs:** [envio.dev](https://envio.dev)
+</Info>
+
+## Overview
+
+Envio is a high-performance blockchain data indexer purpose-built for speed. It supports real-time event streaming and historical queries across Monad contracts. Rampart exposes Envio indexer status and query utilities.
+
+## Functions
+
+### getEnvioIndexerStatus()
+
+Returns the current sync status of the Envio indexer on Monad.
+
+```typescript
+import { Rampart } from 'rampart-monad'
+
+const sdk = new Rampart()
+const status = await sdk.getEnvioIndexerStatus()
+// → { latestBlock: 8540000, syncedBlock: 8539998, lag: 2, healthy: true }
+```
+
+### queryEnvio(query)
+
+Executes a GraphQL query against the Envio Monad indexer endpoint.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `query` | `string` | GraphQL query string |
+
+```typescript
+const data = await sdk.queryEnvio(`
+  query {
+    Transfer(limit: 10, order_by: { block_number: desc }) {
+      from
+      to
+      value
+      block_number
+    }
+  }
+`)
+```
