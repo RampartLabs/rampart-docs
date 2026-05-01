@@ -40,15 +40,13 @@ export const Section = ({ title, count, children }) => (
 
 <div className="not-prose" style={{marginTop:'24px'}}>
 
-<Section title="Lending" count={12}>
+<Section title="Lending" count={10}>
   <Row name="Morpho Blue"    href="https://morpho.org"              slug="morpho"        desc="Permissionless vault-based lending" />
   <Row name="Neverland"      href="https://neverland.fi"            slug="neverland"     desc="Aave V3 fork on Monad" />
   <Row name="Euler V2"       href="https://euler.finance"           slug="euler"         desc="108 permissionless vaults" />
   <Row name="Gearbox V3"     href="https://gearbox.fi"              slug="gearbox"       desc="Composable leverage protocol" />
   <Row name="Curvance"       href="https://curvance.com"            slug="curvance"      desc="Cross-chain lending with gauges" />
   <Row name="Folks Finance"  href="https://folks.finance"           slug="folks-finance" desc="Algorithmic lending, account model" />
-  <Row name="Timeswap"       href="https://timeswap.io"             slug="timeswap"      desc="Oracle-free fixed-rate lending" />
-  <Row name="Lagoon"         href="https://lagoon.finance"          slug="lagoon"        desc="Yield-bearing vault lending" />
   <Row name="TownSquare"     href="https://app.townsq.xyz"          icon="https://pbs.twimg.com/profile_images/1563311542334267398/gaQXK0FD_400x400.jpg" desc="Community-governed lending pools" />
   <Row name="Accountable"    href="https://accountable.finance"     icon="https://pbs.twimg.com/profile_images/1760695497716203522/mvdR-2oP_400x400.jpg" desc="Undercollateralized institutional lending" />
   <Row name="Sumer Money"    href="https://sumer.money"             icon="https://pbs.twimg.com/profile_images/1611413613541924864/rPPtMWRr_400x400.jpg" desc="Compound V2 fork with cross-chain synths" />
@@ -67,7 +65,7 @@ export const Section = ({ title, count, children }) => (
   <Row name="Renzo" href="https://renzoprotocol.com" slug="renzo" desc="ezETH - EigenLayer liquid restaking" />
 </Section>
 
-<Section title="DEX & AMM" count={13}>
+<Section title="DEX & AMM" count={11}>
   <Row name="Uniswap V4"     href="https://uniswap.org"         slug="uniswap"       desc="Hooks-based concentrated liquidity" />
   <Row name="Uniswap V3"     href="https://uniswap.org"         slug="uniswap-v3"    desc="Concentrated liquidity with tick ranges" />
   <Row name="Uniswap V2"     href="https://uniswap.org"         slug="uniswap-v2"    desc="Classic constant-product AMM" />
@@ -78,34 +76,30 @@ export const Section = ({ title, count, children }) => (
   <Row name="iZiSwap"        href="https://izumi.finance"       slug="izumi"         desc="Discretized liquidity AMM (DLAMM)" />
   <Row name="WooFi"          href="https://fi.woo.org"          slug="woofi"         desc="Synthetic proactive market maker" />
   <Row name="Bean Exchange"  href="https://bean.exchange"       slug="bean-exchange" desc="Native Monad AMM" />
-  <Row name="Pingu"          href="https://pingu.exchange"      icon="https://pbs.twimg.com/profile_images/1969166356009373696/TQYJNyzA_400x400.png" desc="Perp DEX with integrated spot AMM" />
   <Row name="Capricorn"      href="https://capricorn.finance"   icon="https://pbs.twimg.com/profile_images/1865437217823051776/P6J3Rmqv_400x400.jpg" desc="Concentrated liquidity DEX (Uniswap V3 fork)" />
-  <Row name="Nabla"          href="https://nabla.fi"            slug="nabla"         desc="Single-sided AMM with insurance pools" />
 </Section>
 
-<Section title="CLOB & Trading" count={3}>
-  <Row name="Kuru"          href="https://kuru.io"       slug="kuru"         desc="On-chain orderbook AMM native to Monad" />
-  <Row name="Clober V2"     href="https://clober.io"     slug="clober"       desc="Fully on-chain central limit order book" />
-  <Row name="Monday Trade"  href="https://monday.trade"  icon="https://unavatar.io/twitter/MondayTrade_" desc="Perpetuals and spot, unified margin" />
+<Section title="CLOB & Trading" count={2}>
+  <Row name="Kuru"       href="https://kuru.io"    slug="kuru"   desc="On-chain orderbook AMM native to Monad" />
+  <Row name="Clober V2"  href="https://clober.io"  slug="clober" desc="Fully on-chain central limit order book" />
 </Section>
 
 <Section title="Perpetuals" count={2}>
-  <Row name="Perpl"    href="https://app.perpl.xyz"        slug="perpl"    desc="On-chain perpetuals with liquidity vaults" />
-  <Row name="LeverUp"  href="https://leverup.finance"      icon="https://pbs.twimg.com/profile_images/1893297819754049536/2TkBSx2s_400x400.jpg" desc="Leveraged perps with LVUSD synthetic dollar" />
+  <Row name="Perpl"    href="https://app.perpl.xyz"   slug="perpl"    desc="On-chain perpetuals with liquidity vaults" />
+  <Row name="LeverUp"  href="https://leverup.finance" icon="https://pbs.twimg.com/profile_images/1893297819754049536/2TkBSx2s_400x400.jpg" desc="Leveraged perps with LVUSD synthetic dollar" />
 </Section>
 
-<Section title="Yield" count={6}>
-  <Row name="Multipli.fi"        href="https://multipli.fi"           slug="multipli"  desc="RWA-backed yield strategies" />
-  <Row name="Upshift"            href="https://upshift.finance"       slug="upshift"   desc="Auto-compounding yield vaults" />
-  <Row name="Beefy"              href="https://beefy.com"             slug="beefy"     desc="Multi-chain yield optimizer" />
-  <Row name="Enjoyoors"          href="https://enjoyoors.xyz"         icon="https://pbs.twimg.com/profile_images/1876281291685879808/Kj1BDWjC_400x400.jpg" desc="Yield vaults with boosted rewards" />
-  <Row name="Sherpa Finance"     href="https://sherpa.finance"        icon="https://pbs.twimg.com/profile_images/1823421234782093312/3I8fVa3A_400x400.jpg" desc="Delta-neutral USDC yield vault" />
-  <Row name="UltraYield by Edge" href="https://ultrayield.edge.capital" icon="https://pbs.twimg.com/profile_images/1882140657296347136/P6EBXFhO_400x400.jpg" desc="ERC-4626 vaults on Gearbox V3 (~$24M TVL)" />
+<Section title="Yield" count={5}>
+  <Row name="Multipli.fi"        href="https://multipli.fi"              slug="multipli"  desc="RWA-backed yield strategies" />
+  <Row name="Upshift"            href="https://upshift.finance"          slug="upshift"   desc="Auto-compounding yield vaults" />
+  <Row name="Beefy"              href="https://beefy.com"                slug="beefy"     desc="Multi-chain yield optimizer" />
+  <Row name="Sherpa Finance"     href="https://sherpa.finance"           icon="https://pbs.twimg.com/profile_images/1823421234782093312/3I8fVa3A_400x400.jpg" desc="Delta-neutral USDC yield vault" />
+  <Row name="UltraYield by Edge" href="https://ultrayield.edge.capital"  icon="https://pbs.twimg.com/profile_images/1882140657296347136/P6EBXFhO_400x400.jpg" desc="ERC-4626 vaults on Gearbox V3 (~$24M TVL)" />
 </Section>
 
 <Section title="Aggregators" count={2}>
-  <Row name="KyberSwap"   href="https://kyberswap.com"       slug="kyberswap"  desc="Multi-chain DEX aggregator" />
-  <Row name="OpenOcean"   href="https://openocean.finance"   slug="openocean"  desc="Cross-chain swap aggregator" />
+  <Row name="KyberSwap"   href="https://kyberswap.com"      slug="kyberswap"  desc="Multi-chain DEX aggregator" />
+  <Row name="OpenOcean"   href="https://openocean.finance"  slug="openocean"  desc="Cross-chain swap aggregator" />
 </Section>
 
 <Section title="Oracles" count={4}>
@@ -115,21 +109,12 @@ export const Section = ({ title, count, children }) => (
   <Row name="Chronicle"  href="https://chroniclelabs.org"  slug="chronicle-labs" desc="Whitelisted oracle by MakerDAO" />
 </Section>
 
-<Section title="Launchpad" count={2}>
-  <Row name="nad.fun"  href="https://nad.fun"     slug="nad-fun" desc="Memecoin launchpad with bonding curves" />
-  <Row name="Doppler"  href="https://doppler.xyz" slug="doppler" desc="Token launch with dynamic pricing" />
+<Section title="Launchpad" count={1}>
+  <Row name="nad.fun" href="https://nad.fun" slug="nad-fun" desc="Memecoin launchpad with bonding curves" />
 </Section>
 
 <Section title="Streaming" count={1}>
   <Row name="Sablier" href="https://sablier.com" slug="sablier" desc="Real-time token streaming and vesting" />
-</Section>
-
-<Section title="CDP" count={1}>
-  <Row name="Covenant" href="https://covenant.finance" icon="https://pbs.twimg.com/profile_images/1760674458497654784/SeqF3eEq_400x400.jpg" desc="Collateralized debt position protocol" />
-</Section>
-
-<Section title="Cross-chain" count={1}>
-  <Row name="Skate" href="https://skatechain.org" icon="https://pbs.twimg.com/profile_images/1873921084871106563/NEW0LSI6_400x400.jpg" desc="Unified liquidity across chains" />
 </Section>
 
 <Section title="Indexer" count={1}>
